@@ -36,11 +36,11 @@ namespace Wrapper {
     // NOTE: Temp removed cuz it no work
     // NOTE: Pasted from Synapse X / https://github.com/Acrillis/SynapseX/blob/master/Synapse/Src/Exploit/Execution/RbxApi.cpp#L1591
     int HookFunction(lua_State* L /*, const char* file_path, const char* content*/) {
-        
+        return 1;
     }
 
     int RestoreFunction(lua_State* L) {
-        
+        return 1;
     }
 }
 
