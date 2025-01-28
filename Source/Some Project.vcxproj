@@ -92,7 +92,7 @@
     <OutDir>$(SolutionDir)Output\</OutDir>
     <IntDir>$(SolutionDir)Output\Intermediates\</IntDir>
     <IncludePath>$(ProjectDir)Dependencies/;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)Dependencies/;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(ProjectDir)Dependencies/;$(ProjectDir)Dependencies/Curl/lib/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -151,7 +151,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -164,12 +164,65 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Luau.Ast.lib;Luau.Compiler.lib;Luau.VM.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Luau.Ast.lib;Luau.Compiler.lib;Luau.VM.lib;libcurl.lib;Ws2_32.lib;Crypt32.lib;Wldap32.lib;Normaliz.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)Dependencies/LuaU/Libraries/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Core\Http\Http.cpp" />
     <ClCompile Include="Core\Utils\Utils.cpp" />
+    <ClCompile Include="Core\Win32\Win32.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Ast\src\Allocator.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Ast\src\Ast.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Ast\src\Confusables.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Ast\src\Lexer.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Ast\src\Location.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Ast\src\Parser.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Ast\src\StringUtils.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Ast\src\TimeTrace.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Compiler\src\BuiltinFolding.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Compiler\src\Builtins.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Compiler\src\BytecodeBuilder.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Compiler\src\Compiler.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Compiler\src\ConstantFolding.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Compiler\src\CostModel.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Compiler\src\lcode.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Compiler\src\TableShape.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Compiler\src\Types.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Compiler\src\ValueTracking.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lapi.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\laux.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lbaselib.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lbitlib.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lbuffer.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lbuflib.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lbuiltins.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lcorolib.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\ldblib.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\ldebug.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\ldo.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lfunc.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lgc.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lgcdebug.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\linit.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lmathlib.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lmem.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lnumprint.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lobject.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\loslib.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lperf.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lstate.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lstring.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lstrlib.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\ltable.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\ltablib.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\ltm.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\ludata.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lutf8lib.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lveclib.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lvmexecute.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lvmload.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lvmutils.cpp" />
     <ClCompile Include="Entry.cpp" />
     <ClCompile Include="Core\FileSystem\FileSystem.cpp" />
     <ClCompile Include="Core\LuaU\Enviornment.cpp" />
@@ -178,10 +231,72 @@
   <ItemGroup>
     <ClInclude Include="Common.hpp" />
     <ClInclude Include="Core\FileSystem\FileSystem.hpp" />
+    <ClInclude Include="Core\Http\Http.hpp" />
     <ClInclude Include="Core\LuaU\Enviornment.hpp" />
     <ClInclude Include="Core\LuaU\Wrapper.hpp" />
     <ClInclude Include="Core\Memory\Memory.hpp" />
     <ClInclude Include="Core\Utils\Utils.hpp" />
+    <ClInclude Include="Core\Win32\Win32.hpp" />
+    <ClInclude Include="Dependencies\Curl\include\curl\curl.h" />
+    <ClInclude Include="Dependencies\Curl\include\curl\curlver.h" />
+    <ClInclude Include="Dependencies\Curl\include\curl\easy.h" />
+    <ClInclude Include="Dependencies\Curl\include\curl\header.h" />
+    <ClInclude Include="Dependencies\Curl\include\curl\mprintf.h" />
+    <ClInclude Include="Dependencies\Curl\include\curl\multi.h" />
+    <ClInclude Include="Dependencies\Curl\include\curl\options.h" />
+    <ClInclude Include="Dependencies\Curl\include\curl\stdcheaders.h" />
+    <ClInclude Include="Dependencies\Curl\include\curl\system.h" />
+    <ClInclude Include="Dependencies\Curl\include\curl\typecheck-gcc.h" />
+    <ClInclude Include="Dependencies\Curl\include\curl\urlapi.h" />
+    <ClInclude Include="Dependencies\Curl\include\curl\websockets.h" />
+    <ClInclude Include="Dependencies\LuaU\Ast\include\Luau\Allocator.h" />
+    <ClInclude Include="Dependencies\LuaU\Ast\include\Luau\Ast.h" />
+    <ClInclude Include="Dependencies\LuaU\Ast\include\Luau\Confusables.h" />
+    <ClInclude Include="Dependencies\LuaU\Ast\include\Luau\Lexer.h" />
+    <ClInclude Include="Dependencies\LuaU\Ast\include\Luau\Location.h" />
+    <ClInclude Include="Dependencies\LuaU\Ast\include\Luau\ParseOptions.h" />
+    <ClInclude Include="Dependencies\LuaU\Ast\include\Luau\Parser.h" />
+    <ClInclude Include="Dependencies\LuaU\Ast\include\Luau\ParseResult.h" />
+    <ClInclude Include="Dependencies\LuaU\Ast\include\Luau\StringUtils.h" />
+    <ClInclude Include="Dependencies\LuaU\Ast\include\Luau\TimeTrace.h" />
+    <ClInclude Include="Dependencies\LuaU\Common\include\Luau\Bytecode.h" />
+    <ClInclude Include="Dependencies\LuaU\Common\include\Luau\BytecodeUtils.h" />
+    <ClInclude Include="Dependencies\LuaU\Common\include\Luau\Common.h" />
+    <ClInclude Include="Dependencies\LuaU\Common\include\Luau\DenseHash.h" />
+    <ClInclude Include="Dependencies\LuaU\Common\include\Luau\ExperimentalFlags.h" />
+    <ClInclude Include="Dependencies\LuaU\Common\include\Luau\Variant.h" />
+    <ClInclude Include="Dependencies\LuaU\Common\include\Luau\VecDeque.h" />
+    <ClInclude Include="Dependencies\LuaU\Compiler\include\luacode.h" />
+    <ClInclude Include="Dependencies\LuaU\Compiler\include\Luau\BytecodeBuilder.h" />
+    <ClInclude Include="Dependencies\LuaU\Compiler\include\Luau\Compiler.h" />
+    <ClInclude Include="Dependencies\LuaU\Compiler\src\BuiltinFolding.h" />
+    <ClInclude Include="Dependencies\LuaU\Compiler\src\Builtins.h" />
+    <ClInclude Include="Dependencies\LuaU\Compiler\src\ConstantFolding.h" />
+    <ClInclude Include="Dependencies\LuaU\Compiler\src\CostModel.h" />
+    <ClInclude Include="Dependencies\LuaU\Compiler\src\TableShape.h" />
+    <ClInclude Include="Dependencies\LuaU\Compiler\src\Types.h" />
+    <ClInclude Include="Dependencies\LuaU\Compiler\src\ValueTracking.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\include\lua.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\include\luaconf.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\include\lualib.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\lapi.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\lbuffer.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\lbuiltins.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\lbytecode.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\lcommon.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\ldebug.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\ldo.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\lfunc.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\lgc.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\lmem.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\lnumutils.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\lobject.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\lstate.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\lstring.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\ltable.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\ltm.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\ludata.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\lvm.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Main.lua" />

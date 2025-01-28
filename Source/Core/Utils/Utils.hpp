@@ -4,7 +4,10 @@
 #include "../Common.hpp"
 
 namespace Utils {
-    std::string RandomString(int length);
-};
+    const char* RandomString(int length);
+
+    void SetClipboard( const char* content );
+    const char* GetClipboard( );
+}
 
 #endif
