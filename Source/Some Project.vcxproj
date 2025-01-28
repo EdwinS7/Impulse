@@ -160,7 +160,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)Dependencies/LuaU/VM/include;$(ProjectDir)Dependencies/LuaU/VM/src;$(ProjectDir)Dependencies/LuaU/Compiler/include;$(ProjectDir)Dependencies/LuaU/Compiler/src;$(ProjectDir)Dependencies/LuaU/Ast/include;$(ProjectDir)Dependencies/LuaU/Ast/src;$(ProjectDir)Dependencies/LuaU/Common/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>

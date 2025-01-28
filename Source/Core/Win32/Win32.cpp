@@ -88,14 +88,19 @@ bool Win32::DispatchMessages( ) {
     return true;
 }
 
-HWND Win32::CreateConsole( const char* title, int w, int h ) {
+HWND Win32::CreateConsole( const char* title, int x, int y, int w, int h ) {
     if ( !AllocConsole( ) )
         return nullptr;
 
     HWND Hwnd = GetConsoleWindow( );
 
     SetConsoleTitleA( title );
-    MoveWindow( Hwnd, CW_USEDEFAULT, CW_USEDEFAULT, w, h, TRUE );
+    MoveWindow( Hwnd, x, y, w, h, TRUE );
+
+    FILE* fp = nullptr;
+    freopen_s( &fp, "CONIN$", "r", stdin );
+    freopen_s( &fp, "CONOUT$", "w", stdout );
+    freopen_s( &fp, "CONOUT$", "w", stderr );
 
     return Hwnd;
 }

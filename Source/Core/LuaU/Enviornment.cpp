@@ -52,8 +52,8 @@ Enviornment::Enviornment( ) {
     register_global_function( m_State, Wrapper::FileSystem_::ReadFile, { "ReadFile", "read_file" } );
     register_global_function( m_State, Wrapper::FileSystem_::WriteFile, { "WriteFile", "write_file" } );
 
-    register_global_function( m_State, Wrapper::HookFunction, { "HookFunction", "hook_function" } );
-    register_global_function( m_State, Wrapper::RestoreFunction, { "RestoreFunction", "restore_function" } );
+    //register_global_function( m_State, Wrapper::HookFunction, { "HookFunction", "hook_function" } );
+    //register_global_function( m_State, Wrapper::RestoreFunction, { "RestoreFunction", "restore_function" } );
 
     register_global_function( m_State, Wrapper::Http_::Get, { "HttpGet", "http_get" } );
     register_global_function( m_State, Wrapper::Http_::Post, { "HttpPost", "http_post" } );

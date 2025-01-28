@@ -9,7 +9,7 @@ namespace Win32 {
     void DestroyWindow( HWND* window );
     bool DispatchMessages( );
 
-    HWND CreateConsole( const char* title, int w, int h );
+    HWND CreateConsole( const char* title, int x, int y, int w, int h );
     void DestroyConsole( HWND* window );
 
     void MessageBox_( HWND* window, const char* title, const char* content, int type );

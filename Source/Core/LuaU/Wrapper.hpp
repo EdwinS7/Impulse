@@ -87,8 +87,9 @@ namespace Wrapper {
         }
 
         int CreateConsole( lua_State* L ) {
-            HWND ConsoleHandle = Win32::CreateConsole(
-                lua_tostring( L, 1 ), lua_tointeger( L, 2 ), lua_tointeger( L, 3 )
+            HWND ConsoleHandle = Win32::CreateConsole( lua_tostring( L, 1 ), 
+                lua_tointeger( L, 2 ), lua_tointeger( L, 3 ),
+                lua_tointeger( L, 4 ), lua_tointeger( L, 5 )
             );
 
             if ( ConsoleHandle ) {

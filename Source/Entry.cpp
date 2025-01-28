@@ -3,7 +3,7 @@
 #include "Core/LuaU/Enviornment.hpp"
 #include "Core/Win32/Win32.hpp"
 
-int main() {
+int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, int nCmdShow ) {
     try {
         Enviornment Env;
 
