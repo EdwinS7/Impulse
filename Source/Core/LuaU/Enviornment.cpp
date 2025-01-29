@@ -56,6 +56,39 @@ Enviornment::Enviornment( ) {
     }
 
     {
+        luaL_newmetatable( m_State, "Vector4" );
+
+        register_function( m_State, Wrapper::Types::Vector4_::__index, { "__index" } );
+        register_function( m_State, Wrapper::Types::Vector4_::__newindex, { "__newindex" } );
+
+        lua_pop( m_State, 1 );
+
+        register_global_function( m_State, Wrapper::Types::Vector4_::New, { "Vector4", "vector4" } );
+    }
+
+    {
+        luaL_newmetatable( m_State, "Vertex" );
+
+        register_function( m_State, Wrapper::Types::Vertex_::__index, { "__index" } );
+        register_function( m_State, Wrapper::Types::Vertex_::__newindex, { "__newindex" } );
+
+        lua_pop( m_State, 1 );
+
+        register_global_function( m_State, Wrapper::Types::Vertex_::New, { "Vertex", "vertex" } );
+    }
+
+    {
+        luaL_newmetatable( m_State, "Color" );
+
+        register_function( m_State, Wrapper::Types::Color_::__index, { "__index" } );
+        register_function( m_State, Wrapper::Types::Color_::__newindex, { "__newindex" } );
+
+        lua_pop( m_State, 1 );
+
+        register_global_function( m_State, Wrapper::Types::Color_::New, { "Color", "color" } );
+    }
+
+    {
         lua_createtable( m_State, 0, 6 );
 
         register_function( m_State, Wrapper::Win32_::CreateWindow_, { "CreateWindow", "create_window" } );

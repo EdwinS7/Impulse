@@ -99,6 +99,170 @@ namespace Wrapper {
                 return 0;
             }
         }
+
+        namespace Vector4_ {
+            int New( lua_State* state ) {
+                auto Vector = ( Vector4* ) lua_newuserdata( state, sizeof( Vector4 ) );
+
+                new ( Vector ) Vector4(
+                    luaL_optnumber( state, 1, 0.0 ),
+                    luaL_optnumber( state, 2, 0.0 ),
+                    luaL_optnumber( state, 3, 0.0 ),
+                    luaL_optnumber( state, 4, 0.0 )
+                );
+
+                luaL_getmetatable( state, "Vector4" );
+                lua_setmetatable( state, -2 );
+
+                return 1;
+            }
+
+            int __index( lua_State* state ) {
+                auto Vector = ( Vector4* ) luaL_checkudata( state, 1, "Vector4" );
+                auto Key = luaL_checkstring( state, 2 );
+
+                if ( Key[ 0 ] == 'x' )
+                    lua_pushnumber( state, Vector->x );
+                else if ( Key[ 0 ] == 'y' )
+                    lua_pushnumber( state, Vector->y );
+                else if ( Key[ 0 ] == 'z' )
+                    lua_pushnumber( state, Vector->z );
+                else if ( Key[ 0 ] == 'w' )
+                    lua_pushnumber( state, Vector->w );
+
+                return 1;
+            }
+
+            int __newindex( lua_State* state ) {
+                auto Vector = ( Vector4* ) luaL_checkudata( state, 1, "Vector4" );
+                auto Key = luaL_checkstring( state, 2 );
+                auto Value = luaL_checknumber( state, 3 );
+
+                if ( Key[ 0 ] == 'x' )
+                    Vector->x = Value;
+                else if ( Key[ 0 ] == 'y' )
+                    Vector->y = Value;
+                else if ( Key[ 0 ] == 'z' )
+                    Vector->z = Value;
+                else if ( Key[ 0 ] == 'w' )
+                    Vector->w = Value;
+
+                return 0;
+            }
+        }
+
+        namespace Vertex_ {
+            int New( lua_State* state ) {
+                auto Vertex_ = ( Vertex* ) lua_newuserdata( state, sizeof( Vertex ) );
+
+                new ( Vertex_ ) Vertex(
+                    luaL_optnumber( state, 1, 0.0 ),
+                    luaL_optnumber( state, 2, 0.0 ),
+                    luaL_optnumber( state, 3, 0.0 ),
+                    luaL_optnumber( state, 4, 0.0 ),
+                    luaL_optnumber( state, 5, 0.0 ),
+                    luaL_optnumber( state, 6, 1.0 )
+                );
+
+                luaL_getmetatable( state, "Vertex" );
+                lua_setmetatable( state, -2 );
+
+                return 1;
+            }
+
+            int __index( lua_State* state ) {
+                auto Vertex_ = ( Vertex* ) luaL_checkudata( state, 1, "Vertex" );
+                auto Key = luaL_checkstring( state, 2 );
+
+                if ( Key[ 0 ] == 'x' )
+                    lua_pushnumber( state, Vertex_->x );
+                else if ( Key[ 0 ] == 'y' )
+                    lua_pushnumber( state, Vertex_->y );
+                else if ( Key[ 0 ] == 'z' )
+                    lua_pushnumber( state, Vertex_->z );
+                else if ( Key[ 0 ] == 'u' )
+                    lua_pushnumber( state, Vertex_->u );
+                else if ( Key[ 0 ] == 'v' )
+                    lua_pushnumber( state, Vertex_->v );
+                else if ( Key == "color" ) // color
+                    lua_pushnumber( state, Vertex_->color );
+
+                return 1;
+            }
+
+            int __newindex( lua_State* state ) {
+                auto Vertex_ = ( Vertex* ) luaL_checkudata( state, 1, "Vertex" );
+                auto Key = luaL_checkstring( state, 2 );
+                auto Value = luaL_checknumber( state, 3 );
+
+                if ( Key[ 0 ] == 'x' )
+                    Vertex_->x = Value;
+                else if ( Key[ 0 ] == 'y' )
+                    Vertex_->y = Value;
+                else if ( Key[ 0 ] == 'z' )
+                    Vertex_->z = Value;
+                else if ( Key[ 0 ] == 'u' )
+                    Vertex_->u = Value;
+                else if ( Key[ 0 ] == 'v' )
+                    Vertex_->v = Value;
+                else if ( Key == "color" )
+                    Vertex_->color = Value;
+
+                return 0;
+            }
+        }
+
+        namespace Color_ {
+            int New( lua_State* L ) {
+                auto Clr = ( Color* ) lua_newuserdata( L, sizeof( Color ) );
+
+                new ( Clr ) Color(
+                    luaL_optnumber( L, 1, 0.0 ),
+                    luaL_optnumber( L, 2, 0.0 ),
+                    luaL_optnumber( L, 3, 0.0 ),
+                    luaL_optnumber( L, 4, 1.0 ) // Default alpha to 1.0
+                );
+
+                luaL_getmetatable( L, "Color" );
+                lua_setmetatable( L, -2 );
+
+                return 1;
+            }
+
+            int __index( lua_State* state ) {
+                auto Clr = ( Color* ) luaL_checkudata( state, 1, "Color" );
+                auto Key = luaL_checkstring( state, 2 );
+
+                if ( Key[ 0 ] == 'r' )
+                    lua_pushnumber( state, Clr->r );
+                else if ( Key[ 0 ] == 'g' )
+                    lua_pushnumber( state, Clr->g );
+                else if ( Key[ 0 ] == 'b' )
+                    lua_pushnumber( state, Clr->b );
+                else if ( Key[ 0 ] == 'a' )
+                    lua_pushnumber( state, Clr->a );
+
+                return 1;
+            }
+
+            int __newindex( lua_State* state ) {
+                auto Clr = ( Color* ) luaL_checkudata( state, 1, "Color" );
+
+                auto Key = luaL_checkstring( state, 2 );
+                auto Value = luaL_checknumber( state, 3 );
+
+                if ( Key[ 0 ] == 'r' )
+                    Clr->r = Value;
+                else if ( Key[ 0 ] == 'g' )
+                    Clr->g = Value;
+                else if ( Key[ 0 ] == 'b' )
+                    Clr->b = Value;
+                else if ( Key[ 0 ] == 'a' )
+                    Clr->a = Value;
+
+                return 0;
+            }
+        }
     }
 
     namespace Utils_ {
