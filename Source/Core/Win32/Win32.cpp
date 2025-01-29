@@ -5,7 +5,7 @@ LRESULT CALLBACK WndProc( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam ) {
 
     switch ( msg ) {
     case WM_SIZE:
-        // NOTE: DirectX stuff herte.
+        // NOTE: DirectX stuff here.
 
         return 0;
     case WM_ENTERSIZEMOVE:
@@ -13,13 +13,13 @@ LRESULT CALLBACK WndProc( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam ) {
 
         return 0;
     case WM_EXITSIZEMOVE:
-        // NOTE: DirectX stuff herte.
+        // NOTE: DirectX stuff here.
 
         IsResizing = false;
 
         return 0;
     case WM_MOUSEMOVE:
-        //gInput->SetMousePos( Vec2<int16_t>( LOWORD( lParam ), HIWORD( lParam ) ) );
+        // NOTE: Input::SetMousePos( Vector2( LOWORD( lParam ), HIWORD( lParam ) ) );
         break;
         break;
     case WM_SETCURSOR:
@@ -68,10 +68,11 @@ HWND Win32::CreateWindow_( const char* title, int w, int h, bool full_screen ) {
     return Hwnd;
 }
 
-void Win32::DestroyWindow( HWND* window ) {
-    if ( window && *window ) {
-        PostMessage( *window, WM_CLOSE, 0, 0 );
-    }
+void Win32::DestroyWindow( HWND window ) {
+    if ( !window )
+        return;
+
+    PostMessage( window, WM_CLOSE, 0, 0 );
 }
 
 bool Win32::DispatchMessages( ) {
@@ -105,12 +106,17 @@ HWND Win32::CreateConsole( const char* title, int x, int y, int w, int h ) {
     return Hwnd;
 }
 
-void Win32::DestroyConsole( HWND* window ) {
-    if ( window && *window ) {
-        FreeConsole( );
-    }
+void Win32::DestroyConsole( HWND window ) {
+    if ( !window )
+        return;
+
+    FreeConsole( );
 }
 
-void Win32::MessageBox_( HWND * window, const char* title, const char* content, int type ) {
-    MessageBoxA( *window, content, title, type );
+void Win32::MessageBox_( HWND window, const char* title, const char* content, int type ) {
+    MessageBoxA( window, content, title, type );
+}
+
+Vector2 Win32::GetScreenSize( ) {
+    return Vector2( GetSystemMetrics( SM_CXSCREEN ), GetSystemMetrics( SM_CYSCREEN ) );
 }

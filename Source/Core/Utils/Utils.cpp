@@ -70,3 +70,9 @@ const char* Utils::GetClipboard( ) {
 
     return StoredClipboardContent.c_str( );
 }
+
+std::string Utils::Sha256( std::string content ) {
+    SHA256 Sha256;
+
+    return Sha256( content );
+}

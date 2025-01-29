@@ -15,3 +15,5 @@
 
 #define CURL_STATICLIB
 #include "Curl/Include/curl/curl.h"
+
+#include "Sha256/sha256.h"

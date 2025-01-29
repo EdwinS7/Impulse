@@ -1,9 +1,11 @@
 #include "Enviornment.hpp"
 #include "Wrapper.hpp"
 
+#define lua_pushfunction(state, wrapper_function) lua_pushcfunction( state, wrapper_function, nullptr )
+
 void register_global_function( lua_State* state, lua_CFunction wrapper_function, std::initializer_list<std::string> names ) {
     for ( const auto& name : names ) {
-        lua_pushcfunction( state, wrapper_function, nullptr );
+        lua_pushfunction( state, wrapper_function );
         lua_setglobal( state, name.c_str( ) );
     }
 }
@@ -16,10 +18,9 @@ void register_global_table( lua_State* state, std::initializer_list<std::string>
     }
 }
 
-// Function to register a table function under multiple names
 void register_function( lua_State* state, lua_CFunction wrapper_function, std::initializer_list<std::string> names ) {
     for ( const auto& name : names ) {
-        lua_pushcfunction( state, wrapper_function, nullptr );
+        lua_pushfunction( state, wrapper_function );
         lua_setfield( state, -2, name.c_str( ) );
     }
 }
@@ -33,13 +34,36 @@ Enviornment::Enviornment( ) {
     luaL_openlibs( m_State );
 
     {
-        lua_createtable( m_State, 0, 5 );
+        luaL_newmetatable( m_State, "Vector2" );
+
+        register_function( m_State, Wrapper::Types::Vector2_::__index, { "__index" } );
+        register_function( m_State, Wrapper::Types::Vector2_::__newindex, { "__newindex" } );
+
+        lua_pop( m_State, 1 );
+
+        register_global_function( m_State, Wrapper::Types::Vector2_::New, { "Vector2", "vector2" } );
+    }
+
+    {
+        luaL_newmetatable( m_State, "Vector3" );
+
+        register_function( m_State, Wrapper::Types::Vector3_::__index, { "__index" } );
+        register_function( m_State, Wrapper::Types::Vector3_::__newindex, { "__newindex" } );
+
+        lua_pop( m_State, 1 );
+
+        register_global_function( m_State, Wrapper::Types::Vector3_::New, { "Vector3", "vector3" } );
+    }
+
+    {
+        lua_createtable( m_State, 0, 6 );
 
         register_function( m_State, Wrapper::Win32_::CreateWindow_, { "CreateWindow", "create_window" } );
         register_function( m_State, Wrapper::Win32_::DestroyWindow, { "DestroyWindow", "destroy_window" } );
         register_function( m_State, Wrapper::Win32_::CreateConsole, { "CreateConsole", "create_console" } );
         register_function( m_State, Wrapper::Win32_::DestroyConsole, { "DestroyConsole", "destroy_console" } );
         register_function( m_State, Wrapper::Win32_::MessageBox_, { "CreateMessageBox", "create_message_box" } );
+        register_function( m_State, Wrapper::Win32_::GetScreenSize, { "GetScreenSize", "get_screen_size" } );
 
         register_global_table( m_State, { "Win32", "win32" } );
     }
@@ -51,9 +75,6 @@ Enviornment::Enviornment( ) {
 
     register_global_function( m_State, Wrapper::FileSystem_::ReadFile, { "ReadFile", "read_file" } );
     register_global_function( m_State, Wrapper::FileSystem_::WriteFile, { "WriteFile", "write_file" } );
-
-    //register_global_function( m_State, Wrapper::HookFunction, { "HookFunction", "hook_function" } );
-    //register_global_function( m_State, Wrapper::RestoreFunction, { "RestoreFunction", "restore_function" } );
 
     register_global_function( m_State, Wrapper::Http_::Get, { "HttpGet", "http_get" } );
     register_global_function( m_State, Wrapper::Http_::Post, { "HttpPost", "http_post" } );
@@ -100,6 +121,5 @@ void Enviornment::HandleError(int error_code) {
     const char* Error = lua_tostring(m_State, -1);
     std::cerr << "[" << error_code << "] " << Error << std::endl;
 
-    // Clear the error message from the stack
     lua_pop(m_State, 1);
 }

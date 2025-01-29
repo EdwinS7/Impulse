@@ -7,31 +7,119 @@
 #include "../Utils/Utils.hpp"
 #include "../Win32/Win32.hpp"
 #include "../Http/Http.hpp"
+#include "../Graphics/Types.hpp"
 
-int Copyable( lua_State* L ) {
+// NOTE: Just here so I can copy it for creating new stuff
+int Dummy( lua_State* L ) {
     return 1;
 }
 
 namespace Wrapper {
+    namespace Types {
+        namespace Vector2_ {
+            int New( lua_State* state ) {
+                auto Vector = ( Vector2* ) lua_newuserdata( state, sizeof( Vector2 ) );
+
+                new ( Vector ) Vector2(
+                    luaL_optnumber( state, 1, 0.0 ),
+                    luaL_optnumber( state, 2, 0.0 )
+                );
+
+                luaL_getmetatable( state, "Vector2" );
+                lua_setmetatable( state, -2 );
+
+                return 1;
+            }
+
+            int __index( lua_State* state ) {
+                auto Vector = ( Vector2* ) luaL_checkudata( state, 1, "Vector2" );
+                lua_pushnumber( state, luaL_checkstring( state, 2 )[ 0 ] == 'x' ? Vector->x : Vector->y );
+
+                return 1;
+            }
+
+            int __newindex( lua_State* state ) {
+                auto Vector = ( Vector2* ) luaL_checkudata( state, 1, "Vector2" );
+                
+                auto Key = luaL_checkstring( state, 2 );
+                auto Value = luaL_checknumber( state, 3 );
+
+                if ( Key[ 0 ] == 'x' ) 
+                    Vector->x = Value;
+                else if ( Key[ 0 ] == 'y' ) 
+                    Vector->y = Value;
+
+                return 0;
+            }
+        }
+
+        namespace Vector3_ {
+            int New( lua_State* state ) {
+                auto Vector = ( Vector3* ) lua_newuserdata( state, sizeof( Vector3 ) );
+
+                new ( Vector ) Vector3(
+                    luaL_optnumber( state, 1, 0.0 ),
+                    luaL_optnumber( state, 2, 0.0 ),
+                    luaL_optnumber( state, 3, 0.0 )
+                );
+
+                luaL_getmetatable( state, "Vector3" );
+                lua_setmetatable( state, -2 );
+
+                return 1;
+            }
+
+            int __index( lua_State* state ) {
+                auto Vector = ( Vector3* ) luaL_checkudata( state, 1, "Vector3" );
+                auto Key = luaL_checkstring( state, 2 );
+
+                if ( Key[ 0 ] == 'x' )
+                    lua_pushnumber( state, Vector->x );
+                else if ( Key[ 0 ] == 'y' )
+                    lua_pushnumber( state, Vector->y );
+                else if ( Key[ 0 ] == 'z' )
+                    lua_pushnumber( state, Vector->z );
+
+                return 1;
+            }
+
+            int __newindex( lua_State* state ) {
+                auto Vector = ( Vector3* ) luaL_checkudata( state, 1, "Vector3" );
+
+                auto Key = luaL_checkstring( state, 2 );
+                auto Value = luaL_checknumber( state, 3 );
+
+                if ( Key[ 0 ] == 'x' )
+                    Vector->x = Value;
+                else if ( Key[ 0 ] == 'y' )
+                    Vector->y = Value;
+                else if ( Key[ 0 ] == 'z' )
+                    Vector->z = Value;
+
+                return 0;
+            }
+        }
+    }
+
     namespace Utils_ {
         int RandomString( lua_State* L ) {
             luaL_checktype( L, 1, LUA_TNUMBER );
 
             lua_pushstring( L, Utils::RandomString( luaL_checkinteger( L, 1 ) ) );
 
-            return 1;
+            return 0;
         }
 
         int SetClipboard( lua_State* L ) {
             Utils::SetClipboard( luaL_checkstring( L, 1 ) );
 
-            return 1;
+            return 0;
         }
 
         int GetClipboard( lua_State* L ) {
             lua_pushstring( L, Utils::GetClipboard( ) );
 
-            return 1;
+            return 0;
         }
     }
 
@@ -40,7 +128,7 @@ namespace Wrapper {
             luaL_checktype( L, 1, LUA_TSTRING );
             lua_pushstring( L, FileSystem::ReadFile( luaL_checkstring( L, 1 ) ).c_str( ) );
 
-            return 1;
+            return 0;
         }
 
         int WriteFile( lua_State* L ) {
@@ -49,7 +137,7 @@ namespace Wrapper {
 
             FileSystem::WriteFile( luaL_checkstring( L, 1 ), luaL_checkstring( L, 2 ) );
 
-            return 1;
+            return 0;
         }
     }
 
@@ -79,11 +167,11 @@ namespace Wrapper {
             HWND WindowHandle = WindowHandles[ luaL_checkinteger( L, 1 ) ];
 
             if ( !WindowHandle )
-                return 0;
+                return 1;
 
-            Win32::DestroyWindow( &WindowHandle );
+            Win32::DestroyWindow( WindowHandle );
 
-            return 1;
+            return 0;
         }
 
         int CreateConsole( lua_State* L ) {
@@ -109,11 +197,11 @@ namespace Wrapper {
             HWND ConsoleHandle = ConsoleHandles[ luaL_checkinteger( L, 1 ) ];
 
             if ( !ConsoleHandle )
-                return 0;
+                return 1;
 
-            Win32::DestroyConsole( &ConsoleHandle );
+            Win32::DestroyConsole( ConsoleHandle );
 
-            return 1;
+            return 0;
         }
 
         int MessageBox_( lua_State* L ) {
@@ -123,7 +211,26 @@ namespace Wrapper {
             HWND ConsoleHandle = ConsoleHandles[ Reference ];
             HWND Handle = WindowHandle ? WindowHandle : ConsoleHandle;
 
-            Win32::MessageBox_( &Handle, luaL_checkstring( L, 2 ), luaL_checkstring( L, 3 ), luaL_checkinteger( L, 4 ) );
+            if ( !Handle )
+                return 1;
+
+            Win32::MessageBox_( Handle, luaL_checkstring( L, 2 ), luaL_checkstring( L, 3 ), luaL_checkinteger( L, 4 ) );
+
+            return 0;
+        }
+
+        int GetScreenSize( lua_State* L ) {
+            Vector2 ScreenSize = Win32::GetScreenSize( );
+
+            auto Vector = ( Vector2* ) lua_newuserdata( L, sizeof( Vector2 ) );
+            
+            new ( Vector ) Vector2(
+                static_cast< double >( ScreenSize.x ),
+                static_cast< double >( ScreenSize.y )
+            );
+
+            luaL_getmetatable( L, "Vector2" );
+            lua_setmetatable( L, -2 );
 
             return 1;
         }
@@ -133,53 +240,26 @@ namespace Wrapper {
         int Get( lua_State* L ) {
             lua_pushstring( L, Http::Get( luaL_checkstring( L, 1 ) ).c_str() );
 
-            return 1;
+            return 0;
         }
 
         int Post( lua_State* L ) {
             lua_pushstring( L, Http::Post( luaL_checkstring( L, 1 ), luaL_checkstring( L, 2 ) ).c_str( ) );
 
-            return 1;
+            return 0;
         }
 
         int Put( lua_State* L ) {
             lua_pushstring( L, Http::Put( luaL_checkstring( L, 1 ), luaL_checkstring( L, 2 ) ).c_str( ) );
 
-            return 1;
+            return 0;
         }
 
         int Delete( lua_State* L ) {
             lua_pushstring( L, Http::Delete( luaL_checkstring( L, 1 ) ).c_str( ) );
 
-            return 1;
-        }
-    }
-
-    static std::unordered_map<const void*, const void*> HookedFunctions;
-
-    int HookFunction( lua_State* L ) {
-        luaL_checktype( L, 1, LUA_TFUNCTION );
-        luaL_checktype( L, 2, LUA_TFUNCTION );
-
-        if ( lua_iscfunction( L, 1 ) ) {
-            // NOTE: This is only temporary!
-            luaL_argerror( L, 1, "Cannot hook C functions" );
             return 0;
         }
-
-        if ( lua_iscfunction( L, 2 ) ) {
-            luaL_argerror( L, 2, "Lua function expected" );
-            return 0;
-        }
-
-        // Do it do it, yh yh d-d-do it do it shake it shake it like sum jello feelin hella mello
-        // I'm a poet
-
-        return 1;
-    }
-
-    int RestoreFunction( lua_State* L ) {
-        return 1;
     }
 }
 

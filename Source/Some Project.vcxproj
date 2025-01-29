@@ -223,6 +223,13 @@
     <ClCompile Include="Dependencies\LuaU\VM\src\lvmexecute.cpp" />
     <ClCompile Include="Dependencies\LuaU\VM\src\lvmload.cpp" />
     <ClCompile Include="Dependencies\LuaU\VM\src\lvmutils.cpp" />
+    <ClCompile Include="Dependencies\Sha256\crc32.cpp" />
+    <ClCompile Include="Dependencies\Sha256\digest.cpp" />
+    <ClCompile Include="Dependencies\Sha256\keccak.cpp" />
+    <ClCompile Include="Dependencies\Sha256\md5.cpp" />
+    <ClCompile Include="Dependencies\Sha256\sha1.cpp" />
+    <ClCompile Include="Dependencies\Sha256\sha256.cpp" />
+    <ClCompile Include="Dependencies\Sha256\sha3.cpp" />
     <ClCompile Include="Entry.cpp" />
     <ClCompile Include="Core\FileSystem\FileSystem.cpp" />
     <ClCompile Include="Core\LuaU\Enviornment.cpp" />
@@ -231,6 +238,7 @@
   <ItemGroup>
     <ClInclude Include="Common.hpp" />
     <ClInclude Include="Core\FileSystem\FileSystem.hpp" />
+    <ClInclude Include="Core\Graphics\Types.hpp" />
     <ClInclude Include="Core\Http\Http.hpp" />
     <ClInclude Include="Core\LuaU\Enviornment.hpp" />
     <ClInclude Include="Core\LuaU\Wrapper.hpp" />
@@ -297,6 +305,14 @@
     <ClInclude Include="Dependencies\LuaU\VM\src\ltm.h" />
     <ClInclude Include="Dependencies\LuaU\VM\src\ludata.h" />
     <ClInclude Include="Dependencies\LuaU\VM\src\lvm.h" />
+    <ClInclude Include="Dependencies\Sha256\crc32.h" />
+    <ClInclude Include="Dependencies\Sha256\hash.h" />
+    <ClInclude Include="Dependencies\Sha256\hmac.h" />
+    <ClInclude Include="Dependencies\Sha256\keccak.h" />
+    <ClInclude Include="Dependencies\Sha256\md5.h" />
+    <ClInclude Include="Dependencies\Sha256\sha1.h" />
+    <ClInclude Include="Dependencies\Sha256\sha256.h" />
+    <ClInclude Include="Dependencies\Sha256\sha3.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Main.lua" />

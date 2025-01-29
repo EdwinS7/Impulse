@@ -8,6 +8,8 @@ namespace Utils {
 
     void SetClipboard( const char* content );
     const char* GetClipboard( );
+
+    std::string Sha256( std::string content );
 }
 
 #endif
