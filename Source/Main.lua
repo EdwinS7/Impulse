@@ -28,15 +28,10 @@ do -- win32 / rendering
         }
     )
 
-    add_connection("new_frame", function()
-        shape.vertices = {
-
-        }
-
-        shape.indices = {
-
-        }
-    end)
+    --[[ NOTE: This works just too lazy to make something.
+        shape.vertices = {}
+        shape.indices = {}
+    --]]
 end
 
 add_connection("shutdown", function()
