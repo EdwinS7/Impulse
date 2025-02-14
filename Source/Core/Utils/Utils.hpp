@@ -3,13 +3,26 @@
 
 #include "../Common.hpp"
 
-namespace Utils {
-    const char* RandomString(int length);
+#include "SHA256.h"
+#include "base64/include/base64.hpp"
+
+class CUtils {
+public:
+    const char* RandomString( int length );
 
     void SetClipboard( const char* content );
     const char* GetClipboard( );
 
-    std::string Sha256( std::string content );
-}
+    std::string SHA256Encode( const std::string& data );
+
+    std::string Base64Encode( const std::string& data );
+    std::string Base64Decode( const std::string& data );
+
+    bool IsInternetConnected( );
+private:
+    SHA256 m_SHA256;
+
+    const char m_Alphabet[63] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+} extern Utils;
 
 #endif

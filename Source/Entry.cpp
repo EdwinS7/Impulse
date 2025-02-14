@@ -1,24 +1,45 @@
+﻿// NOTE: This project is for fun, learning and a wip so if you see any problems please recommend your solution.
+// NOTE: Everything will be heavily cleaned up later on, A LOT. I like getting everything to work first.
+// NOTE: For u fucking retards, Just because this has LuaU in it does NOT mean its an executor 🤦
+
 #include "Common.hpp"
+
+// TODO: Organize
 #include "Core/FileSystem/FileSystem.hpp"
-#include "Core/LuaU/Enviornment.hpp"
+#include "Core/LuaU/Environment.hpp"
 #include "Core/Win32/Win32.hpp"
+#include "Core/Graphics/Include.hpp"
 
 int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, int nCmdShow ) {
     try {
-        Enviornment Env;
+        const std::string Script = FileSystem.ReadFile("Main.lua");
 
-        const std::string Script = FileSystem::ReadFile("Main.lua");
-
-        if (!Env.LoadScript(Script)) {
-            std::cerr << "Failed to load the script." << std::endl;
+        if ( Script.empty( ) ) {
+            MessageBox( NULL, "Failed to read Main.lua", "Error", MB_OK | MB_ICONERROR );
+            return 1;
         }
 
-        while ( Win32::DispatchMessages( ) ) {
-            // NOTE: This runs until we close our window.
+        std::string ErrorMessage;
+        if ( !Environment.RunScript( Script, ErrorMessage ) ) {
+            MessageBox( NULL, ErrorMessage.c_str( ), "Error", MB_OK | MB_ICONERROR );
+            return 1;
         }
-    } catch (const std::exception& e) {
-        std::cerr << "Exception: " << e.what() << std::endl;
+
+        while ( Win32.DispatchMessages( ) ) {
+            if ( Graphics.IsInitiated( ) )
+                Graphics.Present( Color( 0, 0, 0, 255 ) );
+
+            Environment.RunConnection( "new_frame" );
+        }
+    } catch ( const std::exception& e ) {
+        MessageBox( NULL, e.what( ), "Error", MB_OK | MB_ICONERROR );
+        return 1;
+    } catch ( ... ) {
+        MessageBox( NULL, "Unknown error occurred", "Error", MB_OK | MB_ICONERROR );
+        return 1;
     }
+
+    Environment.RunConnection( "shutdown" );
 
     return 0;
 }

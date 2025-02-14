@@ -3,9 +3,19 @@
 
 #include "../Common.hpp"
 
-class Memory {
+class CMemory {
 public:
-    std::uintptr_t ScanPattern(const char* target, const std::string& signature);
-};
+    void SetTarget( const char* target_name );
+    template <typename T>
+    static void Write( std::uintptr_t address, T* value );
+
+    template <typename T>
+    static T Read( std::uintptr_t address );
+
+    std::uintptr_t ScanPattern( const std::string& signature );
+
+private:
+    HMODULE m_Target;
+} extern Memory;
 
 #endif

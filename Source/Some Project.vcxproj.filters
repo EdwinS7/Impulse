@@ -18,7 +18,7 @@
     <ClCompile Include="Entry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Core\LuaU\Enviornment.cpp">
+    <ClCompile Include="Core\LuaU\Environment.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Core\Memory\Memory.cpp">
@@ -189,25 +189,19 @@
     <ClCompile Include="Dependencies\LuaU\VM\src\lvmutils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Dependencies\Sha256\crc32.cpp">
+    <ClCompile Include="Core\Input\Input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Dependencies\Sha256\digest.cpp">
+    <ClCompile Include="Core\Graphics\Implement\DirectX 11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Dependencies\Sha256\keccak.cpp">
+    <ClCompile Include="Core\Graphics\Renderer\Renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Dependencies\Sha256\md5.cpp">
+    <ClCompile Include="Dependencies\SHA256\src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Dependencies\Sha256\sha1.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Dependencies\Sha256\sha3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Dependencies\Sha256\sha256.cpp">
+    <ClCompile Include="Dependencies\SHA256\src\SHA256.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -215,7 +209,7 @@
     <ClInclude Include="Common.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Core\LuaU\Enviornment.hpp">
+    <ClInclude Include="Core\LuaU\Environment.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Core\Memory\Memory.hpp">
@@ -419,28 +413,19 @@
     <ClInclude Include="Core\Graphics\Types.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Dependencies\Sha256\crc32.h">
+    <ClInclude Include="Core\Input\Input.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Dependencies\Sha256\hash.h">
+    <ClInclude Include="Core\Graphics\Implement\DirectX 11.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Dependencies\Sha256\hmac.h">
+    <ClInclude Include="Core\Graphics\Renderer\Renderer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Dependencies\Sha256\keccak.h">
+    <ClInclude Include="Core\Graphics\Include.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Dependencies\Sha256\md5.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Dependencies\Sha256\sha1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Dependencies\Sha256\sha3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Dependencies\Sha256\sha256.h">
+    <ClInclude Include="Dependencies\SHA256\include\SHA256.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

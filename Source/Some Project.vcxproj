@@ -91,8 +91,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Output\</OutDir>
     <IntDir>$(SolutionDir)Output\Intermediates\</IntDir>
-    <IncludePath>$(ProjectDir)Dependencies/;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)Dependencies/;$(ProjectDir)Dependencies/Curl/lib/;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)Dependencies/;$(ProjectDir)Dependencies/SHA256/include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)Dependencies/;$(ProjectDir)Dependencies/Curl/lib/;$(ProjectDir)Dependencies/SpdLog/build/Release/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -164,12 +164,15 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Luau.Ast.lib;Luau.Compiler.lib;Luau.VM.lib;libcurl.lib;Ws2_32.lib;Crypt32.lib;Wldap32.lib;Normaliz.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Luau.Ast.lib;Luau.Compiler.lib;Luau.VM.lib;libcurl.lib;Ws2_32.lib;Crypt32.lib;Wldap32.lib;Normaliz.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)Dependencies/LuaU/Libraries/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Core\Graphics\Renderer\Renderer.cpp" />
+    <ClCompile Include="Core\Graphics\Implement\DirectX 11.cpp" />
     <ClCompile Include="Core\Http\Http.cpp" />
+    <ClCompile Include="Core\Input\Input.cpp" />
     <ClCompile Include="Core\Utils\Utils.cpp" />
     <ClCompile Include="Core\Win32\Win32.cpp" />
     <ClCompile Include="Dependencies\LuaU\Ast\src\Allocator.cpp" />
@@ -223,24 +226,23 @@
     <ClCompile Include="Dependencies\LuaU\VM\src\lvmexecute.cpp" />
     <ClCompile Include="Dependencies\LuaU\VM\src\lvmload.cpp" />
     <ClCompile Include="Dependencies\LuaU\VM\src\lvmutils.cpp" />
-    <ClCompile Include="Dependencies\Sha256\crc32.cpp" />
-    <ClCompile Include="Dependencies\Sha256\digest.cpp" />
-    <ClCompile Include="Dependencies\Sha256\keccak.cpp" />
-    <ClCompile Include="Dependencies\Sha256\md5.cpp" />
-    <ClCompile Include="Dependencies\Sha256\sha1.cpp" />
-    <ClCompile Include="Dependencies\Sha256\sha256.cpp" />
-    <ClCompile Include="Dependencies\Sha256\sha3.cpp" />
+    <ClCompile Include="Dependencies\SHA256\src\main.cpp" />
+    <ClCompile Include="Dependencies\SHA256\src\SHA256.cpp" />
     <ClCompile Include="Entry.cpp" />
     <ClCompile Include="Core\FileSystem\FileSystem.cpp" />
-    <ClCompile Include="Core\LuaU\Enviornment.cpp" />
+    <ClCompile Include="Core\LuaU\Environment.cpp" />
     <ClCompile Include="Core\Memory\Memory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.hpp" />
     <ClInclude Include="Core\FileSystem\FileSystem.hpp" />
+    <ClInclude Include="Core\Graphics\Include.hpp" />
+    <ClInclude Include="Core\Graphics\Renderer\Renderer.hpp" />
+    <ClInclude Include="Core\Graphics\Implement\DirectX 11.hpp" />
     <ClInclude Include="Core\Graphics\Types.hpp" />
     <ClInclude Include="Core\Http\Http.hpp" />
-    <ClInclude Include="Core\LuaU\Enviornment.hpp" />
+    <ClInclude Include="Core\Input\Input.hpp" />
+    <ClInclude Include="Core\LuaU\Environment.hpp" />
     <ClInclude Include="Core\LuaU\Wrapper.hpp" />
     <ClInclude Include="Core\Memory\Memory.hpp" />
     <ClInclude Include="Core\Utils\Utils.hpp" />
@@ -305,14 +307,7 @@
     <ClInclude Include="Dependencies\LuaU\VM\src\ltm.h" />
     <ClInclude Include="Dependencies\LuaU\VM\src\ludata.h" />
     <ClInclude Include="Dependencies\LuaU\VM\src\lvm.h" />
-    <ClInclude Include="Dependencies\Sha256\crc32.h" />
-    <ClInclude Include="Dependencies\Sha256\hash.h" />
-    <ClInclude Include="Dependencies\Sha256\hmac.h" />
-    <ClInclude Include="Dependencies\Sha256\keccak.h" />
-    <ClInclude Include="Dependencies\Sha256\md5.h" />
-    <ClInclude Include="Dependencies\Sha256\sha1.h" />
-    <ClInclude Include="Dependencies\Sha256\sha256.h" />
-    <ClInclude Include="Dependencies\Sha256\sha3.h" />
+    <ClInclude Include="Dependencies\SHA256\include\SHA256.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Main.lua" />

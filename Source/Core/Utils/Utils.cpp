@@ -1,16 +1,14 @@
 #include "Utils.hpp"
 
-const char Alphabet[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-
-const char* Utils::RandomString( int length ) {
+const char* CUtils::RandomString( int length ) {
     std::random_device rd;
     std::mt19937 generator( rd( ) );
-    std::uniform_int_distribution<int> distribution( 0, sizeof( Alphabet ) - 2 );
+    std::uniform_int_distribution<int> distribution( 0, sizeof( m_Alphabet ) - 2 );
 
     char* random_str = new char[ length + 1 ];
 
     for ( int i = 0; i < length; ++i ) {
-        random_str[ i ] = Alphabet[ distribution( generator ) ];
+        random_str[ i ] = m_Alphabet[ distribution( generator ) ];
     }
 
     random_str[ length ] = '\0';
@@ -18,7 +16,7 @@ const char* Utils::RandomString( int length ) {
     return random_str;
 }
 
-void Utils::SetClipboard( const char* content ) {
+void CUtils::SetClipboard( const char* content ) {
     if ( !content ) 
         return;
 
@@ -44,7 +42,7 @@ void Utils::SetClipboard( const char* content ) {
     CloseClipboard( );
 }
 
-const char* Utils::GetClipboard( ) {
+const char* CUtils::GetClipboard( ) {
     if ( !OpenClipboard( nullptr ) ) 
         return nullptr;
 
@@ -71,8 +69,24 @@ const char* Utils::GetClipboard( ) {
     return StoredClipboardContent.c_str( );
 }
 
-std::string Utils::Sha256( std::string content ) {
-    SHA256 Sha256;
+std::string CUtils::SHA256Encode( const std::string& data ) {
+    m_SHA256.update( data );
 
-    return Sha256( content );
+    return SHA256::toString( m_SHA256.digest( ) );
 }
+
+std::string CUtils::Base64Encode( const std::string& data ) {
+    return base64::to_base64( data );
+}
+
+std::string CUtils::Base64Decode( const std::string& data ) {
+    return base64::from_base64( data );
+}
+
+bool CUtils::IsInternetConnected( ) {
+    DWORD Flags;
+
+    return InternetGetConnectedState( &Flags, 0 );
+}
+
+CUtils Utils;

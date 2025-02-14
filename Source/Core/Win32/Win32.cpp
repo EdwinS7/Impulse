@@ -1,29 +1,27 @@
 #include "Win32.hpp"
+#include "../Input/Input.hpp"
+#include "../Graphics/Include.hpp"
+
+std::unordered_map<HWND, bool> Resizing;
 
 LRESULT CALLBACK WndProc( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam ) {
-    static bool IsResizing = false;
-
     switch ( msg ) {
-    case WM_SIZE:
-        // NOTE: DirectX stuff here.
-
-        return 0;
     case WM_ENTERSIZEMOVE:
-        IsResizing = true;
+        Resizing[ hwnd ] = true;
 
         return 0;
     case WM_EXITSIZEMOVE:
-        // NOTE: DirectX stuff here.
+        Resizing[ hwnd ] = false;
 
-        IsResizing = false;
+        Graphics.Resize( ( int ) LOWORD( lParam ), ( int ) HIWORD( lParam ) );
 
         return 0;
     case WM_MOUSEMOVE:
-        // NOTE: Input::SetMousePos( Vector2( LOWORD( lParam ), HIWORD( lParam ) ) );
-        break;
+        Input.SetCursorPosition( Vector2( ( int ) LOWORD( lParam ), ( int ) HIWORD( lParam ) ), false );
+
         break;
     case WM_SETCURSOR:
-        //SetCursor( LoadCursorA( 0, LPCSTR( gInput->GetCursorStyle( ) ) ) );
+        SetCursor( LoadCursorA( 0, LPCSTR( Input.GetCursorStyle( ) ) ) );
 
         break;
     case WM_DESTROY:
@@ -34,7 +32,7 @@ LRESULT CALLBACK WndProc( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam ) {
     return DefWindowProc( hwnd, msg, wParam, lParam );
 }
 
-HWND Win32::CreateWindow_( const char* title, int w, int h, bool full_screen ) {
+HWND CWin32::CreateWindow_( const char* title, int w, int h, bool full_screen ) {
     WNDCLASSEX WindowClass = {
         sizeof( WindowClass ), CS_CLASSDC, WndProc,
         0L, 0L, GetModuleHandle( NULL ),
@@ -68,14 +66,14 @@ HWND Win32::CreateWindow_( const char* title, int w, int h, bool full_screen ) {
     return Hwnd;
 }
 
-void Win32::DestroyWindow( HWND window ) {
+void CWin32::DestroyWindow( HWND window ) {
     if ( !window )
         return;
 
     PostMessage( window, WM_CLOSE, 0, 0 );
 }
 
-bool Win32::DispatchMessages( ) {
+bool CWin32::DispatchMessages( ) {
     MSG Message;
 
     if ( PeekMessage( &Message, nullptr, 0, 0, PM_REMOVE ) ) {
@@ -89,7 +87,7 @@ bool Win32::DispatchMessages( ) {
     return true;
 }
 
-HWND Win32::CreateConsole( const char* title, int x, int y, int w, int h ) {
+HWND CWin32::CreateConsole( const char* title, int x, int y, int w, int h ) {
     if ( !AllocConsole( ) )
         return nullptr;
 
@@ -106,17 +104,41 @@ HWND Win32::CreateConsole( const char* title, int x, int y, int w, int h ) {
     return Hwnd;
 }
 
-void Win32::DestroyConsole( HWND window ) {
+void CWin32::DestroyConsole( HWND window ) {
     if ( !window )
         return;
 
     FreeConsole( );
 }
 
-void Win32::MessageBox_( HWND window, const char* title, const char* content, int type ) {
+void CWin32::MessageBox_( HWND window, const char* title, const char* content, int type ) {
     MessageBoxA( window, content, title, type );
 }
 
-Vector2 Win32::GetScreenSize( ) {
+Vector2 CWin32::GetScreenSize( ) {
     return Vector2( GetSystemMetrics( SM_CXSCREEN ), GetSystemMetrics( SM_CYSCREEN ) );
 }
+
+Vector2 CWin32::GetWindowPosition( HWND window_handle ) {
+    RECT Rect;
+
+    if ( GetWindowRect( window_handle, &Rect ) )
+        return Vector2( static_cast< float >( Rect.left ), static_cast< float >( Rect.top ) );
+
+    return Vector2( );
+}
+
+Vector2 CWin32::GetWindowSize( HWND window_handle ) {
+    RECT Rect;
+
+    if ( GetClientRect( window_handle, &Rect ) )
+        return Vector2( static_cast< float >( Rect.right - Rect.left ), static_cast< float >( Rect.bottom - Rect.top ) );
+
+    return Vector2( );
+}
+
+bool CWin32::IsResizing( HWND window_handle ) {
+    return Resizing[ window_handle ];
+}
+
+CWin32 Win32;
