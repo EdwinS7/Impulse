@@ -1,3 +1,7 @@
+---
+icon: image
+---
+
 # renderer
 
 {% hint style="warning" %}

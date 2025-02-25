@@ -1,4 +1,8 @@
-# direct\_x
+---
+icon: microsoft
+---
+
+# direct x
 
 ## direct\_x.initiate
 
