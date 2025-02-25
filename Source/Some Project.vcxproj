@@ -247,6 +247,7 @@
     <ClInclude Include="Core\Memory\Memory.hpp" />
     <ClInclude Include="Core\Utils\Utils.hpp" />
     <ClInclude Include="Core\Win32\Win32.hpp" />
+    <ClInclude Include="Dependencies\base64\include\base64.hpp" />
     <ClInclude Include="Dependencies\Curl\include\curl\curl.h" />
     <ClInclude Include="Dependencies\Curl\include\curl\curlver.h" />
     <ClInclude Include="Dependencies\Curl\include\curl\easy.h" />

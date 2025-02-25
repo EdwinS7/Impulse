@@ -14,6 +14,7 @@
 #include <stdexcept>
 #include <direct.h>
 #include <filesystem>
+#include <variant>
 
 #include <d3d11.h>
 #include <dxgi.h>

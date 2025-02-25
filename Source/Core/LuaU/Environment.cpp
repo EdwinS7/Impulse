@@ -3,18 +3,20 @@
 
 #define lua_pushfunction(state, wrapper_function) lua_pushcfunction( state, wrapper_function, nullptr )
 
-void register_usertype( lua_State* state, lua_CFunction wrapper_function, const std::string& name, bool global ) {
-    lua_pushfunction( state, wrapper_function );
-    lua_setglobal( state, name.c_str( ) );
-
-    lua_pop( state, 1 );
-}
-
 void register_table( lua_State* state, const std::string& name, bool global ) {
     if ( global )
         lua_setglobal( state, name.c_str( ) );
     else
         lua_setfield( state, -2, name.c_str( ) );
+}
+
+void register_usertype( lua_State* state, lua_CFunction wrapper_function, const std::string& name, bool global ) {
+    lua_createtable( state, 0, 1 );
+
+    lua_pushfunction( state, wrapper_function );
+    lua_setfield( state, -2, "new" );
+
+    lua_setglobal( state, name.c_str( ) );
 }
 
 void register_function( lua_State* state, lua_CFunction wrapper_function, const std::string& name, bool global ) {
@@ -77,16 +79,19 @@ CEnvironment::CEnvironment( ) {
             register_function( m_State, Wrapper::Graphics_::Cleanup, "cleanup", false );
         } register_table( m_State, "directx", true );
 
-        { lua_createtable( m_State, 0, 5 ); // NOTE: WIP, Major changes in the next coming versions.
+        { lua_createtable( m_State, 0, 1 ); // NOTE: WIP, Major changes in the next coming versions.
             register_function( m_State, Wrapper::Renderer_::WriteToBuffer, "write_to_buffer", false );
-            register_function( m_State, Wrapper::Renderer_::Line, "line", false );
+
+            /*register_function( m_State, Wrapper::Renderer_::Line, "line", false );
             register_function( m_State, Wrapper::Renderer_::Polyline, "polyline", false );
             register_function( m_State, Wrapper::Renderer_::Polygon, "polygon", false );
             register_function( m_State, Wrapper::Renderer_::Rectangle, "rectangle", false );
-            register_function( m_State, Wrapper::Renderer_::FilledRectangle, "filled_rectangle", false );
+            register_function( m_State, Wrapper::Renderer_::FilledRectangle, "filled_rectangle", false );*/
+
         } register_table( m_State, "renderer", true );
 
         { lua_createtable( m_State, 0, 6 );
+            register_function( m_State, Wrapper::Input_::IsActive, "is_active", false );
             register_function( m_State, Wrapper::Input_::IsKeyPressed, "is_key_pressed", false );
             register_function( m_State, Wrapper::Input_::IsKeyHeld, "is_key_held", false );
             register_function( m_State, Wrapper::Input_::GetCursorPosition, "get_cursor_position", false );
@@ -218,7 +223,7 @@ bool CEnvironment::RunScript( std::string script, std::string& error ) {
 }
 
 // NOTE: Make sure to define any new connections in m_Connections
-void CEnvironment::RunConnection( const char* connection_name ) {
+void CEnvironment::RunConnection( const char* connection_name, const Args& args ) {
     if ( !m_State )
         return;
 
@@ -228,7 +233,76 @@ void CEnvironment::RunConnection( const char* connection_name ) {
 
         lua_rawgeti( m_State, LUA_REGISTRYINDEX, connection.second );
 
-        if ( lua_pcall( m_State, 0, 0, 0 ) != LUA_OK ) {
+        for ( const auto& argument : args ) {
+            std::visit( [ this ] ( auto&& value ) {
+                using T = std::decay_t<decltype( value )>;
+
+                if constexpr ( std::is_same_v<T, int> ) 
+                    lua_pushinteger( m_State, value );
+                else if constexpr ( std::is_same_v<T, float> )
+                    lua_pushnumber( m_State, value );
+                else if constexpr ( std::is_same_v<T, double> )
+                    lua_pushnumber( m_State, value );
+                else if constexpr ( std::is_same_v<T, std::string> )
+                    lua_pushstring( m_State, value.c_str( ) );
+                else if constexpr ( std::is_same_v<T, Vector2> ) {
+                    auto Vector = ( Vector2* ) lua_newuserdata( m_State, sizeof( Vector2 ) );
+
+                    new ( Vector ) Vector2(
+                        value.x, value.y
+                    );
+
+                    luaL_getmetatable( m_State, "vector2" );
+                    lua_setmetatable( m_State, -2 );
+                }
+                else if constexpr ( std::is_same_v<T, Vector3> ) {
+                    auto Vector = ( Vector3* ) lua_newuserdata( m_State, sizeof( Vector3 ) );
+
+                    new ( Vector ) Vector3(
+                        value.x, value.y, value.z
+                    );
+
+                    luaL_getmetatable( m_State, "vector3" );
+                    lua_setmetatable( m_State, -2 );
+                }
+                else if constexpr ( std::is_same_v<T, Vertex> ) {
+                    auto _Vertex = ( Vertex* ) lua_newuserdata( m_State, sizeof( Vertex ) );
+
+                    new ( _Vertex ) Vertex(
+                        value.x, value.y, value.z,
+                        value.rhw, value.u, value.v,
+                        value.color
+                    );
+
+                    luaL_getmetatable( m_State, "vertex" );
+                    lua_setmetatable( m_State, -2 );
+                }
+                else if constexpr ( std::is_same_v<T, DrawCommand> ) {
+                    auto _DrawCommand = ( DrawCommand* ) lua_newuserdata( m_State, sizeof( DrawCommand ) );
+
+                    new ( _DrawCommand ) DrawCommand(
+                        value.primitive_topology,
+                        value.vertices, value.indices,
+                        value.z_index
+                    );
+
+                    luaL_getmetatable( m_State, "draw_command" );
+                    lua_setmetatable( m_State, -2 );
+                }
+                else if constexpr ( std::is_same_v<T, Color> ) {
+                    auto _Color = ( Color* ) lua_newuserdata( m_State, sizeof( Color ) );
+
+                    new ( _Color ) Color(
+                        value.r, value.g, value.b, value.a
+                    );
+
+                    luaL_getmetatable( m_State, "color" );
+                    lua_setmetatable( m_State, -2 );
+                }
+            }, argument );
+        }
+
+        if ( lua_pcall( m_State, args.size( ), 0, 0 ) != LUA_OK ) {
             std::cerr << "Error running connection '" << connection_name << "': " << lua_tostring( m_State, -1 ) << "\n";
 
             lua_pop( m_State, 1 );

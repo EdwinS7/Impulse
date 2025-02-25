@@ -13,7 +13,7 @@ LRESULT CALLBACK WndProc( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam ) {
     case WM_EXITSIZEMOVE:
         Resizing[ hwnd ] = false;
 
-        Graphics.Resize( ( int ) LOWORD( lParam ), ( int ) HIWORD( lParam ) );
+        Graphics.ResizeBuffers( ( int ) LOWORD( lParam ), ( int ) HIWORD( lParam ) );
 
         return 0;
     case WM_MOUSEMOVE:
@@ -123,7 +123,7 @@ Vector2 CWin32::GetWindowPosition( HWND window_handle ) {
     RECT Rect;
 
     if ( GetWindowRect( window_handle, &Rect ) )
-        return Vector2( static_cast< float >( Rect.left ), static_cast< float >( Rect.top ) );
+        return Vector2( static_cast< int >( Rect.left ), static_cast< int >( Rect.top ) );
 
     return Vector2( );
 }
@@ -132,7 +132,7 @@ Vector2 CWin32::GetWindowSize( HWND window_handle ) {
     RECT Rect;
 
     if ( GetClientRect( window_handle, &Rect ) )
-        return Vector2( static_cast< float >( Rect.right - Rect.left ), static_cast< float >( Rect.bottom - Rect.top ) );
+        return Vector2( static_cast< int >( Rect.right - Rect.left ), static_cast< int >( Rect.bottom - Rect.top ) );
 
     return Vector2( );
 }

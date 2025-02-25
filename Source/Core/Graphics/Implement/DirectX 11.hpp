@@ -6,14 +6,14 @@
 
 class CGraphics {
 public:
-	bool Initiate( HWND hwnd );
-	bool IsInitiated( );
+    bool Initiate(HWND hwnd, bool vertical_sync);
+    bool IsInitiated( );
 
-	void Resize( int width, int height );
+	void ResizeBuffers( int width, int height );
 	void SetupRenderState( ID3D11DeviceContext* device_context );
 
 	bool RenderDrawData( );
-	void Present( Color clear_color );
+	void Present( );
 
 	void Cleanup( );
 
@@ -22,7 +22,11 @@ public:
 private:
 	HWND m_TargetWindow = nullptr;
 
-	int m_VertexBufferSize{ 0 }, m_IndexBufferSize{ 0 };
+    bool m_VSync = false;
+
+    Color m_ClearColor = { 0, 0, 0, 255 };
+
+	int m_VertexBufferSize = 0, m_IndexBufferSize = 0;
 
 	IDXGISwapChain* m_pSwapChain = nullptr;
 	ID3D11Device* m_pDevice = nullptr;

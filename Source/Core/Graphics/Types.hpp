@@ -12,20 +12,11 @@ public:
 
 class Vector3 {
 public:
-    int x{}, y{}, z{};
+    float x{}, y{}, z{};
 
     constexpr Vector3( ) noexcept = default;
-    constexpr Vector3( int x, int y, int z ) noexcept 
+    constexpr Vector3( float x, float y, float z ) noexcept
         : x( x ), y( y ), z( z ) {}
-};
-
-class Vector4 {
-public:
-    int w{}, x{}, y{}, z{};
-
-    constexpr Vector4( ) noexcept = default;
-    constexpr Vector4( int w, int x, int y, int z ) noexcept 
-        : w( w ), x( x ), y( y ), z( z ) {}
 };
 
 class Vertex {
@@ -41,15 +32,17 @@ public:
 
 class DrawCommand {
 public:
-    D3D_PRIMITIVE_TOPOLOGY primitive_type;
+    D3D_PRIMITIVE_TOPOLOGY primitive_topology;
     std::vector<Vertex> vertices;
     std::vector<std::int32_t> indices;
+    uint8_t z_index;
 
-    constexpr DrawCommand( ) noexcept = default;
-    constexpr DrawCommand( D3D_PRIMITIVE_TOPOLOGY primitive_type ) :
-        primitive_type( primitive_type ) {}
-    constexpr DrawCommand( D3D_PRIMITIVE_TOPOLOGY primitive_type, std::vector<Vertex> vertices, std::vector<std::int32_t> indices ) :
-        primitive_type( primitive_type ), vertices( vertices ), indices( indices ) {}
+    constexpr DrawCommand( ) noexcept :
+        primitive_topology( D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST ) {}
+    constexpr DrawCommand( D3D_PRIMITIVE_TOPOLOGY primitive_topology ) :
+        primitive_topology( primitive_topology ) {}
+    constexpr DrawCommand( D3D_PRIMITIVE_TOPOLOGY primitive_topology, std::vector<Vertex> vertices, std::vector<std::int32_t> indices, uint8_t z_index ) :
+        primitive_topology( primitive_topology ), vertices( vertices ), indices( indices ), z_index( z_index ) {}
 };
 
 class Color {

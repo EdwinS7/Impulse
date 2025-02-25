@@ -32,6 +32,8 @@ class CInput {
 public:
     void PoolInput( );
 
+    bool IsActive( );
+
     bool IsKeyPressed( int key );
     bool IsKeyHeld ( int key );
 
@@ -42,6 +44,7 @@ public:
     void SetCursorStyle( PointerStyle pointer_style );
 
 private:
+    bool m_Active = false;
     bool m_AnyKeyPressed = false;
 
     uint8_t m_PreviousKeyStates[ 255 ];

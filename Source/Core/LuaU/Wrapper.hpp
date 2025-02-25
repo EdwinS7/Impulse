@@ -25,8 +25,8 @@ namespace Wrapper {
                 Vector2* Vector = ( Vector2* ) lua_newuserdata( L, sizeof( Vector2 ) );
 
                 new ( Vector ) Vector2(
-                    luaL_optnumber( L, 1, 0.0 ),
-                    luaL_optnumber( L, 2, 0.0 )
+                    luaL_optinteger ( L, 1, 0 ),
+                    luaL_optinteger( L, 2, 0 )
                 );
 
                 luaL_getmetatable( L, "vector2" );
@@ -40,9 +40,9 @@ namespace Wrapper {
                 const char* Key = luaL_checkstring( L, 2 );
 
                 if ( strcmp( Key, "x" ) == 0 )
-                    lua_pushnumber( L, Vector->x );
+                    lua_pushinteger( L, Vector->x );
                 else if ( strcmp( Key, "y" ) == 0 )
-                    lua_pushnumber( L, Vector->y );
+                    lua_pushinteger( L, Vector->y );
                 else
                     luaL_error( L, "invalid field '%s' for vector2", Key );
 
@@ -54,9 +54,9 @@ namespace Wrapper {
                 const char* Key = luaL_checkstring( L, 2 );
 
                 if ( strcmp( Key, "x" ) == 0 )
-                    Vector->x = luaL_checknumber( L, 3 );
+                    Vector->x = luaL_checkinteger( L, 3 );
                 else if ( strcmp( Key, "y" ) == 0 )
-                    Vector->y = luaL_checknumber( L, 3 );
+                    Vector->y = luaL_checkinteger( L, 3 );
                 else
                     luaL_error( L, "invalid field '%s' for vector2", Key );
 
@@ -69,9 +69,9 @@ namespace Wrapper {
                 Vector3* Vector = ( Vector3* ) lua_newuserdata( L, sizeof( Vector3 ) );
 
                 new ( Vector ) Vector3(
-                    luaL_optnumber( L, 1, 0.0 ),
-                    luaL_optnumber( L, 2, 0.0 ),
-                    luaL_optnumber( L, 3, 0.0 )
+                    static_cast< float >( luaL_optnumber( L, 1, 0.0 ) ),
+                    static_cast< float >( luaL_optnumber( L, 2, 0.0 ) ),
+                    static_cast< float >( luaL_optnumber( L, 3, 0.0 ) )
                 );
 
                 luaL_getmetatable( L, "vector3" );
@@ -86,11 +86,11 @@ namespace Wrapper {
                 const char* Key = luaL_checkstring( L, 2 );
 
                 if ( strcmp( Key, "x" ) == 0 )
-                    lua_pushnumber( L, Vector->x );
+                    lua_pushnumber( L, static_cast< double >( Vector->x ) );
                 else if ( strcmp( Key, "y" ) == 0 )
-                    lua_pushnumber( L, Vector->y );
+                    lua_pushnumber( L, static_cast< double >( Vector->y ) );
                 else if ( strcmp( Key, "z" ) == 0 )
-                    lua_pushnumber( L, Vector->z );
+                    lua_pushnumber( L, static_cast< double >( Vector->z ) );
                 else
                     luaL_error( L, "invalid field '%s' for vector3", Key );
 
@@ -103,11 +103,11 @@ namespace Wrapper {
                 const char* Key = luaL_checkstring( L, 2 );
 
                 if ( strcmp( Key, "x" ) == 0 )
-                    Vector->x = luaL_checknumber( L, 3 );
+                    Vector->x = static_cast< float >( luaL_checknumber( L, 3 ) );
                 else if ( strcmp( Key, "y" ) == 0 )
-                    Vector->y = luaL_checknumber( L, 3 );
+                    Vector->y = static_cast< float >( luaL_checknumber( L, 3 ) );
                 else if ( strcmp( Key, "z" ) == 0 )
-                    Vector->z = luaL_checknumber( L, 3 );
+                    Vector->z = static_cast< float >( luaL_checknumber( L, 3 ) );
                 else
                     luaL_error( L, "invalid field '%s' for vector3", Key );
 
@@ -120,13 +120,13 @@ namespace Wrapper {
                 Vertex* Vertex_ = ( Vertex* ) lua_newuserdata( L, sizeof( Vertex ) );
 
                 new ( Vertex_ ) Vertex(
-                    luaL_optnumber( L, 1, 0.0 ), // x: 0
-                    luaL_optnumber( L, 2, 0.0 ), // y: 0
-                    luaL_optnumber( L, 3, 0.0 ), // z: 0
-                    luaL_optnumber( L, 4, 1.0 ), // rhw: 1 (2D)
-                    luaL_optnumber( L, 5, 0.0 ), // u: 0
-                    luaL_optnumber( L, 6, 0.0 ), // v: 0
-                    luaL_optnumber( L, 7, ( double ) 0xFFFFFF ) // color: white
+                    static_cast< float >( luaL_optnumber( L, 1, 0.0 ) ), // x: 0
+                    static_cast< float >( luaL_optnumber( L, 2, 0.0 ) ), // y: 0
+                    static_cast< float >( luaL_optnumber( L, 3, 0.0 ) ), // z: 0
+                    static_cast< float >( luaL_optnumber( L, 4, 1.0 ) ), // rhw: 1 (2D)
+                    static_cast< float >( luaL_optnumber( L, 5, 0.0 ) ), // u: 0
+                    static_cast< float >( luaL_optnumber( L, 6, 0.0 ) ), // v: 0
+                    static_cast< unsigned long >( luaL_optnumber( L, 7, ( double ) 0xFFFFFF ) ) // color: white
                 );
 
                 luaL_getmetatable( L, "vertex" );
@@ -140,19 +140,19 @@ namespace Wrapper {
                 const char* Key = luaL_checkstring( L, 2 );
 
                 if ( strcmp( Key, "x" ) == 0 )
-                    lua_pushnumber( L, Vertex_->x );
+                    lua_pushnumber( L, static_cast< double >( Vertex_->x ) );
                 else if ( strcmp( Key, "y" ) == 0 )
-                    lua_pushnumber( L, Vertex_->y );
+                    lua_pushnumber( L, static_cast< double >( Vertex_->y ) );
                 else if ( strcmp( Key, "z" ) == 0 )
-                    lua_pushnumber( L, Vertex_->z );
+                    lua_pushnumber( L, static_cast< double >( Vertex_->z ) );
                 else if ( strcmp( Key, "rhw" ) == 0 )
-                    lua_pushnumber( L, Vertex_->rhw );
+                    lua_pushnumber( L, static_cast< double >( Vertex_->rhw ) );
                 else if ( strcmp( Key, "u" ) == 0 )
-                    lua_pushnumber( L, Vertex_->u );
+                    lua_pushnumber( L, static_cast< double >( Vertex_->u ) );
                 else if ( strcmp( Key, "v" ) == 0 )
-                    lua_pushnumber( L, Vertex_->v );
+                    lua_pushnumber( L, static_cast< double >( Vertex_->v ) );
                 else if ( strcmp( Key, "color" ) == 0 )
-                    lua_pushnumber( L, Vertex_->color );
+                    lua_pushnumber( L, static_cast< double >( Vertex_->color ) );
                 else
                     luaL_error( L, "invalid field '%s' for vertex", Key );
 
@@ -165,19 +165,19 @@ namespace Wrapper {
                 const char* Key = luaL_checkstring( L, 2 );
 
                 if ( strcmp( Key, "x" ) == 0 )
-                    _Vertex->x = luaL_checknumber( L, 3 );
+                    _Vertex->x = static_cast< float >( luaL_checknumber( L, 3 ) );
                 else if ( strcmp( Key, "y" ) == 0 )
-                    _Vertex->y = luaL_checknumber( L, 3 );
+                    _Vertex->y = static_cast< float >( luaL_checknumber( L, 3 ) );
                 else if ( strcmp( Key, "z" ) == 0 )
-                    _Vertex->z = luaL_checknumber( L, 3 );
+                    _Vertex->z = static_cast< float >( luaL_checknumber( L, 3 ) );
                 else if ( strcmp( Key, "rhw" ) == 0 )
-                    _Vertex->rhw = luaL_checknumber( L, 3 );
+                    _Vertex->rhw = static_cast< float >( luaL_checknumber( L, 3 ) );
                 else if ( strcmp( Key, "u" ) == 0 )
-                    _Vertex->u = luaL_checknumber( L, 3 );
+                    _Vertex->u = static_cast< float >( luaL_checknumber( L, 3 ) );
                 else if ( strcmp( Key, "v" ) == 0 )
-                    _Vertex->v = luaL_checknumber( L, 3 );
+                    _Vertex->v = static_cast< float >( luaL_checknumber( L, 3 ) );
                 else if ( strcmp( Key, "color" ) == 0 )
-                    _Vertex->color = luaL_checknumber( L, 3 );
+                    _Vertex->color = static_cast< unsigned long >( luaL_checknumber( L, 3 ) );
                 else
                     luaL_error( L, "invalid field '%s' for vertex", Key );
 
@@ -190,10 +190,10 @@ namespace Wrapper {
                 auto _Color = ( Color* ) lua_newuserdata( L, sizeof( Color ) );
 
                 new ( _Color ) Color(
-                    luaL_optnumber( L, 1, 0.0 ),
-                    luaL_optnumber( L, 2, 0.0 ),
-                    luaL_optnumber( L, 3, 0.0 ),
-                    luaL_optnumber( L, 4, 255.0 ) // Default alpha to 255
+                    static_cast< uint8_t >( luaL_optinteger( L, 1, 0 ) ),
+                    static_cast< uint8_t >( luaL_optinteger( L, 2, 0 ) ),
+                    static_cast< uint8_t >( luaL_optinteger( L, 3, 0 ) ),
+                    static_cast< uint8_t >( luaL_optinteger( L, 4, 255 ) ) // Default alpha to 255
                 );
 
                 luaL_getmetatable( L, "color" );
@@ -210,15 +210,15 @@ namespace Wrapper {
                 const char* Key = luaL_checkstring( L, 2 );
 
                 if ( strcmp( Key, "r" ) == 0 )
-                    lua_pushnumber( L, _Color->r );
+                    lua_pushinteger( L, static_cast< int >( _Color->r ) );
                 else if ( strcmp( Key, "g" ) == 0 )
-                    lua_pushnumber( L, _Color->g );
+                    lua_pushinteger( L, static_cast< int >( _Color->g ) );
                 else if ( strcmp( Key, "b" ) == 0 )
-                    lua_pushnumber( L, _Color->b );
+                    lua_pushinteger( L, static_cast< int >( _Color->b ) );
                 else if ( strcmp( Key, "a" ) == 0 )
-                    lua_pushnumber( L, _Color->a );
+                    lua_pushinteger( L, static_cast< int >( _Color->a ) );
                 else if ( strcmp( Key, "hex" ) == 0 )
-                    lua_pushnumber( L, RGBA_TO_DWORD( _Color->r, _Color->g, _Color->b, _Color->a ) );
+                    lua_pushnumber( L, static_cast< double >( RGBA_TO_DWORD( _Color->r, _Color->g, _Color->b, _Color->a ) ) );
                 else
                     luaL_error( L, "invalid field '%s' for color", Key );
 
@@ -231,13 +231,14 @@ namespace Wrapper {
                 const char* Key = luaL_checkstring( L, 2 );
 
                 if ( strcmp( Key, "r" ) == 0 )
-                    _Color->r = luaL_checknumber( L, 3 );
+                    _Color->r = static_cast< uint8_t >( luaL_checknumber( L, 3 ) );
                 else if ( strcmp( Key, "g" ) == 0 )
-                    _Color->g = luaL_checknumber( L, 3 );
+                    _Color->g = static_cast< uint8_t >( luaL_checknumber( L, 3 ) );
                 else if ( strcmp( Key, "b" ) == 0 )
-                    _Color->b = luaL_checknumber( L, 3 );
+                    _Color->b = static_cast< uint8_t >( luaL_checknumber( L, 3 ) );
                 else if ( strcmp( Key, "a" ) == 0 )
-                    _Color->a = luaL_checknumber( L, 3 ); else
+                    _Color->a = static_cast< uint8_t >( luaL_checknumber( L, 3 ) );
+                else
                     luaL_error( L, "invalid field '%s' for color", Key );
 
                 return 0;
@@ -264,9 +265,9 @@ namespace Wrapper {
                 auto Key = luaL_checkstring( L, 2 );
 
                 if ( strcmp( Key, "primitive_topology" ) == 0 )
-                    lua_pushnumber( L, _DrawCommand->primitive_type );
+                    lua_pushinteger( L, static_cast< int >( _DrawCommand->primitive_topology ) );
                 else if ( strcmp( Key, "vertices" ) == 0 ) {
-                    lua_createtable( L, _DrawCommand->vertices.size( ), 0 );
+                    lua_createtable( L, static_cast< int >( _DrawCommand->vertices.size( ) ), 0 );
 
                     for ( size_t i = 0; i < _DrawCommand->vertices.size( ); i++ ) {
                         auto _Vertex = ( Vertex* ) lua_newuserdata( L, sizeof( Vertex ) );
@@ -274,16 +275,18 @@ namespace Wrapper {
 
                         luaL_getmetatable( L, "vertex" );
                         lua_setmetatable( L, -2 );
-                        lua_rawseti( L, -2, i + 1 );
+
+                        lua_rawseti( L, -2, static_cast< int >( i + 1 ) );
                     }
                 } else if ( strcmp( Key, "indices" ) == 0 ) {
-                    lua_createtable( L, _DrawCommand->indices.size( ), 0 );
+                    lua_createtable( L, static_cast< int >( _DrawCommand->indices.size( ) ), 0 );
 
                     for ( size_t i = 0; i < _DrawCommand->indices.size( ); i++ ) {
-                        lua_pushinteger( L, _DrawCommand->indices[ i ] );
-                        lua_rawseti( L, -2, i + 1 );
+                        lua_pushinteger( L, static_cast< int >( _DrawCommand->indices[ i ] ) );
+                        lua_rawseti( L, -2, static_cast< int >( i + 1 ) );
                     }
-                }
+                } else if ( strcmp( Key, "z_index" ) == 0 )
+                    lua_pushinteger( L, static_cast< int >( _DrawCommand->z_index ) );
                 else
                     luaL_error( L, "invalid field '%s' for draw_command", Key );
 
@@ -296,22 +299,23 @@ namespace Wrapper {
                 auto Key = luaL_checkstring( L, 2 );
 
                 if ( strcmp( Key, "primitive_topology" ) == 0 ) {
-                    _DrawCommand->primitive_type = static_cast< D3D_PRIMITIVE_TOPOLOGY >(
+                    _DrawCommand->primitive_topology = static_cast< D3D_PRIMITIVE_TOPOLOGY >(
                         luaL_checknumber( L, 3 )
                     );
                 }
                 else if ( strcmp( Key, "vertices" ) == 0 ) {
-                    size_t TableLength = lua_objlen( L, 3 );
+                    size_t TableLength = static_cast< size_t >( lua_objlen( L, 3 ) );
 
                     _DrawCommand->vertices.resize( TableLength );
 
                     for ( size_t i = 1; i <= TableLength; i++ ) {
-                        lua_rawgeti( L, 3, i );
-                        auto* vertex = static_cast< Vertex* >(
+                        lua_rawgeti( L, 3, static_cast< int >( i ) );
+
+                        auto* _Vertex = static_cast< Vertex* >(
                             luaL_checkudata( L, -1, "vertex" )
                         );
 
-                        _DrawCommand->vertices[ i - 1 ] = *vertex;
+                        _DrawCommand->vertices[ i - 1 ] = *_Vertex;
 
                         lua_pop( L, 1 );
                     }
@@ -322,11 +326,12 @@ namespace Wrapper {
                     _DrawCommand->indices.resize( TableLength );
 
                     for ( size_t i = 1; i <= TableLength; i++ ) {
-                        lua_rawgeti( L, 3, i );
+                        lua_rawgeti( L, 3, static_cast< int >( i ) );
                         _DrawCommand->indices[ i - 1 ] = luaL_checkinteger( L, -1 );
                         lua_pop( L, 1 );
                     }
-                }
+                } else if ( strcmp( Key, "primitive_topology" ) == 0 )
+                    _DrawCommand->z_index = luaL_checknumber( L, 3 );
                 else
                     luaL_error( L, "invalid field '%s' for draw_command", Key );
 
@@ -386,7 +391,7 @@ namespace Wrapper {
             std::vector<std::string> Files = FileSystem.ListFiles( luaL_checkstring( L, 1 ) );
 
             for ( size_t i = 0; i < Files.size( ); i++ ) {
-                lua_pushinteger( L, i + 1 );
+                lua_pushinteger( L, static_cast< int >( i + 1 ) );
                 lua_pushstring( L, Files[ i ].c_str( ) );
                 lua_settable( L, -3 );
             }
@@ -430,7 +435,7 @@ namespace Wrapper {
             std::vector<std::string> Directories = FileSystem.ListDirectories( luaL_checkstring( L, 1 ) );
 
             for ( size_t i = 0; i < Directories.size( ); i++ ) {
-                lua_pushinteger( L, i + 1 );
+                lua_pushinteger( L, static_cast< int >( i + 1 ) );
                 lua_pushstring( L, Directories[ i ].c_str( ) );
                 lua_settable( L, -3 );
             }
@@ -467,7 +472,7 @@ namespace Wrapper {
             );
 
             if ( WindowHandle ) {
-                int WindowRef = WindowHandles.size( ) + 1;
+                int WindowRef = static_cast< int >( WindowHandles.size( ) + 1 );
                 WindowHandles[ WindowRef ] = WindowHandle;
 
                 lua_pushinteger( L, WindowRef );
@@ -497,7 +502,7 @@ namespace Wrapper {
             );
 
             if ( ConsoleHandle ) {
-                int ConsoleRef = ConsoleHandles.size( ) + 1;
+                int ConsoleRef = static_cast< int >( ConsoleHandles.size( ) + 1 );
                 ConsoleHandles[ ConsoleRef ] = ConsoleHandle;
 
                 lua_pushinteger( L, ConsoleRef );
@@ -539,8 +544,8 @@ namespace Wrapper {
             auto Vector = ( Vector2* ) lua_newuserdata( L, sizeof( Vector2 ) );
 
             new ( Vector ) Vector2(
-                static_cast< double >( ScreenSize.x ),
-                static_cast< double >( ScreenSize.y )
+               ScreenSize.x,
+               ScreenSize.y
             );
 
             luaL_getmetatable( L, "vector2" );
@@ -552,7 +557,10 @@ namespace Wrapper {
 
     namespace Graphics_ {
         int Initiate( lua_State* L ) {
-            lua_pushboolean( L, Graphics.Initiate( Win32_::WindowHandles[ luaL_checkinteger( L, 1 ) ] ) );
+            lua_pushboolean( L, Graphics.Initiate( 
+                Win32_::WindowHandles[ luaL_checkinteger( L, 1 ) ],
+                luaL_checkboolean( L, 2 )
+            ) );
 
             return 1;
         }
@@ -593,76 +601,22 @@ namespace Wrapper {
             }
 
             DrawCommand** _DrawCommand = ( DrawCommand** ) lua_newuserdata( L, sizeof( DrawCommand* ) );
-            *_DrawCommand = Renderer.WriteToBuffer( D3D_PRIMITIVE_TOPOLOGY( luaL_checkinteger( L, 1 ) ), &Vertices, &Indices );
+            *_DrawCommand = Renderer.WriteToBuffer( D3D_PRIMITIVE_TOPOLOGY( luaL_checkinteger( L, 1 ) ), &Vertices, &Indices, luaL_optinteger( L, 4, 0 ) );
 
             luaL_getmetatable( L, "draw_command" );
             lua_setmetatable( L, -2 );
 
             return 1;
         }
-
-        int Line( lua_State* L ) {
-            Renderer.Line(
-                *( Vector2* ) luaL_checkudata( L, 1, "vector2" ),
-                *( Vector2* ) luaL_checkudata( L, 2, "vector2" ),
-                *( Color* ) luaL_checkudata( L, 3, "color" )
-            );
-
-            return 0;
-        }
-
-        int Polyline( lua_State* L ) {
-            std::vector<Vector2> PointList = {};
-
-            lua_pushnil( L );
-            while ( lua_next( L, 1 ) != 0 ) {
-                PointList.push_back( *( Vector2* ) luaL_checkudata( L, -1, "vector2" ) );
-
-                lua_pop( L, 1 );
-            }
-
-            Renderer.Polyline( PointList, *( Color* ) luaL_checkudata( L, 3, "color" ) );
-
-            return 0;
-        }
-
-        int Polygon( lua_State* L ) {
-            std::vector<Vector2> PointList = {};
-
-            lua_pushnil( L );
-            while ( lua_next( L, 1 ) != 0 ) {
-                PointList.push_back( *( Vector2* ) luaL_checkudata( L, -1, "vector2" ) );
-
-                lua_pop( L, 1 );
-            }
-
-            Renderer.Polygon( PointList, *( Color* ) luaL_checkudata( L, 3, "color" ) );
-
-            return 0;
-        }
-
-        int Rectangle( lua_State* L ) {
-            Renderer.Rectangle(
-                *( Vector2* ) luaL_checkudata( L, 1, "vector2" ),
-                *( Vector2* ) luaL_checkudata( L, 2, "vector2" ),
-                *( Color* ) luaL_checkudata( L, 3, "color" )
-            );
-
-            return 0;
-        }
-
-        int FilledRectangle( lua_State* L ) {
-            Renderer.FilledRectangle(
-                *( Vector2* ) luaL_checkudata( L, 1, "vector2" ),
-                *( Vector2* ) luaL_checkudata( L, 2, "vector2" ),
-                *( Color* ) luaL_checkudata( L, 3, "color" )
-            );
-
-            return 0;
-        }
     }
 
     namespace Input_ {
+        int IsActive( lua_State* L ) {
+            lua_pushboolean( L, Input.IsActive( ) );
+
+            return 1;
+        }
+
         int IsKeyPressed( lua_State* L ) {
             lua_pushboolean( L, Input.IsKeyPressed( luaL_checkinteger( L, 1 ) ) );
 

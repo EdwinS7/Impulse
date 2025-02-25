@@ -7,8 +7,9 @@
     p = nullptr; \
 }
 
-bool CGraphics::Initiate( HWND hwnd ) {
+bool CGraphics::Initiate( HWND hwnd, bool vertical_sync ) {
     m_TargetWindow = hwnd;
+    m_VSync = vertical_sync;
 
     RECT Rect;
     GetClientRect( hwnd, &Rect );
@@ -31,7 +32,11 @@ bool CGraphics::Initiate( HWND hwnd ) {
         ID3D11Texture2D* BackBuffer;
 
         m_pSwapChain->GetBuffer( 0, __uuidof( ID3D11Texture2D ), ( void** ) &BackBuffer );
-        m_pDevice->CreateRenderTargetView( BackBuffer, nullptr, &m_pRenderTargetView );
+
+        if ( m_pDevice->CreateRenderTargetView( BackBuffer, nullptr, &m_pRenderTargetView ) < S_OK ) {
+            SAFE_RELEASE( BackBuffer );
+            return FALSE;
+        }
 
         SAFE_RELEASE( BackBuffer );
     }
@@ -134,7 +139,7 @@ bool CGraphics::IsInitiated( ) {
     return m_pDevice != nullptr;
 }
 
-void CGraphics::Resize( int width, int height ) {
+void CGraphics::ResizeBuffers( int width, int height ) {
     if ( !m_pRenderTargetView )
         return;
 
@@ -142,11 +147,17 @@ void CGraphics::Resize( int width, int height ) {
 
     m_pSwapChain->ResizeBuffers( 0, width, height, DXGI_FORMAT_UNKNOWN, 0 );
 
-    { // Back buffer
-        ID3D11Texture2D* BackBuffer;
-        m_pSwapChain->GetBuffer( 0, IID_PPV_ARGS( &BackBuffer ) );
-        m_pDevice->CreateRenderTargetView( BackBuffer, nullptr, &m_pRenderTargetView );
-        SAFE_RELEASE( BackBuffer );
+    { // Create render target
+        ID3D11Texture2D* pBackBuffer;
+
+        m_pSwapChain->GetBuffer( 0, IID_PPV_ARGS( &pBackBuffer ) );
+
+        if ( m_pDevice->CreateRenderTargetView( pBackBuffer, nullptr, &m_pRenderTargetView ) < S_OK ) {
+            SAFE_RELEASE( pBackBuffer );
+            return;
+        }
+
+        SAFE_RELEASE( pBackBuffer );
     }
 }
 
@@ -156,8 +167,8 @@ void CGraphics::SetupRenderState( ID3D11DeviceContext* device_context ) {
 
     { // Setup viewport
         D3D11_VIEWPORT Viewport = {};
-        Viewport.Width = Rect.right - Rect.left;
-        Viewport.Height = Rect.bottom - Rect.top;
+        Viewport.Width = static_cast< FLOAT >( Rect.right - Rect.left );
+        Viewport.Height = static_cast< FLOAT >( Rect.bottom - Rect.top );
         Viewport.MinDepth = 0.f;
         Viewport.MaxDepth = 1.0f;
 
@@ -170,10 +181,10 @@ void CGraphics::SetupRenderState( ID3D11DeviceContext* device_context ) {
             VERTEX_CONSTANT_BUFFER_DX11* ConstantBuffer = ( VERTEX_CONSTANT_BUFFER_DX11* ) mapped_resource.pData;
 
             float mvp[ 4 ][ 4 ] = {
-                { 2.0f / ( Rect.right - Rect.left ), 0.f, 0.f, 0.f },
-                { 0.f, 2.0f / -( Rect.bottom - Rect.top ), 0.f, 0.f },
+                { 2.0f / static_cast< float >( Rect.right - Rect.left ), 0.f, 0.f, 0.f },
+                { 0.f, 2.0f / -static_cast< float >( Rect.bottom - Rect.top ), 0.f, 0.f },
                 { 0.f, 0.f, 0.5f, 0.f },
-                { ( Rect.right - Rect.left ) /  -( Rect.right - Rect.left ), 1.f, 0.5f, 1.0f},
+                { static_cast< float >( Rect.right - Rect.left ) / -static_cast< float >( Rect.right - Rect.left ), 1.f, 0.5f, 1.0f},
             };
 
             memcpy( &ConstantBuffer->mvp, mvp, sizeof( mvp ) );
@@ -213,16 +224,17 @@ void CGraphics::SetupRenderState( ID3D11DeviceContext* device_context ) {
 bool CGraphics::RenderDrawData( ) {
     int TotalVerticesCount{ 0 }, TotalIndicesCount{ 0 };
 
+    std::sort( DrawCommands.begin( ), DrawCommands.end( ), [ ] ( const DrawCommand& a, const DrawCommand& b ) {
+        return a.z_index < b.z_index;
+    } );
+
     for ( DrawCommand& draw_command : DrawCommands ) {
-        TotalVerticesCount += draw_command.vertices.size( );
-        TotalIndicesCount += draw_command.indices.size( );
+        TotalVerticesCount += static_cast< int >( draw_command.vertices.size( ) );
+        TotalIndicesCount += static_cast< int >( draw_command.indices.size( ) );
     }
 
     if ( !m_pVertexBuffer || m_VertexBufferSize < TotalVerticesCount ) {
-        if ( m_pVertexBuffer ) {
-            m_pVertexBuffer->Release( );
-            m_pVertexBuffer = nullptr;
-        }
+        if ( m_pVertexBuffer ) SAFE_RELEASE( m_pVertexBuffer );
 
         m_VertexBufferSize = TotalVerticesCount + 5000;
 
@@ -240,10 +252,7 @@ bool CGraphics::RenderDrawData( ) {
     }
 
     if ( !m_pIndexBuffer || m_IndexBufferSize < TotalIndicesCount ) {
-        if ( m_pIndexBuffer ) {
-            m_pIndexBuffer->Release( );
-            m_pIndexBuffer = nullptr;
-        }
+        if ( m_pIndexBuffer ) SAFE_RELEASE( m_pIndexBuffer );
 
         m_IndexBufferSize = TotalIndicesCount + 5000;
 
@@ -293,28 +302,33 @@ bool CGraphics::RenderDrawData( ) {
     int VertexOffset{ 0 }, IndexOffset{ 0 };
 
     for ( DrawCommand& draw_command : DrawCommands ) {
-        m_pDeviceContext->IASetPrimitiveTopology( draw_command.primitive_type );
-        m_pDeviceContext->DrawIndexed( draw_command.indices.size( ), IndexOffset, VertexOffset );
+        m_pDeviceContext->IASetPrimitiveTopology( draw_command.primitive_topology );
+        m_pDeviceContext->DrawIndexed( static_cast< UINT >( draw_command.indices.size( ) ), IndexOffset, VertexOffset );
 
-        VertexOffset += draw_command.vertices.size( );
-        IndexOffset += draw_command.indices.size( );
+        VertexOffset += static_cast< int >( draw_command.vertices.size( ) );
+        IndexOffset += static_cast< int >( draw_command.indices.size( ) );
     }
 
     return TRUE;
 }
 
-void CGraphics::Present( Color clear_color ) {
+void CGraphics::Present( ) {
     if ( Win32.IsResizing( m_TargetWindow ) )
         return;
 
-    float ClearColor[] = { clear_color.r, clear_color.g, clear_color.b, clear_color.a };
+    float ClearColor[] = { 
+        static_cast< float >( m_ClearColor.r ),
+        static_cast< float >( m_ClearColor.g ),
+        static_cast< float >( m_ClearColor.b ),
+        static_cast< float >( m_ClearColor.a )
+    };
 
     m_pDeviceContext->OMSetRenderTargets( 1, &m_pRenderTargetView, nullptr );
     m_pDeviceContext->ClearRenderTargetView( m_pRenderTargetView, ClearColor );
 
     RenderDrawData( );
 
-    m_pSwapChain->Present( 1, 0 );
+    m_pSwapChain->Present( static_cast<int>( m_VSync ), 0 );
 }
 
 void CGraphics::Cleanup( ) {

@@ -1,6 +1,8 @@
 #include "Input.hpp"
+#include "../LuaU/Environment.hpp"
 
 void CInput::PoolInput( ) {
+	m_Active = true; // Make this chekc if were focused
 	m_AnyKeyPressed = false;
 
 	uint8_t Buffer[ 256 ];
@@ -12,10 +14,15 @@ void CInput::PoolInput( ) {
 
 			m_KeyStates[ i ] = ( ( IsPressed ) ? 0x01 : 0x00 ) | ( WasPressed ? 0x02 : 0x00 );
 
-			if ( IsPressed )
+			if ( IsPressed ) {
 				m_AnyKeyPressed = true;
+			}
 		}
 	}
+}
+
+bool CInput::IsActive( ) {
+	return m_Active;
 }
 
 bool CInput::IsKeyPressed( int key ) {
@@ -29,8 +36,11 @@ bool CInput::IsKeyHeld( int key ) {
 void CInput::SetCursorPosition( Vector2 position, bool actual_cursor ) {
 	if ( actual_cursor )
 		SetCursorPos( position.x, position.y );
-	else
+	else {
 		m_CursorPosition = position;
+
+		Environment.RunConnection( "cursor_move", { position } );
+	}
 }
 
 Vector2 CInput::GetCursorPosition( ) {

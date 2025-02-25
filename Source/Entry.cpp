@@ -9,6 +9,7 @@
 #include "Core/LuaU/Environment.hpp"
 #include "Core/Win32/Win32.hpp"
 #include "Core/Graphics/Include.hpp"
+#include "Core/Input/Input.hpp"
 
 int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, int nCmdShow ) {
     try {
@@ -26,10 +27,12 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine,
         }
 
         while ( Win32.DispatchMessages( ) ) {
-            if ( Graphics.IsInitiated( ) )
-                Graphics.Present( Color( 0, 0, 0, 255 ) );
+            Input.PoolInput( );
 
-            Environment.RunConnection( "new_frame" );
+            if ( Graphics.IsInitiated( ) )
+                Graphics.Present( );
+
+            Environment.RunConnection( "new_frame", { /* Empty*/ } );
         }
     } catch ( const std::exception& e ) {
         MessageBox( NULL, e.what( ), "Error", MB_OK | MB_ICONERROR );
@@ -39,7 +42,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine,
         return 1;
     }
 
-    Environment.RunConnection( "shutdown" );
+    Environment.RunConnection( "shutdown", { /* Empty*/ } );
 
     return 0;
 }
