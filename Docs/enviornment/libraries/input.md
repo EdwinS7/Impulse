@@ -2,7 +2,7 @@
 icon: computer-mouse
 ---
 
-# input
+# Input
 
 ## input.is\_active
 

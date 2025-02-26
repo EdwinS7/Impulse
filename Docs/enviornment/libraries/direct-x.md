@@ -2,7 +2,7 @@
 icon: microsoft
 ---
 
-# direct x
+# Direct X
 
 ## direct\_x.initiate
 

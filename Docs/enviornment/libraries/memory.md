@@ -3,7 +3,7 @@ description: This is extremely under-developed at the moment since it's not yet 
 icon: memory
 ---
 
-# memory
+# Memory
 
 ## memory.set\_target
 

@@ -2,7 +2,7 @@
 icon: browser
 ---
 
-# win32
+# Win32
 
 ## win32.create\_window
 

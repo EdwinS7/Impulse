@@ -2,11 +2,27 @@
 
 ## enviornment
 
-* [globals](README.md)
-* [win32](<README (1).md>)
-* [direct x](enviornment/direct-x.md)
-* [renderer](enviornment/renderer.md)
-* [input](enviornment/input.md)
-* [crypt](enviornment/crypt.md)
-* [memory](enviornment/memory.md)
-* [file system](enviornment/file-system.md)
+* [Globals](README.md)
+  * [Lua globals](enviornment/globals/lua-globals.md)
+  * [👑 Impulse globals](enviornment/globals/impulse-globals.md)
+* [Libraries](enviornment/libraries/README.md)
+  * [Win32](enviornment/libraries/win32.md)
+  * [Direct X](enviornment/libraries/direct-x.md)
+  * [Renderer](enviornment/libraries/renderer.md)
+  * [Input](enviornment/libraries/input.md)
+  * [Crypt](enviornment/libraries/crypt.md)
+  * [Memory](enviornment/libraries/memory.md)
+  * [File system](enviornment/libraries/file-system.md)
+
+***
+
+* [Enumerations](enumerations/README.md)
+  * [Key codes](enumerations/key-codes.md)
+  * [Cursor style](enumerations/cursor-style.md)
+  * [Primitive topology](enumerations/primitive-topology.md)
+* [Data types](data-types/README.md)
+  * [Vector2](data-types/vector2.md)
+  * [Vector3](data-types/vector3.md)
+  * [Vertex](data-types/vertex.md)
+  * [Color](data-types/color.md)
+  * [Draw command](data-types/draw-command.md)

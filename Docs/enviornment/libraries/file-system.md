@@ -2,7 +2,7 @@
 icon: folder-closed
 ---
 
-# file system
+# File system
 
 ## file\_system.list\_files
 

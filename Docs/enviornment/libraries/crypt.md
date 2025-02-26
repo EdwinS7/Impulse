@@ -2,7 +2,7 @@
 icon: lock
 ---
 
-# crypt
+# Crypt
 
 ## sha256\_encode
 
