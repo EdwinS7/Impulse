@@ -1,4 +1,8 @@
-# 👑 Impulse globals
+---
+icon: crown
+---
+
+# Impulse globals
 
 ## add\_connection
 

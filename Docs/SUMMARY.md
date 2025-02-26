@@ -1,10 +1,17 @@
 # Table of contents
 
+* [Getting started](README.md)
+
+## Examples
+
+* [Console](examples/console.md)
+* [Window](examples/window.md)
+
 ## enviornment
 
-* [Globals](README.md)
+* [Globals](<README (1).md>)
   * [Lua globals](enviornment/globals/lua-globals.md)
-  * [👑 Impulse globals](enviornment/globals/impulse-globals.md)
+  * [Impulse globals](enviornment/globals/impulse-globals.md)
 * [Libraries](enviornment/libraries/README.md)
   * [Win32](enviornment/libraries/win32.md)
   * [Direct X](enviornment/libraries/direct-x.md)
