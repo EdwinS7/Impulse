@@ -4,26 +4,20 @@ icon: lock
 
 # Crypt
 
-## sha256\_encode
+## crypt.sha256\_encode
 
 ```lua
-sha256_encode(data: string) -> string
+crypt.sha256_encode(data: string) -> string
 ```
 
-## sha256\_decode
+## crypt.base64\_encode
 
 ```lua
-sha256_decode(data: string) -> string
+crypt.base64_encode(data: string) -> string
 ```
 
-## base64\_encode
+## crypt.base64\_decode
 
 ```lua
-base64_encode(data: string) -> string
-```
-
-## base64\_decode
-
-```lua
-base64_decode(data: string) -> string
+crypt.base64_decode(data: string) -> string
 ```
