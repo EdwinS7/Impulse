@@ -4,7 +4,7 @@ icon: screwdriver-wrench
 
 # Debug
 
-## GetRegistry
+## debug.getregistry
 
 ```lua
 debug.getregistry() -> table
