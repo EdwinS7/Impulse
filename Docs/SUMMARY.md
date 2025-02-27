@@ -20,6 +20,7 @@
   * [Crypt](enviornment/libraries/crypt.md)
   * [Memory](enviornment/libraries/memory.md)
   * [File system](enviornment/libraries/file-system.md)
+  * [Debug](enviornment/libraries/debug.md)
 
 ***
 
