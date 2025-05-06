@@ -11,9 +11,11 @@ public:
     void DestroyWindow( HWND window );
     bool DispatchMessages( );
 
-    HWND CreateConsole( const char* title, Vector2 position, Vector2 size );
 
+    HWND CreateConsole( const char* title, Vector2 position, Vector2 size );
     void DestroyConsole( HWND window );
+
+    void RedirectConsole( HWND hwnd );
 
     void MessageBox_( HWND window, const char* title, const char* content, int type );
 

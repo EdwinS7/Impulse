@@ -60,14 +60,15 @@ public:
     D3D_PRIMITIVE_TOPOLOGY primitive_topology;
     std::vector<Vertex> vertices;
     std::vector<std::int32_t> indices;
+    Texture* texture;
     uint8_t z_index;
 
     constexpr DrawCommand( ) noexcept :
         primitive_topology( D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST ) {}
     constexpr DrawCommand( D3D_PRIMITIVE_TOPOLOGY primitive_topology ) :
         primitive_topology( primitive_topology ) {}
-    constexpr DrawCommand( D3D_PRIMITIVE_TOPOLOGY primitive_topology, std::vector<Vertex> vertices, std::vector<std::int32_t> indices, uint8_t z_index ) :
-        primitive_topology( primitive_topology ), vertices( vertices ), indices( indices ), z_index( z_index ) {}
+    constexpr DrawCommand( D3D_PRIMITIVE_TOPOLOGY primitive_topology, std::vector<Vertex> vertices, std::vector<std::int32_t> indices, Texture* texture, uint8_t z_index ) :
+        primitive_topology( primitive_topology ), vertices( vertices ), indices( indices ), texture( texture ), z_index( z_index ) {}
 };
 
 #endif

@@ -47,7 +47,7 @@ renderer.circle = function(position, segments, radius, completion, angle, color,
 
     private.draw_command = renderer.write_to_buffer(
         filled and D3D11_PRIMITIVE_TOPOLOGY.TRIANGLE_STRIP or D3D11_PRIMITIVE_TOPOLOGY.LINE_STRIP,
-        vertices, indices, z_index
+        vertices, indices, nil, z_index
     )
 
     return setmetatable({}, {
@@ -105,7 +105,7 @@ renderer.circle = function(position, segments, radius, completion, angle, color,
     })
 end
 
-renderer.rectangle = function(position, size, color, filled, z_index)
+renderer.rectangle = function(position, size, color, filled, texture, z_index)
     local private = {
         position = position,
         size = size,
@@ -116,15 +116,15 @@ renderer.rectangle = function(position, size, color, filled, z_index)
     local create_vertices = function()
         return {
             vertex.new(private.position.x, private.position.y, 0, 1, 0, 0, private.color.hex),
-            vertex.new(private.position.x + private.size.x, private.position.y, 0, 1, 0, 0, private.color.hex),
-            vertex.new(private.position.x + private.size.x, private.position.y + private.size.y, 0, 1, 0, 0, private.color.hex),
-            vertex.new(private.position.x, private.position.y + private.size.y, 0, 1, 0, 0, private.color.hex)
+            vertex.new(private.position.x + private.size.x, private.position.y, 0, 1, 1, 0, private.color.hex),
+            vertex.new(private.position.x + private.size.x, private.position.y + private.size.y, 0, 1, 1, 1, private.color.hex),
+            vertex.new(private.position.x, private.position.y + private.size.y, 0, 1, 0, 1, private.color.hex)
         }
     end
 
     private.draw_command = renderer.write_to_buffer(
         filled and D3D11_PRIMITIVE_TOPOLOGY.TRIANGLE_STRIP or D3D11_PRIMITIVE_TOPOLOGY.LINE_STRIP, 
-        create_vertices(), {0, 1, 2, 3, 0}, z_index
+        create_vertices(), {0, 1, 2, 3, 0}, texture, z_index
     )
     
     return setmetatable({}, {

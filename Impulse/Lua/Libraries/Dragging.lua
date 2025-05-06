@@ -35,7 +35,7 @@ end
 
 add_connection("cursor_move", function(position)
     local is_mouse_down = input.is_key_held(KEY_CODES.MOUSE1)
-    
+        
     if is_mouse_down and not dragging.was_mouse_down then
         dragging.active_object.is_dragging = false
         dragging.active_object.click_started_inside = false

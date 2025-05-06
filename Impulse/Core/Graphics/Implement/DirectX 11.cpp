@@ -1,32 +1,37 @@
 #include "DirectX 11.hpp"
 #include "../../Win32/Win32.hpp"
 
-bool CGraphics::Initiate( HWND hwnd, DXGI_SWAP_CHAIN_DESC swap_chain_description, D3D11_BUFFER_DESC buffer_description, D3D11_RASTERIZER_DESC rasterizer_description, D3D11_DEPTH_STENCIL_DESC depth_stencil_description, D3D11_BLEND_DESC blend_description, const char* vertex_shader_source, const char* pixel_shader_source ) {
+bool CGraphics::Initiate( 
+    HWND hwnd, DXGI_SWAP_CHAIN_DESC swap_chain_description, D3D11_BUFFER_DESC buffer_description, 
+    D3D11_RASTERIZER_DESC rasterizer_description, D3D11_DEPTH_STENCIL_DESC depth_stencil_description, 
+    D3D11_SAMPLER_DESC sampler_description, D3D11_BLEND_DESC blend_description, 
+    const char* vertex_shader_source, const char* pixel_shader_source )
+{
     if ( D3D11CreateDeviceAndSwapChain( nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, nullptr, 0, D3D11_SDK_VERSION, &swap_chain_description, &m_pSwapChain, &m_pDevice, nullptr, &m_pDeviceContext ) < S_OK )
-        return FALSE;
+        return false;
     
     { // Create back buffer
-        ID3D11Texture2D* BackBuffer;
+        ID3D11Texture2D* pBackBuffer;
 
-        m_pSwapChain->GetBuffer( 0, __uuidof( ID3D11Texture2D ), ( void** ) &BackBuffer );
+        m_pSwapChain->GetBuffer( 0, IID_PPV_ARGS( &pBackBuffer ) );
 
-        if ( m_pDevice->CreateRenderTargetView( BackBuffer, nullptr, &m_pRenderTargetView ) < S_OK ) {
-            SAFE_RELEASE( BackBuffer );
-            return FALSE;
+        if ( m_pDevice->CreateRenderTargetView( pBackBuffer, nullptr, &m_pRenderTargetView ) < S_OK ) {
+            SAFE_RELEASE( pBackBuffer );
+            return false;
         }
 
-        SAFE_RELEASE( BackBuffer );
+        SAFE_RELEASE( pBackBuffer );
     }
 
     { // Compile and create vertex shader
         ID3DBlob* VertexShaderBlob;
 
         if ( FAILED( D3DCompile( vertex_shader_source, strlen( vertex_shader_source ), nullptr, nullptr, nullptr, "main", "vs_4_0", 0, 0, &VertexShaderBlob, nullptr ) ) )
-            return FALSE;
+            return false;
 
         if ( m_pDevice->CreateVertexShader( VertexShaderBlob->GetBufferPointer( ), VertexShaderBlob->GetBufferSize( ), nullptr, &m_pVertexShader ) != S_OK ) {
             SAFE_RELEASE( VertexShaderBlob );
-            return FALSE;
+            return false;
         }
 
         D3D11_INPUT_ELEMENT_DESC LocalLayout[] = {
@@ -37,7 +42,7 @@ bool CGraphics::Initiate( HWND hwnd, DXGI_SWAP_CHAIN_DESC swap_chain_description
 
         if ( m_pDevice->CreateInputLayout( LocalLayout, 3, VertexShaderBlob->GetBufferPointer( ), VertexShaderBlob->GetBufferSize( ), &m_pInputLayout ) != S_OK ) {
             SAFE_RELEASE( VertexShaderBlob );
-            return FALSE;
+            return false;
         }
 
         SAFE_RELEASE( VertexShaderBlob );
@@ -47,7 +52,7 @@ bool CGraphics::Initiate( HWND hwnd, DXGI_SWAP_CHAIN_DESC swap_chain_description
         ID3DBlob* PixelShaderBlob;
 
         if ( FAILED( D3DCompile( pixel_shader_source, strlen( pixel_shader_source ), nullptr, nullptr, nullptr, "main", "ps_4_0", 0, 0, &PixelShaderBlob, nullptr ) ) )
-            return FALSE;
+            return false;
 
         if ( m_pDevice->CreatePixelShader( PixelShaderBlob->GetBufferPointer( ), PixelShaderBlob->GetBufferSize( ), nullptr, &m_pPixelShader ) != S_OK ) {
             SAFE_RELEASE( PixelShaderBlob );
@@ -57,9 +62,33 @@ bool CGraphics::Initiate( HWND hwnd, DXGI_SWAP_CHAIN_DESC swap_chain_description
         SAFE_RELEASE( PixelShaderBlob );
     }
 
+    { // Create white texture / back buffer ig? idfk what to call it lmao
+        unsigned char WhitePixel[ 4 ] = { 255, 255, 255, 255 };
+
+        D3D11_TEXTURE2D_DESC TextureDescription;
+        ZeroMemory( &TextureDescription, sizeof( TextureDescription ) );
+
+        TextureDescription.Width = TextureDescription.Height = 1;
+        TextureDescription.MipLevels = 1;
+        TextureDescription.ArraySize = 1;
+        TextureDescription.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        TextureDescription.SampleDesc.Count = 1;
+        TextureDescription.Usage = D3D11_USAGE_DEFAULT;
+        TextureDescription.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+        TextureDescription.CPUAccessFlags = 0;
+
+        D3D11_SUBRESOURCE_DATA ResourceData{ WhitePixel, sizeof( WhitePixel ), 0 };
+
+        m_pDevice->CreateTexture2D( &TextureDescription, &ResourceData, &m_pTexture );
+        m_pDevice->CreateShaderResourceView( m_pTexture, nullptr, &m_pTextureSRV );
+
+        m_pTexture->Release( );
+    }
+
     m_pDevice->CreateBuffer( &buffer_description, nullptr, &m_pVertexConstantBuffer );
     m_pDevice->CreateRasterizerState( &rasterizer_description, &m_pRasterizerState );
     m_pDevice->CreateDepthStencilState( &depth_stencil_description, &m_pDepthStencilState );
+    m_pDevice->CreateSamplerState( &sampler_description, &m_pSamplerState );
     m_pDevice->CreateBlendState( &blend_description, &m_pBlendState );
 
     m_TargetWindow = hwnd;
@@ -67,7 +96,7 @@ bool CGraphics::Initiate( HWND hwnd, DXGI_SWAP_CHAIN_DESC swap_chain_description
     return true;
 }
 
-bool CGraphics::IsDeviceInitialized( ) {
+bool CGraphics::IsDeviceInitialized( ) const {
     return m_pDevice != nullptr;
 }
 
@@ -77,20 +106,14 @@ void CGraphics::ResizeSwapChainBuffers( int width, int height ) {
 
     SAFE_RELEASE( m_pRenderTargetView );
 
-    m_pSwapChain->ResizeBuffers( 0, width, height, DXGI_FORMAT_UNKNOWN, 0 );
+    m_pSwapChain->ResizeBuffers( 0, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0 );
 
-    { // Create render target
-        ID3D11Texture2D* pBackBuffer;
+    ID3D11Texture2D* pBackBuffer;
 
-        m_pSwapChain->GetBuffer( 0, IID_PPV_ARGS( &pBackBuffer ) );
+    m_pSwapChain->GetBuffer( 0, IID_PPV_ARGS( &pBackBuffer ) );
+    m_pDevice->CreateRenderTargetView( pBackBuffer, nullptr, &m_pRenderTargetView );
 
-        if ( m_pDevice->CreateRenderTargetView( pBackBuffer, nullptr, &m_pRenderTargetView ) < S_OK ) {
-            SAFE_RELEASE( pBackBuffer );
-            return;
-        }
-
-        SAFE_RELEASE( pBackBuffer );
-    }
+    SAFE_RELEASE( pBackBuffer );
 }
 
 void CGraphics::SetProjectionMatrix( const float matrix[ 4 ][ 4 ] ) {
@@ -99,6 +122,7 @@ void CGraphics::SetProjectionMatrix( const float matrix[ 4 ][ 4 ] ) {
     if ( m_pDeviceContext->Map( m_pVertexConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource ) == S_OK ) {
         VERTEX_CONSTANT_BUFFER_DX11* ConstantBuffer = ( VERTEX_CONSTANT_BUFFER_DX11* ) MappedResource.pData;
         memcpy( &ConstantBuffer->mvp, matrix, sizeof( float ) * 4 * 4 );
+
         m_pDeviceContext->Unmap( m_pVertexConstantBuffer, 0 );
     }
 }
@@ -107,44 +131,44 @@ void CGraphics::SetupRenderState( ID3D11DeviceContext* device_context ) {
     RECT Rect;
     GetClientRect( m_TargetWindow, &Rect );
 
-    { // Setup viewport
-        D3D11_VIEWPORT Viewport = {};
-        Viewport.Width = static_cast< FLOAT >( Rect.right - Rect.left );
-        Viewport.Height = static_cast< FLOAT >( Rect.bottom - Rect.top );
-        Viewport.MinDepth = 0.f;
-        Viewport.MaxDepth = 1.0f;
+    D3D11_VIEWPORT Viewport = {};
 
-        device_context->RSSetViewports( 1, &Viewport );
-    }
+    Viewport.Width = static_cast< FLOAT >( Rect.right - Rect.left );
+    Viewport.Height = static_cast< FLOAT >( Rect.bottom - Rect.top );
+    Viewport.MinDepth = 0.f;
+    Viewport.MaxDepth = 1.0f;
 
-    { // Setup projection matrix
-        float mvp[ 4 ][ 4 ] = {
-             { 2.0f / static_cast< float >( Rect.right - Rect.left ), 0.f, 0.f, 0.f },
-             { 0.f, 2.0f / -static_cast< float >( Rect.bottom - Rect.top ), 0.f, 0.f },
-             { 0.f, 0.f, 0.5f, 0.f },
-             { static_cast< float >( Rect.right - Rect.left ) / -static_cast< float >( Rect.right - Rect.left ), 1.f, 0.5f, 1.0f},
-        };
+    device_context->RSSetViewports( 1, &Viewport );
 
-        SetProjectionMatrix( mvp );
-    }
+    float ProjectionMatrix[ 4 ][ 4 ] = {
+            { 2.0f / static_cast< float >( Rect.right - Rect.left ), 0.f, 0.f, 0.f },
+            { 0.f, 2.0f / -static_cast< float >( Rect.bottom - Rect.top ), 0.f, 0.f },
+            { 0.f, 0.f, 0.5f, 0.f },
+            { -1.f, 1.f, 0.5f, 1.0f },
+    };
 
-    device_context->OMSetRenderTargets( 1, &m_pRenderTargetView, nullptr );
+    SetProjectionMatrix( ProjectionMatrix );
+
+    float ClearColor[] = {
+        static_cast< float >( m_ClearColor.r ),
+        static_cast< float >( m_ClearColor.g ),
+        static_cast< float >( m_ClearColor.b ),
+        static_cast< float >( m_ClearColor.a )
+    };
+
+    m_pDeviceContext->OMSetRenderTargets( 1, &m_pRenderTargetView, nullptr );
+    m_pDeviceContext->ClearRenderTargetView( m_pRenderTargetView, ClearColor );
 
     unsigned int Stride = sizeof( Vertex ), Offset = 0;
-
     device_context->IASetVertexBuffers( 0, 1, &m_pVertexBuffer, &Stride, &Offset );
-    device_context->IASetIndexBuffer( m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0 );
-    device_context->VSSetShader( m_pVertexShader, nullptr, 0 );
-    device_context->PSSetShader( m_pPixelShader, nullptr, 0 );
-    device_context->IASetInputLayout( m_pInputLayout );
 
-    device_context->IASetInputLayout( m_pInputLayout );
-    device_context->IASetVertexBuffers( 0, 1, &m_pVertexBuffer, &Stride, &Offset );
     device_context->IASetIndexBuffer( m_pIndexBuffer, sizeof( std::int32_t ) == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT, 0 );
     device_context->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
-    device_context->VSSetShader( m_pVertexShader, nullptr, 0 );
     device_context->VSSetConstantBuffers( 0, 1, &m_pVertexConstantBuffer );
+    device_context->VSSetShader( m_pVertexShader, nullptr, 0 );
     device_context->PSSetShader( m_pPixelShader, nullptr, 0 );
+    device_context->PSSetSamplers( 0, 1, &m_pSamplerState );
+    device_context->IASetInputLayout( m_pInputLayout );
     device_context->GSSetShader( nullptr, nullptr, 0 );
     device_context->HSSetShader( nullptr, nullptr, 0 );
     device_context->DSSetShader( nullptr, nullptr, 0 );
@@ -192,13 +216,9 @@ ID3D11Device* CGraphics::GetDevice( ) {
 bool CGraphics::RenderDrawData( ) {
     int TotalVerticesCount{ 0 }, TotalIndicesCount{ 0 };
 
-    std::sort( DrawCommands.begin( ), DrawCommands.end( ), [ ] ( const DrawCommand& a, const DrawCommand& b ) {
-        return a.z_index < b.z_index;
-    } );
-
-    for ( DrawCommand& draw_command : DrawCommands ) {
-        TotalVerticesCount += static_cast< int >( draw_command.vertices.size( ) );
-        TotalIndicesCount += static_cast< int >( draw_command.indices.size( ) );
+    for ( const auto& draw_command : DrawCommands ) {
+        TotalVerticesCount += static_cast< int >( draw_command->vertices.size( ) );
+        TotalIndicesCount += static_cast< int >( draw_command->indices.size( ) );
     }
 
     if ( !m_pVertexBuffer || m_VertexBufferSize < TotalVerticesCount ) {
@@ -215,7 +235,7 @@ bool CGraphics::RenderDrawData( ) {
 
         if ( m_pDevice->CreateBuffer( &BufferDescription, nullptr, &m_pVertexBuffer ) < S_OK ) {
             std::cerr << "[Graphics::RenderDrawData] Failed to setup VertexBuffer" << std::endl;
-            return FALSE;
+            return false;
         }
     }
 
@@ -233,7 +253,7 @@ bool CGraphics::RenderDrawData( ) {
 
         if ( m_pDevice->CreateBuffer( &BufferDescription, nullptr, &m_pIndexBuffer ) < S_OK ) {
             std::cerr << "[Graphics::RenderDrawData] Failed to setup IndexBuffer" << std::endl;
-            return FALSE;
+            return false;
         }
     }
 
@@ -241,62 +261,83 @@ bool CGraphics::RenderDrawData( ) {
 
     if ( m_pDeviceContext->Map( m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &VertexResource ) != S_OK ) {
         std::cerr << "[Graphics::RenderDrawData] Failed to map VertexBuffer" << std::endl;
-        return FALSE;
+        return false;
     }
 
     if ( m_pDeviceContext->Map( m_pIndexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &IndexResource ) != S_OK ) {
         std::cerr << "[Graphics::RenderDrawData] Failed to map IndexBuffer" << std::endl;
-        return FALSE;
+        return false;
     }
 
-    {
-        Vertex* VertexDst = ( Vertex* ) VertexResource.pData;
-        std::int32_t* IndexDst = ( std::int32_t* ) IndexResource.pData;
+    Vertex* VertexDst = ( Vertex* ) VertexResource.pData;
+    std::int32_t* IndexDst = ( std::int32_t* ) IndexResource.pData;
 
-        for ( DrawCommand& draw_command : DrawCommands ) {
-            memcpy( VertexDst, draw_command.vertices.data( ), draw_command.vertices.size( ) * sizeof( Vertex ) );
-            memcpy( IndexDst, draw_command.indices.data( ), draw_command.indices.size( ) * sizeof( std::int32_t ) );
+    for ( const auto& draw_command : DrawCommands ) {
+        memcpy( VertexDst, draw_command->vertices.data( ), draw_command->vertices.size( ) * sizeof( Vertex ) );
+        memcpy( IndexDst, draw_command->indices.data( ), draw_command->indices.size( ) * sizeof( std::int32_t ) );
 
-            VertexDst += draw_command.vertices.size( );
-            IndexDst += draw_command.indices.size( );
-        }
-
-        m_pDeviceContext->Unmap( m_pVertexBuffer, 0 );
-        m_pDeviceContext->Unmap( m_pIndexBuffer, 0 );
+        VertexDst += draw_command->vertices.size( );
+        IndexDst += draw_command->indices.size( );
     }
+
+    m_pDeviceContext->Unmap( m_pVertexBuffer, 0 );
+    m_pDeviceContext->Unmap( m_pIndexBuffer, 0 );
 
     SetupRenderState( m_pDeviceContext );
 
     int VertexOffset{ 0 }, IndexOffset{ 0 };
 
-    for ( DrawCommand& draw_command : DrawCommands ) {
-        m_pDeviceContext->IASetPrimitiveTopology( draw_command.primitive_topology );
-        m_pDeviceContext->DrawIndexed( static_cast< UINT >( draw_command.indices.size( ) ), IndexOffset, VertexOffset );
+    for ( const auto& draw_command : DrawCommands ) {
+        m_pDeviceContext->IASetPrimitiveTopology( draw_command->primitive_topology );
+        m_pDeviceContext->PSSetShaderResources( 0, 1, ( draw_command->texture ? &draw_command->texture->pTextureSRV : &m_pTextureSRV ) );
 
-        VertexOffset += static_cast< int >( draw_command.vertices.size( ) );
-        IndexOffset += static_cast< int >( draw_command.indices.size( ) );
+        m_pDeviceContext->DrawIndexed( static_cast< UINT >( draw_command->indices.size( ) ), IndexOffset, VertexOffset );
+
+        VertexOffset += static_cast< int >( draw_command->vertices.size( ) );
+        IndexOffset += static_cast< int >( draw_command->indices.size( ) );
     }
 
-    return TRUE;
+    return true;
 }
 
-void CGraphics::Present( ) {
+bool CGraphics::Present( ) {
     if ( Win32.IsResizing( m_TargetWindow ) )
-        return;
+        return false;
 
-    float ClearColor[] = {
-        static_cast< float >( m_ClearColor.r ),
-        static_cast< float >( m_ClearColor.g ),
-        static_cast< float >( m_ClearColor.b ),
-        static_cast< float >( m_ClearColor.a )
-    };
+    if ( !RenderDrawData( ) )
+        return false;
 
-    m_pDeviceContext->OMSetRenderTargets( 1, &m_pRenderTargetView, nullptr );
-    m_pDeviceContext->ClearRenderTargetView( m_pRenderTargetView, ClearColor );
+    if ( m_pSwapChain->Present( static_cast< int >( m_VSync ), 0 ) != S_OK )
+        return false;
 
-    RenderDrawData( );
+    return true;
+}
 
-    m_pSwapChain->Present( static_cast<int>( m_VSync ), 0 );
+Texture* CGraphics::CreateTexture( const char* texture_name, D3D11_TEXTURE2D_DESC texture_description, D3D11_SUBRESOURCE_DATA sub_resource_data, D3D11_SHADER_RESOURCE_VIEW_DESC shader_resource_view_description ) {
+    ID3D11Texture2D* pTexture = nullptr;
+
+    if ( FAILED( Graphics.GetDevice( )->CreateTexture2D( &texture_description, &sub_resource_data, &pTexture ) ) )
+        throw std::runtime_error( "Failed to create texture: " + std::string( texture_name ) );
+
+    ID3D11ShaderResourceView* pTextureSRV = nullptr;
+
+    if ( FAILED( Graphics.GetDevice( )->CreateShaderResourceView( pTexture, &shader_resource_view_description, &pTextureSRV ) ) )
+        throw std::runtime_error( "Failed to create shader resource view for texture: " + std::string( texture_name ) );
+
+    return new Texture( texture_name, pTexture, pTextureSRV );
+}
+
+void CGraphics::DestroyTexture( const char* texture_name ) {
+    /*auto Texture = pTextures[ texture_name ];
+
+    if ( Texture ) {
+        Texture->Name = nullptr;
+
+        SAFE_RELEASE( Texture->pTexture );
+        SAFE_RELEASE( Texture->pTextureSRV );
+    }
+
+    Texture = nullptr;*/
 }
 
 void CGraphics::Cleanup( ) {
@@ -310,6 +351,7 @@ void CGraphics::Cleanup( ) {
     SAFE_RELEASE( m_pInputLayout );
     SAFE_RELEASE( m_pVertexConstantBuffer );
     SAFE_RELEASE( m_pPixelShader );
+    SAFE_RELEASE( m_pSamplerState );
     SAFE_RELEASE( m_pBlendState );
     SAFE_RELEASE( m_pRasterizerState );
     SAFE_RELEASE( m_pDepthStencilState );

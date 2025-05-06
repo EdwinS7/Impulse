@@ -51,12 +51,12 @@ CEnvironment::CEnvironment( ) {
             register_function( m_State, Wrapper::Graphics_::Cleanup, "cleanup", false );
             register_function( m_State, Wrapper::Graphics_::SetProjectionMatrix, "set_projection_matrix", false );
             register_function( m_State, Wrapper::Graphics_::SetViewport, "set_viewport", false );
+            register_function( m_State, Wrapper::Graphics_::CreateTexture, "create_texture", false );
+            register_function( m_State, Wrapper::Graphics_::DestroyResource, "destroy_texture", false );
         } register_table( m_State, "graphics", true );
 
-        { lua_createtable( m_State, 0, 3 );
+        { lua_createtable( m_State, 0, 1 );
             register_function( m_State, Wrapper::Renderer_::WriteToBuffer, "write_to_buffer", false );
-            register_function( m_State, Wrapper::Renderer_::CreateTexture, "create_texture", false );
-            register_function( m_State, Wrapper::Renderer_::DestroyResource, "destroy_texture", false );
         } register_table( m_State, "renderer", true );
 
         { lua_createtable( m_State, 0, 7 );
@@ -69,14 +69,7 @@ CEnvironment::CEnvironment( ) {
             register_function( m_State, Wrapper::Input_::SetCursorStyle, "set_cursor_style", false );
         } register_table( m_State, "input", true );
 
-        { lua_createtable( m_State, 0, 4 );
-            register_function( m_State, Wrapper::Memory_::SetTarget, "set_target", false );
-            register_function( m_State, Wrapper::Memory_::Read, "read", false );
-            register_function( m_State, Wrapper::Memory_::Write, "write", false );
-            register_function( m_State, Wrapper::Memory_::ScanPattern, "scan_pattern", false );
-        } register_table( m_State, "memory", true );
-
-        { lua_createtable( m_State, 0, 10 );
+        { lua_createtable( m_State, 0, 11 );
             register_function( m_State, Wrapper::FileSystem_::ListFiles, "list_files", false );
             register_function( m_State, Wrapper::FileSystem_::FileExists, "file_exists", false );
             register_function( m_State, Wrapper::FileSystem_::ReadFile, "read_file", false );
@@ -87,6 +80,7 @@ CEnvironment::CEnvironment( ) {
             register_function( m_State, Wrapper::FileSystem_::DirectoryExists, "directory_exists", false );
             register_function( m_State, Wrapper::FileSystem_::CreateDirectory_, "create_directory", false );
             register_function( m_State, Wrapper::FileSystem_::DeleteDirectory, "delete_directory", false );
+            register_function( m_State, Wrapper::FileSystem_::_LoadImage, "load_image", false );
         } register_table( m_State, "file_system", true );
 
         { lua_createtable( m_State, 0, 5 );
@@ -107,6 +101,8 @@ CEnvironment::CEnvironment( ) {
     }
 
     { // Globals
+        register_function( m_State, Wrapper::Print, "print", true );
+
         register_function( m_State, Wrapper::AddConnection, "add_connection", true );
         register_function( m_State, Wrapper::RemoveConnection, "remove_connection", true );
 
@@ -275,7 +271,7 @@ void CEnvironment::RunConnection( const char* connection_name, const Args& args 
                     new ( _DrawCommand ) DrawCommand(
                         value.primitive_topology,
                         value.vertices, value.indices,
-                        value.z_index
+                        value.texture, value.z_index
                     );
 
                     luaL_getmetatable( m_State, "draw_command" );

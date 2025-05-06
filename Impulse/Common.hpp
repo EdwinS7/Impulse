@@ -15,6 +15,9 @@
 #include <direct.h>
 #include <filesystem>
 #include <variant>
+#include <wincodec.h>
+
+#pragma comment(lib, "windowscodecs.lib")
 
 #include <d3d11.h>
 #include <dxgi.h>

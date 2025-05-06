@@ -238,7 +238,6 @@
     <ClCompile Include="Entry.cpp" />
     <ClCompile Include="Core\FileSystem\FileSystem.cpp" />
     <ClCompile Include="Core\LuaU\Environment.cpp" />
-    <ClCompile Include="Core\Memory\Memory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.hpp" />
@@ -252,7 +251,6 @@
     <ClInclude Include="Core\LuaU\Environment.hpp" />
     <ClInclude Include="Core\LuaU\LuaBindings.hpp" />
     <ClInclude Include="Core\LuaU\LuaWrapper.hpp" />
-    <ClInclude Include="Core\Memory\Memory.hpp" />
     <ClInclude Include="Core\Utils\Utils.hpp" />
     <ClInclude Include="Core\Win32\Win32.hpp" />
     <ClInclude Include="Dependencies\base64\include\base64.hpp" />

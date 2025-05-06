@@ -75,4 +75,93 @@ void CFileSystem::DeleteDirectory( const char* dir_path ) {
     }
 }
 
+static IWICImagingFactory* GetWICFactory( ) {
+    static IWICImagingFactory* Factory = NULL;
+
+    if ( !Factory ) {
+        CoInitialize( NULL );
+
+        CoCreateInstance(
+            CLSID_WICImagingFactory,
+            NULL,
+            CLSCTX_INPROC_SERVER,
+            IID_IWICImagingFactory,
+            ( void** ) &Factory
+        );
+    }
+
+    return Factory;
+}
+
+bool CFileSystem::_LoadImage( const char* file_path, unsigned char** pixels, int* width, int* height ) {
+    if ( !file_path || !pixels || !width || !height )
+        return false;
+
+    wchar_t WFilePath[ MAX_PATH ];
+
+    int Length = MultiByteToWideChar( CP_UTF8, 0, file_path, -1, NULL, 0 );
+
+    if ( Length == 0 || Length > MAX_PATH )
+        return false;
+
+    MultiByteToWideChar( CP_UTF8, 0, file_path, -1, WFilePath, Length );
+
+    IWICImagingFactory* Factory = GetWICFactory( );
+    IWICBitmapDecoder* Decoder = NULL;
+
+    if ( FAILED( Factory->CreateDecoderFromFilename( WFilePath, NULL, GENERIC_READ, WICDecodeMetadataCacheOnDemand, &Decoder ) ) ) {
+        return false;
+    }
+
+    IWICBitmapFrameDecode* Frame = NULL;
+    if ( FAILED( Decoder->GetFrame( 0, &Frame ) ) ) {
+        Decoder->Release( );
+        return false;
+    }
+    Decoder->Release( );
+
+    UINT ImageWidth = 0, ImageHeight = 0;
+    if ( FAILED( Frame->GetSize( &ImageWidth, &ImageHeight ) ) ) {
+        Frame->Release( );
+        return false;
+    }
+
+    IWICFormatConverter* Converter = NULL;
+    if ( FAILED( Factory->CreateFormatConverter( &Converter ) ) ) {
+        Frame->Release( );
+        return false;
+    }
+
+    if ( FAILED( Converter->Initialize( Frame, GUID_WICPixelFormat32bppRGBA, WICBitmapDitherTypeNone, NULL, 0.0, WICBitmapPaletteTypeCustom ) ) ) {
+        Converter->Release( );
+        Frame->Release( );
+        return false;
+    }
+
+    Frame->Release( );
+
+    size_t row_pitch = ImageWidth * 4;
+    size_t data_size = row_pitch * ImageHeight;
+    unsigned char* pixel_buffer = ( unsigned char* ) malloc( data_size );
+
+    if ( !pixel_buffer ) {
+        Converter->Release( );
+        return false;
+    }
+
+    if ( FAILED( Converter->CopyPixels( NULL, ( UINT ) row_pitch, ( UINT ) data_size, pixel_buffer ) ) ) {
+        free( pixel_buffer );
+        Converter->Release( );
+        return false;
+    }
+
+    Converter->Release( );
+
+    *pixels = pixel_buffer;
+    *width = ( int ) ImageWidth;
+    *height = ( int ) ImageHeight;
+
+    return true;
+}
+
 CFileSystem FileSystem;

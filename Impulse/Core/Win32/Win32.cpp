@@ -6,16 +6,22 @@ std::unordered_map<HWND, bool> Resizing;
 
 LRESULT CALLBACK WndProc( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam ) {
     switch ( msg ) {
+    case WM_SIZE:
+        if ( !Resizing[ hwnd ] && wParam != SIZE_MINIMIZED ) {
+            Graphics.ResizeSwapChainBuffers( ( int ) LOWORD( lParam ), ( int ) HIWORD( lParam ) );
+        }
+
+        break;
     case WM_ENTERSIZEMOVE:
         Resizing[ hwnd ] = true;
 
-        return 0;
+        break;
     case WM_EXITSIZEMOVE:
         Resizing[ hwnd ] = false;
 
         Graphics.ResizeSwapChainBuffers( ( int ) LOWORD( lParam ), ( int ) HIWORD( lParam ) );
 
-        return 0;
+        break;
     case WM_MOUSEMOVE:
         Input.SetCursorPosition( Vector2( ( int ) LOWORD( lParam ), ( int ) HIWORD( lParam ) ), false );
 
@@ -87,19 +93,19 @@ HWND CWin32::CreateConsole( const char* title, Vector2 position, Vector2 size ) 
     if ( !AllocConsole( ) )
         return nullptr;
 
+    SetConsoleTitleA( title );
+
     HWND Hwnd = GetConsoleWindow( );
 
-    SetConsoleTitleA( title );
     MoveWindow( Hwnd, 
         position.x, position.y, 
         size.x, size.y, 
         TRUE
     );
 
-    FILE* fp = nullptr;
-    freopen_s( &fp, "CONIN$", "r", stdin );
-    freopen_s( &fp, "CONOUT$", "w", stdout );
-    freopen_s( &fp, "CONOUT$", "w", stderr );
+    DWORD ConsolePID = 0;
+
+    RedirectConsole( Hwnd );
 
     return Hwnd;
 }
@@ -109,6 +115,18 @@ void CWin32::DestroyConsole( HWND window ) {
         return;
 
     FreeConsole( );
+}
+
+void CWin32::RedirectConsole( HWND hwnd ) {
+    DWORD ConsolePID = 0;
+
+    GetWindowThreadProcessId( hwnd, &ConsolePID );
+    AttachConsole( ConsolePID );
+
+    FILE* fp = nullptr;
+    freopen_s( &fp, "CONIN$", "r", stdin );
+    freopen_s( &fp, "CONOUT$", "w", stdout );
+    freopen_s( &fp, "CONOUT$", "w", stderr );
 }
 
 void CWin32::MessageBox_( HWND window, const char* title, const char* content, int type ) {

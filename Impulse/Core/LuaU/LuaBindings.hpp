@@ -7,7 +7,6 @@
 #include "../Win32/Win32.hpp"
 #include "../Graphics/Include.hpp"
 #include "../Input/Input.hpp"
-#include "../Memory/Memory.hpp"
 #include "../Http/Http.hpp"
 #include "../Utils/Utils.hpp"
 
@@ -276,7 +275,7 @@ namespace Wrapper {
                     lua_state, sizeof( DrawCommand )
                 );
 
-                // TODO: Add vertices, indices and z index to init args
+                // TODO: add other args
                 new ( _DrawCommand ) DrawCommand(
                     D3D_PRIMITIVE_TOPOLOGY( luaL_optinteger( lua_state, 1, D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST ) )
                 );
@@ -477,6 +476,23 @@ namespace Wrapper {
 
             return 0;
         }
+
+        int _LoadImage( lua_State* lua_state ) {
+            unsigned char* Pixels = NULL;
+            int Width = 0, Height = 0;
+
+            if ( !FileSystem._LoadImage( luaL_checkstring( lua_state, 1 ), &Pixels, &Width, &Height ) ) {
+                lua_pushnil( lua_state );
+                lua_pushstring( lua_state, "Failed to load image" );
+                return 2;
+            }
+
+            lua_pushlightuserdata( lua_state, Pixels );
+            lua_pushinteger( lua_state, Width );
+            lua_pushinteger( lua_state, Height );
+
+            return 3; // Pixel data, width, height
+        }
     }
 
     namespace Win32_ {
@@ -491,17 +507,30 @@ namespace Wrapper {
                 lua_tostring( lua_state, 1 ), Position, Size, lua_toboolean( lua_state, 4 )
             );
 
-            if ( WindowHandle ) {
-                int WindowRef = static_cast< int >( WindowHandles.size( ) + 1 );
-                WindowHandles[ WindowRef ] = WindowHandle;
-
-                lua_pushinteger( lua_state, WindowRef );
-            }
-            else {
+            if ( !WindowHandle ) {
                 lua_pushnil( lua_state );
+                return 1;
             }
 
-            return 1;
+            int WindowRef = static_cast< int >( WindowHandles.size( ) + 1 );
+            WindowHandles[ WindowRef ] = WindowHandle;
+
+            RECT ClientRect;
+            GetClientRect( WindowHandle, &ClientRect );
+
+            lua_pushinteger( lua_state, WindowRef );
+
+            auto Vector = ( Vector2* ) lua_newuserdata( lua_state, sizeof( Vector2 ) );
+
+            new ( Vector ) Vector2(
+                static_cast< int >( ClientRect.right - ClientRect.left ),
+                static_cast< int >( ClientRect.bottom - ClientRect.top )
+            );
+
+            luaL_getmetatable( lua_state, "vector2" );
+            lua_setmetatable( lua_state, -2 );
+
+            return 2;
         }
 
         int DestroyWindow( lua_State* lua_state ) {
@@ -741,15 +770,86 @@ namespace Wrapper {
                 DepthStencilDescription.BackFace = DepthStencilDescription.FrontFace;
             }
 
-            D3D11_BLEND_DESC BlendDescription = {};
+            D3D11_SAMPLER_DESC SamplerDescription = {};
 
             if ( lua_istable( lua_state, 6 ) ) {
-                { lua_getfield( lua_state, 6, "alpha_to_coverage_enable" );
+                lua_getfield( lua_state, 6, "filter" ); 
+                if ( lua_isnumber( lua_state, -1 ) )
+                    SamplerDescription.Filter = static_cast< D3D11_FILTER >( lua_tointeger( lua_state, -1 ) );
+                lua_pop( lua_state, 1 );
+
+                // AddressU 
+                lua_getfield( lua_state, 6, "address_u" );
+                if ( lua_isnumber( lua_state, -1 ) )
+                    SamplerDescription.AddressU = static_cast< D3D11_TEXTURE_ADDRESS_MODE >( lua_tointeger( lua_state, -1 ) );
+                lua_pop( lua_state, 1 );
+
+                // AddressV
+                lua_getfield( lua_state, 6, "address_v" );
+                if ( lua_isnumber( lua_state, -1 ) )
+                    SamplerDescription.AddressV = static_cast< D3D11_TEXTURE_ADDRESS_MODE >( lua_tointeger( lua_state, -1 ) );
+                lua_pop( lua_state, 1 );
+
+                // AddressW
+                lua_getfield( lua_state, 6, "address_w" );
+                if ( lua_isnumber( lua_state, -1 ) )
+                    SamplerDescription.AddressW = static_cast< D3D11_TEXTURE_ADDRESS_MODE >( lua_tointeger( lua_state, -1 ) );
+                lua_pop( lua_state, 1 );
+
+                // MipLODBias
+                lua_getfield( lua_state, 6, "mip_lod_bias" );
+                if ( lua_isnumber( lua_state, -1 ) )
+                    SamplerDescription.MipLODBias = static_cast< FLOAT >( lua_tonumber( lua_state, -1 ) );
+                lua_pop( lua_state, 1 );
+
+                // MaxAnisotropy
+                lua_getfield( lua_state, 6, "max_anisotropy" );
+                if ( lua_isnumber( lua_state, -1 ) )
+                    SamplerDescription.MaxAnisotropy = static_cast< UINT >( lua_tointeger( lua_state, -1 ) );
+                lua_pop( lua_state, 1 );
+
+                // ComparisonFunc
+                lua_getfield( lua_state, 6, "comparison_func" );
+                if ( lua_isnumber( lua_state, -1 ) )
+                    SamplerDescription.ComparisonFunc = static_cast< D3D11_COMPARISON_FUNC >( lua_tointeger( lua_state, -1 ) );
+                lua_pop( lua_state, 1 );
+
+                // BorderColor (table of 4 numbers)
+                lua_getfield( lua_state, 6, "border_color" );
+                if ( lua_istable( lua_state, -1 ) ) {
+                    for ( int i = 0; i < 4; ++i ) {
+                        lua_rawgeti( lua_state, -1, i + 1 );
+                        if ( lua_isnumber( lua_state, -1 ) )
+                            SamplerDescription.BorderColor[ i ] = static_cast< FLOAT >( lua_tonumber( lua_state, -1 ) );
+                        else
+                            SamplerDescription.BorderColor[ i ] = 0.0f;
+                        lua_pop( lua_state, 1 );
+                    }
+                }
+                lua_pop( lua_state, 1 );
+
+                // MinLOD
+                lua_getfield( lua_state, 6, "min_lod" );
+                if ( lua_isnumber( lua_state, -1 ) )
+                    SamplerDescription.MinLOD = static_cast< FLOAT >( lua_tonumber( lua_state, -1 ) );
+                lua_pop( lua_state, 1 );
+
+                // MaxLOD
+                lua_getfield( lua_state, 6, "max_lod" );
+                if ( lua_isnumber( lua_state, -1 ) )
+                    SamplerDescription.MaxLOD = static_cast< FLOAT >( lua_tonumber( lua_state, -1 ) );
+                lua_pop( lua_state, 1 );
+            }
+
+            D3D11_BLEND_DESC BlendDescription = {};
+
+            if ( lua_istable( lua_state, 7 ) ) {
+                { lua_getfield( lua_state, 7, "alpha_to_coverage_enable" );
                     if ( lua_isboolean( lua_state, -1 ) )
                         BlendDescription.AlphaToCoverageEnable = lua_toboolean( lua_state, -1 );
                 } lua_pop( lua_state, 1 );
 
-                { lua_getfield( lua_state, 6, "render_target" );
+                { lua_getfield( lua_state, 7, "render_target" );
                     if ( lua_istable( lua_state, -1 ) ) {
                         lua_getfield( lua_state, -1, "blend_enable" );
                         if ( lua_isboolean( lua_state, -1 ) )
@@ -761,37 +861,36 @@ namespace Wrapper {
 
             lua_pushboolean( lua_state, Graphics.Initiate(
                 Win32_::WindowHandles[ luaL_checkinteger( lua_state, 1 ) ], SwapChainDescription, 
-                BufferDescription, RasterizerDescription, DepthStencilDescription, BlendDescription, 
-                lua_tostring( lua_state, 7 ), lua_tostring( lua_state, 8 )
+                BufferDescription, RasterizerDescription, DepthStencilDescription, SamplerDescription, 
+                BlendDescription, lua_tostring( lua_state, 8 ), lua_tostring( lua_state, 9 )
             ) );
 
             return 1;
         }
 
         int SetProjectionMatrix( lua_State* lua_state ) {
-            float matrix[ 4 ][ 4 ];
-
-            for ( int row = 0; row < 4; row++ ) {
-                for ( int col = 0; col < 4; col++ ) {
-                    int Index = row * 4 + col + 1;
-
-                    lua_rawgeti( lua_state, 1, Index );
-
-                    if ( !lua_isnumber( lua_state, -1 ) ) {
-                        lua_pushstring( lua_state, "All matrix elements must be numbers" );
-                        lua_error( lua_state );
-
-                        return 0;
-                    }
-
-                    matrix[ row ][ col ] = static_cast< float >( lua_tonumber( lua_state, -1 ) );
-
-                    lua_pop( lua_state, 1 );
-                }
+            if ( !lua_istable( lua_state, 1 ) ) {
+                lua_pushstring( lua_state, "Expected a table as the first argument" );
+                lua_error( lua_state );
+                return 0;
             }
 
-            Graphics.SetProjectionMatrix( matrix );
+            float Matrix[ 4 ][ 4 ];
 
+            for ( int i = 0; i < 16; ++i ) {
+                lua_rawgeti( lua_state, 1, i + 1 );
+
+                if ( !lua_isnumber( lua_state, -1 ) ) {
+                    lua_pushstring( lua_state, "All matrix elements must be numbers" );
+                    lua_error( lua_state );
+                    return 0;
+                }
+
+                Matrix[ i / 4 ][ i % 4 ] = static_cast< float >( lua_tonumber( lua_state, -1 ) );
+                lua_pop( lua_state, 1 );
+            }
+
+            Graphics.SetProjectionMatrix( Matrix );
             return 0;
         }
 
@@ -804,50 +903,6 @@ namespace Wrapper {
             );
 
             return 0;
-        }
-
-        int Cleanup( lua_State* lua_state ) {
-            Graphics.Cleanup( );
-
-            return 0;
-        }
-    }
-
-    namespace Renderer_ {
-        int WriteToBuffer( lua_State* lua_state ) {
-            std::vector<Vertex> Vertices;
-
-            { // Get vertices
-                lua_pushnil( lua_state );
-
-                while ( lua_next( lua_state, 2 ) != 0 ) {
-                    if ( lua_isuserdata( lua_state, -1 ) ) {
-                        Vertices.push_back( *( Vertex* ) luaL_checkudata( lua_state, -1, "vertex" ) );
-                        lua_pop( lua_state, 1 );
-                    }
-                }
-            }
-
-            std::vector<std::int32_t> Indices;
-
-            { // Get indices
-                lua_pushnil( lua_state );
-
-                while ( lua_next( lua_state, 3 ) != 0 ) {
-                    if ( lua_isnumber( lua_state, -1 ) ) {
-                        Indices.push_back( ( int ) lua_tonumber( lua_state, -1 ) );
-                        lua_pop( lua_state, 1 );
-                    }
-                }
-            }
-
-            DrawCommand** _DrawCommand = ( DrawCommand** ) lua_newuserdata( lua_state, sizeof( DrawCommand* ) );
-            *_DrawCommand = Renderer.WriteToBuffer( D3D_PRIMITIVE_TOPOLOGY( luaL_checkinteger( lua_state, 1 ) ), &Vertices, &Indices, luaL_optinteger( lua_state, 4, 0 ) );
-
-            luaL_getmetatable( lua_state, "draw_command" );
-            lua_setmetatable( lua_state, -2 );
-
-            return 1;
         }
 
         int CreateTexture( lua_State* lua_state ) {
@@ -949,7 +1004,7 @@ namespace Wrapper {
 
                     if ( !lua_isnil( lua_state, -1 ) ) {
                         if ( lua_islightuserdata( lua_state, -1 ) )
-                            SubResourceData.pSysMem = lua_touserdata( lua_state, -1 );
+                            SubResourceData.pSysMem = static_cast< unsigned char* >( lua_touserdata( lua_state, -1 ) );
                         else
                             luaL_error( lua_state, "p_sys_mem must be a userdata pointer" );
                     }
@@ -959,10 +1014,10 @@ namespace Wrapper {
                     lua_gettable( lua_state, -2 );
 
                     if ( !lua_isnil( lua_state, -1 ) ) {
-                        if ( lua_islightuserdata( lua_state, -1 ) )
+                        if ( lua_isnumber( lua_state, -1 ) )
                             SubResourceData.SysMemPitch = static_cast< UINT >( lua_tointeger( lua_state, -1 ) );
                         else
-                            luaL_error( lua_state, "p_sys_mem must be a userdata pointer" );
+                            luaL_error( lua_state, "sys_mem_pitch must be a number" );
                     }
                 } lua_pop( lua_state, 1 );
 
@@ -970,10 +1025,10 @@ namespace Wrapper {
                     lua_gettable( lua_state, -2 );
 
                     if ( !lua_isnil( lua_state, -1 ) ) {
-                        if ( lua_islightuserdata( lua_state, -1 ) )
+                        if ( lua_isnumber( lua_state, -1 ) )
                             SubResourceData.SysMemSlicePitch = static_cast< UINT >( lua_tointeger( lua_state, -1 ) );
                         else
-                            luaL_error( lua_state, "p_sys_mem must be a userdata pointer" );
+                            luaL_error( lua_state, "sys_mem_slice_pitch must be a number" );
                     }
                 } lua_pop( lua_state, 1 );
             } lua_pop( lua_state, 1 );
@@ -1001,7 +1056,8 @@ namespace Wrapper {
                     lua_gettable( lua_state, -2 );
 
                     if ( lua_istable( lua_state, -1 ) ) {
-                        { lua_pushstring( lua_state, "texture2d" );
+                        {
+                            lua_pushstring( lua_state, "texture2d" );
                             lua_gettable( lua_state, -2 );
 
                             if ( lua_istable( lua_state, -1 ) ) {
@@ -1024,21 +1080,87 @@ namespace Wrapper {
                 } lua_pop( lua_state, 1 );
             } lua_pop( lua_state, 1 );
 
-            // Create texture
-            ID3D11Texture2D* texture = Renderer.CreateTexture(
+            Texture* _Texture = Graphics.CreateTexture(
                 lua_tostring( lua_state, 1 ),
                 TextureDescription, SubResourceData,
                 ShaderResourceViewDescription
             );
 
-            lua_pushlightuserdata( lua_state, static_cast< void* >( texture ) );
+            lua_pushlightuserdata( lua_state, _Texture );
+
             return 1;
         }
 
         int DestroyResource( lua_State* lua_state ) {
-            Renderer.DestroyTexture( lua_tostring( lua_state, 1 ) );
+            Graphics.DestroyTexture( lua_tostring( lua_state, 1 ) );
 
             return 0;
+        }
+
+        int Cleanup( lua_State* lua_state ) {
+            Graphics.Cleanup( );
+
+            return 0;
+        }
+    }
+
+    namespace Renderer_ {
+        int WriteToBuffer( lua_State* lua_state ) {
+            if ( !lua_istable( lua_state, 2 ) || !lua_istable( lua_state, 3 ) ) {
+                luaL_error( lua_state, "Expected tables at argument 2 (vertices) and 3 (indices)" );
+                return 0;
+            }
+
+            std::vector<Vertex> Vertices;
+
+            { // Get vertices
+                lua_pushnil( lua_state );
+
+                while ( lua_next( lua_state, 2 ) != 0 ) {
+                    if ( lua_isuserdata( lua_state, -1 ) ) {
+                        Vertex* _Vertex = static_cast< Vertex* >( 
+                            luaL_checkudata( lua_state, -1, "vertex" )
+                        );
+
+                        Vertices.push_back( *_Vertex );
+                    }
+
+                    lua_pop( lua_state, 1 );
+                }
+            }
+
+            std::vector<std::int32_t> Indices;
+
+            { // Get indices
+                lua_pushnil( lua_state );
+
+                while ( lua_next( lua_state, 3 ) != 0 ) {
+                    if ( lua_isnumber( lua_state, -1 ) ) {
+                        Indices.push_back( static_cast< std::int32_t >( 
+                            lua_tointeger( lua_state, -1 ) 
+                        ) );
+                    }
+
+                    lua_pop( lua_state, 1 );
+                }
+            }
+
+            DrawCommand** _DrawCommand = static_cast< DrawCommand** >(
+               lua_newuserdata( lua_state, sizeof( DrawCommand* ) )
+            );
+
+            Texture* _Texture = ( Texture* ) lua_touserdata( lua_state, 4 );
+
+            *_DrawCommand = Renderer.WriteToBuffer(
+                D3D_PRIMITIVE_TOPOLOGY( luaL_checkinteger( lua_state, 1 ) ),
+                &Vertices, &Indices, _Texture,
+                luaL_optinteger( lua_state, 5, 0 )
+            );
+
+            luaL_getmetatable( lua_state, "draw_command" );
+            lua_setmetatable( lua_state, -2 );
+
+            return 1;
         }
     }
 
@@ -1094,30 +1216,6 @@ namespace Wrapper {
 
             return 1;
         }
-    }
-
-    namespace Memory_ {
-        int SetTarget( lua_State* lua_state ) {
-            Memory.SetTarget( luaL_checkstring( lua_state, 1 ) );
-
-            return 0;
-        }
-
-        int Read( lua_State* lua_state ) {
-
-            return 1;
-        }
-
-        int Write( lua_State* lua_state ) {
-
-            return 0;
-        }
-        int ScanPattern( lua_State* lua_state ) {
-            lua_pushnumber( lua_state, ( double ) Memory.ScanPattern( luaL_checkstring( lua_state, 1 ) ) );
-
-            return 1;
-        }
-
     }
 
     namespace Http_ {
@@ -1296,6 +1394,31 @@ namespace Wrapper {
 
             return 0;
         }
+    }
+
+    int Print( lua_State* lua_state ) {
+        HWND ConsoleHandle = Win32_::ConsoleHandles[ luaL_checkinteger( lua_state, 1 ) ];
+
+        if ( !ConsoleHandle )
+            return 0;
+            
+        Win32.RedirectConsole( ConsoleHandle );
+
+        int ArgCount = lua_gettop( lua_state );
+
+        for ( int i = 2; i <= ArgCount; ++i ) {
+            const char* String = lua_tostring( lua_state, i );
+
+            if ( String )
+                std::cout << String;
+
+            if ( i < ArgCount )
+                std::cout << "\t";
+        }
+
+        std::cout << "\n";
+
+        return 0;
     }
     
     int AddConnection( lua_State* lua_state ) {

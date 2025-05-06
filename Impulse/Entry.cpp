@@ -29,12 +29,11 @@ int WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         while ( Win32.DispatchMessages( ) ) {
             Input.PoolInput( );
 
-            if ( Graphics.IsDeviceInitialized( ) )
-                Graphics.Present( );
-
-            Environment.RunConnection( "present", {
-                /* Parameters */
-            } );
+            if ( Graphics.IsDeviceInitialized( ) && Graphics.Present( ) ) {
+                Environment.RunConnection( "present", {
+                    /* Parameters */
+                } );
+            }
         }
     } catch ( const std::exception& e ) {
         MessageBox( NULL, e.what( ), "Error", MB_OK | MB_ICONERROR );

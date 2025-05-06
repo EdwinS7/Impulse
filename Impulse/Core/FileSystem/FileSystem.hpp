@@ -18,6 +18,8 @@ public:
     bool DirectoryExists( const char* dir_path );
     void CreateDirectory_( const char* dir_path );
     void DeleteDirectory( const char* dir_path );
+
+    bool _LoadImage( const char* file_path, unsigned char** pixels, int* width, int* height );
 } extern FileSystem;
 
 #endif

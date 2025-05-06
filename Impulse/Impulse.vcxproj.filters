@@ -21,9 +21,6 @@
     <ClCompile Include="Core\LuaU\Environment.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Core\Memory\Memory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Core\FileSystem\FileSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -210,9 +207,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Core\LuaU\Environment.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Memory\Memory.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Core\FileSystem\FileSystem.hpp">
