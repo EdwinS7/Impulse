@@ -1,139 +1,175 @@
 #include "Environment.hpp"
-#include "LuaBindings.hpp"
+#include "LuaBinds.hpp"
 
 CEnvironment::CEnvironment( ) {
     m_State = luaL_newstate( );
 
     if ( !m_State )
-        throw std::runtime_error( "Failed to initialize Lua state." );
+        throw std::runtime_error( "Failed to initialize m_State" );
 
     luaL_openlibs( m_State );
 
-    { // Usertypes
-        { luaL_newmetatable( m_State, "vector2" );
-            register_function( m_State, Wrapper::Types::Vector2_::Index, "__index", false );
-            register_function( m_State, Wrapper::Types::Vector2_::NewIndex, "__newindex", false );
-        } register_usertype( m_State, Wrapper::Types::Vector2_::New, "vector2", false );
+    { // User types registration
+        register_usertype( m_State,
+            LuaBind::LuaUsertypes::LuaVector2::New,
+            LuaBind::LuaUsertypes::LuaVector2::Destroy,
+            LuaBind::LuaUsertypes::LuaVector2::Index,
+            LuaBind::LuaUsertypes::LuaVector2::NewIndex,
+        "vector2" );
 
-        { luaL_newmetatable( m_State, "vector3" );
-            register_function( m_State, Wrapper::Types::Vector3_::Index, "__index", false );
-            register_function( m_State, Wrapper::Types::Vector3_::NewIndex, "__newindex", false );
-        }  register_usertype( m_State, Wrapper::Types::Vector3_::New, "vector3", false );
+        register_usertype( m_State,
+            LuaBind::LuaUsertypes::LuaVector3::New,
+            LuaBind::LuaUsertypes::LuaVector3::Destroy,
+            LuaBind::LuaUsertypes::LuaVector3::Index,
+            LuaBind::LuaUsertypes::LuaVector3::NewIndex,
+        "vector3" );
 
-        { luaL_newmetatable( m_State, "vertex" );
-            register_function( m_State, Wrapper::Types::Vertex_::Index, "__index", false );
-            register_function( m_State, Wrapper::Types::Vertex_::NewIndex, "__newindex", false );
-        } register_usertype( m_State, Wrapper::Types::Vertex_::New, "vertex", false );
+        register_usertype( m_State,
+            LuaBind::LuaUsertypes::LuaVertex::New,
+            LuaBind::LuaUsertypes::LuaVertex::Destroy,
+            LuaBind::LuaUsertypes::LuaVertex::Index,
+            LuaBind::LuaUsertypes::LuaVertex::NewIndex,
+        "vertex" );
 
-        { luaL_newmetatable( m_State, "color" );
-            register_function( m_State, Wrapper::Types::Color_::Index, "__index", false );
-            register_function( m_State, Wrapper::Types::Color_::NewIndex, "__newindex", false );
-        } register_usertype( m_State, Wrapper::Types::Color_::New, "color", false );
+        register_usertype( m_State,
+            LuaBind::LuaUsertypes::LuaTexture::New,
+            LuaBind::LuaUsertypes::LuaTexture::Destroy,
+            LuaBind::LuaUsertypes::LuaTexture::Index,
+            LuaBind::LuaUsertypes::LuaTexture::NewIndex,
+        "texture" );
 
-        { luaL_newmetatable( m_State, "draw_command" );
-            register_function( m_State, Wrapper::Types::DrawCommand_::Index, "__index", false );
-            register_function( m_State, Wrapper::Types::DrawCommand_::NewIndex, "__newindex", false );
-        } register_usertype( m_State, Wrapper::Types::DrawCommand_::New, "draw_command", false );
+        register_usertype( m_State,
+            LuaBind::LuaUsertypes::LuaGlyph::New,
+            LuaBind::LuaUsertypes::LuaGlyph::Destroy,
+            LuaBind::LuaUsertypes::LuaGlyph::Index,
+            LuaBind::LuaUsertypes::LuaGlyph::NewIndex,
+        "glyph" );
+
+        register_usertype( m_State,
+            LuaBind::LuaUsertypes::LuaFont::New,
+            LuaBind::LuaUsertypes::LuaFont::Destroy,
+            LuaBind::LuaUsertypes::LuaFont::Index,
+            LuaBind::LuaUsertypes::LuaFont::NewIndex,
+        "font" );
+
+        register_usertype( m_State,
+            LuaBind::LuaUsertypes::LuaColor::New,
+            LuaBind::LuaUsertypes::LuaColor::Destroy,
+            LuaBind::LuaUsertypes::LuaColor::Index,
+            LuaBind::LuaUsertypes::LuaColor::NewIndex,
+        "color" );
+
+        register_usertype( m_State,
+            LuaBind::LuaUsertypes::LuaDrawCommand::New,
+            LuaBind::LuaUsertypes::LuaDrawCommand::Destroy,
+            LuaBind::LuaUsertypes::LuaDrawCommand::Index,
+            LuaBind::LuaUsertypes::LuaDrawCommand::NewIndex,
+        "draw_command" );
     }
 
     { // Libraries
         { lua_createtable( m_State, 0, 6 );
-            register_function( m_State, Wrapper::Win32_::CreateWindow_, "create_window", false );
-            register_function( m_State, Wrapper::Win32_::DestroyWindow, "destroy_window", false );
-            register_function( m_State, Wrapper::Win32_::CreateConsole, "create_console", false );
-            register_function( m_State, Wrapper::Win32_::DestroyConsole, "destroy_console", false );
-            register_function( m_State, Wrapper::Win32_::MessageBox_, "create_message_box", false );
-            register_function( m_State, Wrapper::Win32_::GetScreenSize, "get_screen_size", false );
-        } register_table( m_State, "win32", true );
+            register_function( m_State, LuaBind::LuaWin32::CreateWindow_, "create_window" );
+            register_function( m_State, LuaBind::LuaWin32::DestroyWindow, "destroy_window" );
+            register_function( m_State, LuaBind::LuaWin32::CreateConsole, "create_console" );
+            register_function( m_State, LuaBind::LuaWin32::DestroyConsole, "destroy_console" );
+            register_function( m_State, LuaBind::LuaWin32::MessageBox_, "create_message_box" );
+            register_function( m_State, LuaBind::LuaWin32::GetScreenSize, "get_screen_size" );
+        } lua_setglobal( m_State, "win32" );
 
         { lua_createtable( m_State, 0, 6 );
-            register_function( m_State, Wrapper::Graphics_::Initiate, "initiate", false );
-            register_function( m_State, Wrapper::Graphics_::Cleanup, "cleanup", false );
-            register_function( m_State, Wrapper::Graphics_::SetProjectionMatrix, "set_projection_matrix", false );
-            register_function( m_State, Wrapper::Graphics_::SetViewport, "set_viewport", false );
-            register_function( m_State, Wrapper::Graphics_::CreateTexture, "create_texture", false );
-            register_function( m_State, Wrapper::Graphics_::DestroyResource, "destroy_texture", false );
-        } register_table( m_State, "graphics", true );
+            register_function( m_State, LuaBind::LuaGraphics::Initiate, "initiate" );
+            register_function( m_State, LuaBind::LuaGraphics::Cleanup, "cleanup" );
+            register_function( m_State, LuaBind::LuaGraphics::SetProjectionMatrix, "set_projection_matrix" );
+            register_function( m_State, LuaBind::LuaGraphics::SetViewport, "set_viewport" );
+            register_function( m_State, LuaBind::LuaGraphics::CreateTexture, "create_texture" );
+            register_function( m_State, LuaBind::LuaGraphics::DestroyTexture, "destroy_texture" );
+            register_function( m_State, LuaBind::LuaGraphics::_CreateFont, "create_font" );
+            register_function( m_State, LuaBind::LuaGraphics::DestroyFont, "destroy_font" );
+        } lua_setglobal( m_State, "graphics" );
 
         { lua_createtable( m_State, 0, 1 );
-            register_function( m_State, Wrapper::Renderer_::WriteToBuffer, "write_to_buffer", false );
-        } register_table( m_State, "renderer", true );
+            register_function( m_State, LuaBind::LuaRenderer::WriteToBuffer, "write_to_buffer" );
+        } lua_setglobal( m_State, "renderer" );
 
         { lua_createtable( m_State, 0, 7 );
-            register_function( m_State, Wrapper::Input_::IsActive, "is_active", false );
-            register_function( m_State, Wrapper::Input_::IsKeyPressed, "is_key_pressed", false );
-            register_function( m_State, Wrapper::Input_::IsKeyHeld, "is_key_held", false );
-            register_function( m_State, Wrapper::Input_::GetCursorPosition, "get_cursor_position", false );
-            register_function( m_State, Wrapper::Input_::SetCursorPosition, "set_cursor_position", false );
-            register_function( m_State, Wrapper::Input_::GetCursorStyle, "get_cursor_style", false );
-            register_function( m_State, Wrapper::Input_::SetCursorStyle, "set_cursor_style", false );
-        } register_table( m_State, "input", true );
+            register_function( m_State, LuaBind::LuaInput::IsActive, "is_active" );
+            register_function( m_State, LuaBind::LuaInput::IsKeyPressed, "is_key_pressed" );
+            register_function( m_State, LuaBind::LuaInput::IsKeyHeld, "is_key_held" );
+            register_function( m_State, LuaBind::LuaInput::GetCursorPosition, "get_cursor_position" );
+            register_function( m_State, LuaBind::LuaInput::SetCursorPosition, "set_cursor_position" );
+            register_function( m_State, LuaBind::LuaInput::GetCursorStyle, "get_cursor_style" );
+            register_function( m_State, LuaBind::LuaInput::SetCursorStyle, "set_cursor_style" );
+        } lua_setglobal( m_State, "input" );
 
         { lua_createtable( m_State, 0, 11 );
-            register_function( m_State, Wrapper::FileSystem_::ListFiles, "list_files", false );
-            register_function( m_State, Wrapper::FileSystem_::FileExists, "file_exists", false );
-            register_function( m_State, Wrapper::FileSystem_::ReadFile, "read_file", false );
-            register_function( m_State, Wrapper::FileSystem_::WriteFile, "write_file", false );
-            register_function( m_State, Wrapper::FileSystem_::RenameFile, "rename_file", false );
-            register_function( m_State, Wrapper::FileSystem_::DeleteFile_, "delete_file", false );
-            register_function( m_State, Wrapper::FileSystem_::ListDirectories, "list_directories", false );
-            register_function( m_State, Wrapper::FileSystem_::DirectoryExists, "directory_exists", false );
-            register_function( m_State, Wrapper::FileSystem_::CreateDirectory_, "create_directory", false );
-            register_function( m_State, Wrapper::FileSystem_::DeleteDirectory, "delete_directory", false );
-            register_function( m_State, Wrapper::FileSystem_::_LoadImage, "load_image", false );
-        } register_table( m_State, "file_system", true );
+            register_function( m_State, LuaBind::LuaFileSystem::ListFiles, "list_files" );
+            register_function( m_State, LuaBind::LuaFileSystem::FileExists, "file_exists" );
+            register_function( m_State, LuaBind::LuaFileSystem::ReadFile, "read_file" );
+            register_function( m_State, LuaBind::LuaFileSystem::WriteFile, "write_file" );
+            register_function( m_State, LuaBind::LuaFileSystem::RenameFile, "rename_file" );
+            register_function( m_State, LuaBind::LuaFileSystem::DeleteFile_, "delete_file" );
+            register_function( m_State, LuaBind::LuaFileSystem::ListDirectories, "list_directories" );
+            register_function( m_State, LuaBind::LuaFileSystem::DirectoryExists, "directory_exists" );
+            register_function( m_State, LuaBind::LuaFileSystem::CreateDirectory_, "create_directory" );
+            register_function( m_State, LuaBind::LuaFileSystem::DeleteDirectory, "delete_directory" );
+            register_function( m_State, LuaBind::LuaFileSystem::_LoadImage, "load_image" );
+        } lua_setglobal( m_State, "file_system" );
 
         { lua_createtable( m_State, 0, 5 );
-            register_function( m_State, Wrapper::Crypt::SHA256Encode, "sha256_encode", false );
-            register_function( m_State, Wrapper::Crypt::Base64Encode, "base64_encode", false );
-            register_function( m_State, Wrapper::Crypt::Base64Decode, "base64_decode", false );
-            register_function( m_State, Wrapper::Crypt::JsonEncode, "json_encode", false );
-            register_function( m_State, Wrapper::Crypt::JsonDecode, "json_decode", false );
-        } register_table( m_State, "crypt", true );
+            register_function( m_State, LuaBind::LuaCrypt::SHA256Encode, "sha256_encode" );
+            register_function( m_State, LuaBind::LuaCrypt::Base64Encode, "base64_encode" );
+            register_function( m_State, LuaBind::LuaCrypt::Base64Decode, "base64_decode" );
+            register_function( m_State, LuaBind::LuaCrypt::JsonEncode, "json_encode" );
+            register_function( m_State, LuaBind::LuaCrypt::JsonDecode, "json_decode" );
+        } lua_setglobal( m_State, "crypt" );
 
         { lua_getglobal( m_State, "debug" );
-        register_function( m_State, Wrapper::Debug::GetRegistry, "get_registry", false );
-
-            register_function( m_State, Wrapper::Debug::GetUpvalues, "get_upvalues", false );
-            register_function( m_State, Wrapper::Debug::GetUpvalue, "get_upvalue", false );
-            register_function( m_State, Wrapper::Debug::SetUpvalue, "set_upvalue", false );
+            register_function( m_State, LuaBind::LuaDebug::GetRegistry, "get_registry" );
+            register_function( m_State, LuaBind::LuaDebug::GetUpvalues, "get_upvalues" );
+            register_function( m_State, LuaBind::LuaDebug::GetUpvalue, "get_upvalue" );
+            register_function( m_State, LuaBind::LuaDebug::SetUpvalue, "set_upvalue" );
         } lua_pop( m_State, 1 );
     }
 
     { // Globals
-        register_function( m_State, Wrapper::Print, "print", true );
+        register_function( m_State, LuaBind::LuaGlobals::Print, "print", true );
 
-        register_function( m_State, Wrapper::AddConnection, "add_connection", true );
-        register_function( m_State, Wrapper::RemoveConnection, "remove_connection", true );
+        register_function( m_State, LuaBind::LuaGlobals::AddConnection, "add_connection", true );
+        register_function( m_State, LuaBind::LuaGlobals::RemoveConnection, "remove_connection", true );
 
-        register_function( m_State, Wrapper::LoadString_, "load_string", true );
-        register_function( m_State, Wrapper::NewCClosure, "new_c_closure", true );
-        register_function( m_State, Wrapper::IsLuaClosure, "is_lua_closure", true );
-        register_function( m_State, Wrapper::IsCClosure, "is_c_closure", true ); 
-        register_function( m_State, Wrapper::GetWrappedOriginal, "get_wrapped_original", true );
+        register_function( m_State, LuaBind::LuaGlobals::LoadString_, "load_string", true );
+        register_function( m_State, LuaBind::LuaGlobals::NewCClosure, "new_c_closure", true );
+        register_function( m_State, LuaBind::LuaGlobals::IsLuaClosure, "is_lua_closure", true );
+        register_function( m_State, LuaBind::LuaGlobals::IsCClosure, "is_c_closure", true );
+        register_function( m_State, LuaBind::LuaGlobals::GetWrappedOriginal, "get_wrapped_original", true );
 
-        register_function( m_State, Wrapper::SetReadOnly, "set_read_only", true );
-        register_function( m_State, Wrapper::GetReadOnly, "is_read_only", true );
+        register_function( m_State, LuaBind::LuaGlobals::SetReadOnly, "set_read_only", true );
+        register_function( m_State, LuaBind::LuaGlobals::GetReadOnly, "is_read_only", true );
 
-        register_function( m_State, Wrapper::Utils_::RandomString, "random_string", true );
-        register_function( m_State, Wrapper::Utils_::SetClipboard, "set_clipboard", true );
-        register_function( m_State, Wrapper::Utils_::GetClipboard, "get_clipboard", true );
-        register_function( m_State, Wrapper::Utils_::IsInternetConnected, "is_internet_connected", true );
+        register_function( m_State, LuaBind::LuaUtils::RandomString, "random_string", true );
+        register_function( m_State, LuaBind::LuaUtils::SetClipboard, "set_clipboard", true );
+        register_function( m_State, LuaBind::LuaUtils::GetClipboard, "get_clipboard", true );
+        register_function( m_State, LuaBind::LuaUtils::IsInternetConnected, "is_internet_connected", true );
 
-        register_function( m_State, Wrapper::Http_::Get, "http_get", true );
-        register_function( m_State, Wrapper::Http_::Post, "http_post", true );
-        register_function( m_State, Wrapper::Http_::Put, "http_put", true );
-        register_function( m_State, Wrapper::Http_::Delete, "http_delete", true );
+        register_function( m_State, LuaBind::LuaHttp::Get, "http_get", true );
+        register_function( m_State, LuaBind::LuaHttp::Post, "http_post", true );
+        register_function( m_State, LuaBind::LuaHttp::Put, "http_put", true );
+        register_function( m_State, LuaBind::LuaHttp::Delete, "http_delete", true );
     }
 
     { // Initiation scripts
         std::string Error;
 
-        if ( !RunScripts( "Lua/Libraries", Error ) ) {
+        if ( !RunScripts( "Game/Lua/Libraries", Error ) ) {
+            throw std::runtime_error( Error );
+
             return;
         }
 
-        if ( !RunScripts( "Lua/Startup", Error ) ) {
+        if ( !RunScripts( "Game/Lua/Startup", Error ) ) {
+            throw std::runtime_error( Error );
+
             return;
         }
     }

@@ -212,7 +212,7 @@
     <ClInclude Include="Core\FileSystem\FileSystem.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Core\LuaU\LuaBindings.hpp">
+    <ClInclude Include="Core\LuaU\LuaBinds.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Core\Utils\Utils.hpp">
@@ -734,8 +734,41 @@
     <ClInclude Include="Core\LuaU\LuaWrapper.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Core\LuaU\LuaBinds\Usertypes.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\LuaU\LuaBinds\Utils.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\LuaU\LuaBinds\FileSystem.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\LuaU\LuaBinds\Crypt.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\LuaU\LuaBinds\Debug.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\LuaU\LuaBinds\Globals.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\LuaU\LuaBinds\Graphics.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\LuaU\LuaBinds\Http.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\LuaU\LuaBinds\Input.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\LuaU\LuaBinds\Renderer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\LuaU\LuaBinds\Win32.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Main.lua" />
+    <None Include="Game\Main.lua" />
   </ItemGroup>
 </Project>

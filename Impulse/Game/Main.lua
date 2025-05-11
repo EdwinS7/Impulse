@@ -115,8 +115,8 @@ do -- Create window and graphics device
         }
     }
 
-    local vertex_shader_source: string = file_system.read_file("Shaders/vertex_shader.hlsl")
-    local pixel_shader_source: string = file_system.read_file("Shaders/pixel_shader.hlsl")
+    local vertex_shader_source: string = file_system.read_file("Game/Shaders/vertex_shader.hlsl")
+    local pixel_shader_source: string = file_system.read_file("Game/Shaders/pixel_shader.hlsl")
 
     local success = graphics.initiate(
         window_reference,
@@ -148,111 +148,120 @@ do -- Create window and graphics device
 end
 
 do -- Rendering
-    local pixel_data, width, height = file_system.load_image("Assets/Impulse.png")
-
-    local example_texture = graphics.create_texture(
-        "example_texture",
-
-        {
-            width = width,
-            height = height,
-            mip_levels = 1,
-            array_size = 1,
-            format = DXGI_FORMAT.R8G8B8A8_UNORM,
-            sample_desc = {count = 1, quality = 0},
-            usage = D3D11_USAGE.DEFAULT,
-            bind_flags = D3D11_BIND_FLAG.SHADER_RESOURCE,
-            cpu_access_flags = 0,
-            misc_flags  = 0,
-        },
-
-        {
-            p_sys_mem = pixel_data,
-            sys_mem_pitch = width * 4,
-            sys_mem_slice_pitch = 0,
-        },
-
-        {
-            format = DXGI_FORMAT.R8G8B8A8_UNORM,
-            view_dimension = D3D11_SRV_DIMENSION.TEXTURE2D,
-
-            union = {
-                texture2d = {
-                    most_detailed_mip = 0,
-                    mip_levels = 1,
-                }
-            }
-        }
+    local font = graphics.create_font(
+        "Game/Assets/arial.ttf",    -- path
+        16                          -- size
+        -- TODO: add padding
     )
 
-    dragging.add_object(renderer.rectangle(
+    renderer.text(
+        font, "test123",
+        vector2.new(100, 100), 
+        color.new(255, 255, 255, 255)
+    )
+
+    local rect = renderer.rectangle(
+        vector2.new(200, 200),
         vector2.new(50, 50),
-        vector2.new(500, 500),
         color.new(255, 255, 255, 255),
-        true, example_texture, 0
-    ))
-
-    local white = color.new(255, 255, 255, 255)
-
-    local base_vertices = {
-        {-0.5, -0.5, -0.5},
-        { 0.5, -0.5, -0.5},
-        { 0.5,  0.5, -0.5},
-        {-0.5,  0.5, -0.5},
-        {-0.5, -0.5,  0.5},
-        { 0.5, -0.5,  0.5},
-        { 0.5,  0.5,  0.5},
-        {-0.5,  0.5,  0.5},
-    }
-
-    local indices = {
-        0, 1, 1, 2, 2, 3, 3, 0, -- bottom
-        4, 5, 5, 6, 6, 7, 7, 4, -- top
-        0, 4, 1, 5, 2, 6, 3, 7  -- sides
-    }
-
-    local angle_y = 0
-    local angle_x = 0
-
-    local shape = renderer.write_to_buffer(
-        D3D11_PRIMITIVE_TOPOLOGY.LINE_LIST,
-        {},
-        indices,
-        nil,
-        0
+        true, nil, 0
     )
 
-    add_connection(CONNECTIONS.PRESENT, function()
-        local cosY = math.cos(angle_y)
-        local sinY = math.sin(angle_y)
-        local cosX = math.cos(angle_x)
-        local sinX = math.sin(angle_x)
+    dragging.add_object(rect)
 
-        local function rotate_xyz(v)
-            local x1 = v[1] * cosY - v[3] * sinY
-            local z1 = v[1] * sinY + v[3] * cosY
-            local y1 = v[2]
+    do -- ChatGPT 3D Box rainbow wowza
+        local function hsv_to_rgb(h, s, v)
+            local r, g, b
 
-            local y2 = y1 * cosX - z1 * sinX
-            local z2 = y1 * sinX + z1 * cosX
-            local x2 = x1
+            local i = math.floor(h * 6)
+            local f = h * 6 - i
+            local p = v * (1 - s)
+            local q = v * (1 - f * s)
+            local t = v * (1 - (1 - f) * s)
 
-            local scale = 80
-            local screen_x = 300 + x2 * scale
-            local screen_y = 300 + y2 * scale
-            local screen_z = z2 * scale
+            i = i % 6
+            if i == 0 then r, g, b = v, t, p
+            elseif i == 1 then r, g, b = q, v, p
+            elseif i == 2 then r, g, b = p, v, t
+            elseif i == 3 then r, g, b = p, q, v
+            elseif i == 4 then r, g, b = t, p, v
+            elseif i == 5 then r, g, b = v, p, q
+            end
 
-            return vertex.new(screen_x, screen_y, screen_z, 1, 0, 0, white.hex)
+            return math.floor(r * 255), math.floor(g * 255), math.floor(b * 255)
         end
 
-        local new_vertices = {}
-        for i = 1, #base_vertices do
-            table.insert(new_vertices, rotate_xyz(base_vertices[i]))
-        end
+        local white = color.new(255, 0, 255, 255)
 
-        shape.vertices = new_vertices
+        local base_vertices = {
+            {-0.5, -0.5, -0.5},
+            { 0.5, -0.5, -0.5},
+            { 0.5,  0.5, -0.5},
+            {-0.5,  0.5, -0.5},
+            {-0.5, -0.5,  0.5},
+            { 0.5, -0.5,  0.5},
+            { 0.5,  0.5,  0.5},
+            {-0.5,  0.5,  0.5},
+        }
 
-        angle_y = angle_y + 0.02
-        angle_x = angle_x + 0.01
-    end)
+        local indices = {
+            0, 1, 1, 2, 2, 3, 3, 0,
+            4, 5, 5, 6, 6, 7, 7, 4,
+            0, 4, 1, 5, 2, 6, 3, 7 
+        }
+
+        local angle_y = 0
+        local angle_x = 0
+
+        local shape = renderer.write_to_buffer(
+            D3D11_PRIMITIVE_TOPOLOGY.LINE_LIST,
+            {},
+            indices,
+            nil,
+            0
+        )
+
+        local time = 0
+
+        add_connection(CONNECTIONS.PRESENT, function()
+            local cosY = math.cos(angle_y)
+            local sinY = math.sin(angle_y)
+            local cosX = math.cos(angle_x)
+            local sinX = math.sin(angle_x)
+
+            local function rotate_xyz(v, i, time)
+                local x1 = v[1] * cosY - v[3] * sinY
+                local z1 = v[1] * sinY + v[3] * cosY
+                local y1 = v[2]
+
+                local y2 = y1 * cosX - z1 * sinX
+                local z2 = y1 * sinX + z1 * cosX
+                local x2 = x1
+
+                local scale = 80
+                local screen_x = 300 + x2 * scale
+                local screen_y = 300 + y2 * scale
+                local screen_z = z2 * scale
+
+                local hue = (time + i * 0.08) % 1.0
+                local r, g, b = hsv_to_rgb(hue, 1, 1)
+                local c = color.new(r, g, b, 255)
+
+                return vertex.new(screen_x, screen_y, screen_z, 1, 0, 0, c.hex)
+            end
+
+            local new_vertices = {}
+
+            for i = 1, #base_vertices do
+                table.insert(new_vertices, rotate_xyz(base_vertices[i], i, time))
+            end
+
+            shape.vertices = new_vertices
+
+            angle_y = angle_y + 0.02
+            angle_x = angle_x + 0.01
+
+            time = time + 0.01
+        end)
+    end
 end

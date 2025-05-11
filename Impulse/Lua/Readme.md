@@ -1,1 +1,0 @@
-This directory is used by our application upon startup, it contains all the nessasary default libraries.

@@ -40,7 +40,10 @@ public:
 
 
 	Texture* CreateTexture( const char* texture_name, D3D11_TEXTURE2D_DESC texture_description, D3D11_SUBRESOURCE_DATA sub_resource_data, D3D11_SHADER_RESOURCE_VIEW_DESC shader_resource_view_description );
-	void DestroyTexture( const char* texture_name );
+	void DestroyTexture( Texture* texture );
+
+	Font* _CreateFont( const char* font_path, int size );
+	void DestroyFont( Font* font );
 
 	void Cleanup( );
 
@@ -81,6 +84,12 @@ private:
 	ID3D11SamplerState* m_pSamplerState = nullptr;
 	ID3D11RasterizerState* m_pRasterizerState = nullptr;
 	ID3D11DepthStencilState* m_pDepthStencilState = nullptr;
+
+	/* Freetype */
+	FT_Library m_FT;
+	FT_Face m_FTFace;
+
+	Font* m_DefaultFont;
 } extern Graphics;
 
 #endif

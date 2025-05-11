@@ -1,6 +1,8 @@
 #include "DirectX 11.hpp"
 #include "../../Win32/Win32.hpp"
 
+#define SAFE_RELEASE(p) if (p) { p->Release(); p = nullptr; }
+
 bool CGraphics::Initiate( 
     HWND hwnd, DXGI_SWAP_CHAIN_DESC swap_chain_description, D3D11_BUFFER_DESC buffer_description, 
     D3D11_RASTERIZER_DESC rasterizer_description, D3D11_DEPTH_STENCIL_DESC depth_stencil_description, 
@@ -83,6 +85,15 @@ bool CGraphics::Initiate(
         m_pDevice->CreateShaderResourceView( m_pTexture, nullptr, &m_pTextureSRV );
 
         m_pTexture->Release( );
+    }
+
+    { // Freetype and default font
+        if ( FT_Init_FreeType( &m_FT ) ) {
+            // Handle error
+        }
+
+        // TODO: Finish this.
+        //m_DefaultFont = _CreateFont( "Fonts/", 16 );
     }
 
     m_pDevice->CreateBuffer( &buffer_description, nullptr, &m_pVertexConstantBuffer );
@@ -313,31 +324,132 @@ bool CGraphics::Present( ) {
     return true;
 }
 
-Texture* CGraphics::CreateTexture( const char* texture_name, D3D11_TEXTURE2D_DESC texture_description, D3D11_SUBRESOURCE_DATA sub_resource_data, D3D11_SHADER_RESOURCE_VIEW_DESC shader_resource_view_description ) {
+Texture* CGraphics::CreateTexture( 
+    const char* texture_name, D3D11_TEXTURE2D_DESC texture_description, 
+    D3D11_SUBRESOURCE_DATA sub_resource_data, D3D11_SHADER_RESOURCE_VIEW_DESC shader_resource_view_description )
+{
     ID3D11Texture2D* pTexture = nullptr;
 
-    if ( FAILED( Graphics.GetDevice( )->CreateTexture2D( &texture_description, &sub_resource_data, &pTexture ) ) )
-        throw std::runtime_error( "Failed to create texture: " + std::string( texture_name ) );
+    if ( FAILED( Graphics.GetDevice( )->CreateTexture2D( &texture_description, &sub_resource_data, &pTexture ) ) ) {
+#ifdef _DEBUG
+        std::cout << "Failed to create pTexture for '" + std::string( texture_name ) << "'\n";
+#endif
+        return nullptr;
+    }
 
     ID3D11ShaderResourceView* pTextureSRV = nullptr;
 
-    if ( FAILED( Graphics.GetDevice( )->CreateShaderResourceView( pTexture, &shader_resource_view_description, &pTextureSRV ) ) )
-        throw std::runtime_error( "Failed to create shader resource view for texture: " + std::string( texture_name ) );
-
-    return new Texture( texture_name, pTexture, pTextureSRV );
-}
-
-void CGraphics::DestroyTexture( const char* texture_name ) {
-    /*auto Texture = pTextures[ texture_name ];
-
-    if ( Texture ) {
-        Texture->Name = nullptr;
-
-        SAFE_RELEASE( Texture->pTexture );
-        SAFE_RELEASE( Texture->pTextureSRV );
+    if ( FAILED( Graphics.GetDevice( )->CreateShaderResourceView( pTexture, &shader_resource_view_description, &pTextureSRV ) ) ) {
+#ifdef _DEBUG
+        std::cout << "Failed to create pTextureSRV for '" + std::string( texture_name ) << "'\n";
+#endif
+        pTexture->Release( );
+        return nullptr;
     }
 
-    Texture = nullptr;*/
+    return new Texture( std::string( texture_name ), pTexture, pTextureSRV );
+}
+
+void CGraphics::DestroyTexture( Texture* texture ) {
+    SAFE_RELEASE( texture->pTexture );
+    SAFE_RELEASE( texture->pTextureSRV );
+
+    texture = nullptr;
+}
+
+Font* CGraphics::_CreateFont( const char* font_path, int size ) {
+    if ( FT_New_Face( m_FT, font_path, 0, &m_FTFace ) ) {
+        // Handle error
+    }
+
+    if ( FT_Set_Pixel_Sizes( m_FTFace, 0, size ) ) {
+        return nullptr;
+    }
+
+    std::string FontName = std::filesystem::path( font_path ).stem( ).string( );
+    auto _Font = new Font( FontName, size );
+
+    // ASCII - 128
+    // Extended ASCII - 256
+    // Unicode - > 143,000
+    for ( int i = 0; i < 128; i++ ) {
+        if ( !isprint( i ) )
+            continue;
+
+        if ( FT_Load_Char( m_FTFace, i, FT_LOAD_RENDER ) ) {
+            // Handle error
+            continue;
+        }
+
+        FT_GlyphSlot GlyphSlot = m_FTFace->glyph;
+
+        if ( GlyphSlot->bitmap.width == 0 || GlyphSlot->bitmap.rows == 0 || GlyphSlot->bitmap.buffer == nullptr ) {
+            continue;
+        }
+
+        const unsigned int width = GlyphSlot->bitmap.width;
+        const unsigned int height = GlyphSlot->bitmap.rows;
+        std::vector<unsigned char> rgbaData( width * height * 4 );
+
+        for ( unsigned int y = 0; y < height; y++ ) {
+            for ( unsigned int x = 0; x < width; x++ ) {
+                unsigned char gray = GlyphSlot->bitmap.buffer[ y * GlyphSlot->bitmap.pitch + x ];
+                unsigned int rgbaIdx = ( y * width + x ) * 4;
+                rgbaData[ rgbaIdx + 0 ] = gray; // R
+                rgbaData[ rgbaIdx + 1 ] = gray; // G
+                rgbaData[ rgbaIdx + 2 ] = gray; // B
+                rgbaData[ rgbaIdx + 3 ] = gray; // A
+            }
+        }
+
+        D3D11_TEXTURE2D_DESC Description = {};
+        Description.Width = width;
+        Description.Height = height;
+        Description.MipLevels = 1;
+        Description.ArraySize = 1;
+        Description.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        Description.Usage = D3D11_USAGE_DEFAULT;
+        Description.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+        Description.CPUAccessFlags = 0;
+        Description.SampleDesc.Count = 1;
+
+        D3D11_SUBRESOURCE_DATA ResourceData = {};
+        ResourceData.pSysMem = rgbaData.data( );
+        ResourceData.SysMemPitch = width * 4;
+
+        D3D11_SHADER_RESOURCE_VIEW_DESC SRVDescription = {};
+        SRVDescription.Format = Description.Format;
+        SRVDescription.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+        SRVDescription.Texture2D.MipLevels = 1;
+
+        std::string TextureName = FontName + "_" + std::string( 1, static_cast< char >( i ) );
+        Texture* _Texture = CreateTexture( TextureName.c_str( ), Description, ResourceData, SRVDescription );
+
+        _Font->Glyphs[ static_cast< char >( i ) ] = Glyph(
+            static_cast< float >( GlyphSlot->advance.x ) / 64.0f,
+            static_cast< float >( GlyphSlot->bitmap_left ),
+            static_cast< float >( GlyphSlot->bitmap_top ),
+            static_cast< float >( GlyphSlot->bitmap.width ),
+            static_cast< float >( GlyphSlot->bitmap.rows ),
+            0.f, 0.f, 1.f, 1.f, _Texture
+        );
+    }
+
+    return _Font;
+}
+
+void CGraphics::DestroyFont( Font* font ) {
+    for ( auto& [Char, GlyphPtr] : font->Glyphs ) {
+        if ( !GlyphPtr._Texture )
+            continue;
+
+        GlyphPtr._Texture->pTexture->Release( );
+        GlyphPtr._Texture->pTextureSRV->Release( );
+
+        GlyphPtr._Texture = nullptr;
+    }
+
+    font = nullptr;
 }
 
 void CGraphics::Cleanup( ) {

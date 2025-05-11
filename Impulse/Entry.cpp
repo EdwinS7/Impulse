@@ -8,12 +8,12 @@
 
 int WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ PSTR pCmdLine, _In_ int nCmdShow ) {
     try {
-        if ( !FileSystem.DirectoryExists( "Lua" ) ) {
-            MessageBox( NULL, "Failed to find Lua folder", "Error", MB_OK | MB_ICONERROR );
+        if ( !FileSystem.DirectoryExists( "Game" ) ) {
+            MessageBox( NULL, "Failed to find 'Game' folder", "Error", MB_OK | MB_ICONERROR );
             return 1;
         }
 
-        const std::string Script = FileSystem.ReadFile("Main.lua");
+        const std::string Script = FileSystem.ReadFile("Game/Main.lua");
 
         if ( Script.empty( ) ) {
             MessageBox( NULL, "Failed to read Main.lua", "Error", MB_OK | MB_ICONERROR );

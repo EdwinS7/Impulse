@@ -30,7 +30,7 @@ local generate_arc_points = function(position, segments, radius, completion, ang
     return vertices, indices
 end
 
-renderer.circle = function(position, segments, radius, completion, angle, color, filled, z_index)
+renderer.circle = function(position, segments, radius, completion, angle, color, filled, texture, z_index)
     local private = {
         position = position,
         segments = segments,
@@ -47,7 +47,10 @@ renderer.circle = function(position, segments, radius, completion, angle, color,
 
     private.draw_command = renderer.write_to_buffer(
         filled and D3D11_PRIMITIVE_TOPOLOGY.TRIANGLE_STRIP or D3D11_PRIMITIVE_TOPOLOGY.LINE_STRIP,
-        vertices, indices, nil, z_index
+        vertices, 
+        indices, 
+        texture, 
+        z_index
     )
 
     return setmetatable({}, {
@@ -124,7 +127,10 @@ renderer.rectangle = function(position, size, color, filled, texture, z_index)
 
     private.draw_command = renderer.write_to_buffer(
         filled and D3D11_PRIMITIVE_TOPOLOGY.TRIANGLE_STRIP or D3D11_PRIMITIVE_TOPOLOGY.LINE_STRIP, 
-        create_vertices(), {0, 1, 2, 3, 0}, texture, z_index
+        create_vertices(), 
+        {0, 1, 2, 3, 0}, 
+        texture, 
+        z_index
     )
     
     return setmetatable({}, {
@@ -163,4 +169,61 @@ renderer.rectangle = function(position, size, color, filled, texture, z_index)
             end
         end
     })
+end
+
+renderer.text = function(font, string, position, color)
+    local private = {
+        font = font,
+        string = string,
+        position = position,
+        color = color,
+
+        draw_commands = {}
+    }
+
+    local baseline = 0
+
+    for i = 1, #string do
+        local char = string:sub(i, i)
+        local glyph = font.glyphs[char]
+        
+        if glyph then
+            baseline = math.max(baseline, glyph.offset_y)
+        end
+    end
+
+    -- TODO: use advance_y for multi-line
+    local advance_x, advance_y = 0, 0
+    local glyph_x, glyph_y = 0, 0
+
+    for i = 1, #string do
+        local char = string:sub(i, i)
+        local glyph = font.glyphs[char]
+
+        if not glyph then 
+            continue 
+        end
+
+        local glyph_x = math.floor(position.x + advance_x + glyph.offset_x)
+        local glyph_y = math.floor(position.y + baseline - glyph.offset_y)
+
+        local vertices = {
+            vertex.new(glyph_x, glyph_y, 0, 1, 0, 0, color.hex),
+            vertex.new(glyph_x + glyph.width, glyph_y, 0, 1, 1, 0, color.hex),
+            vertex.new(glyph_x + glyph.width, glyph_y + glyph.height, 0, 1, 1, 1, color.hex),
+            vertex.new(glyph_x, glyph_y + glyph.height, 0, 1, 0, 1, color.hex)
+        }
+
+        private.draw_commands[i] = renderer.write_to_buffer(
+            D3D11_PRIMITIVE_TOPOLOGY.TRIANGLE_STRIP,
+            vertices,
+            {0, 1, 2, 3, 0},
+            glyph.texture,
+            z_index
+        )
+
+        advance_x = advance_x + (glyph.advance_x ~= 0 and glyph.advance_x or glyph.width)
+    end
+
+    -- TODO: Setup metatable, ts gonna take a bit for this lmao.
 end

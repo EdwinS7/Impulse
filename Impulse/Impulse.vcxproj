@@ -248,8 +248,19 @@
     <ClInclude Include="Core\Graphics\Types.hpp" />
     <ClInclude Include="Core\Http\Http.hpp" />
     <ClInclude Include="Core\Input\Input.hpp" />
+    <ClInclude Include="Core\LuaU\LuaBinds\Crypt.hpp" />
+    <ClInclude Include="Core\LuaU\LuaBinds\Debug.hpp" />
+    <ClInclude Include="Core\LuaU\LuaBinds\FileSystem.hpp" />
+    <ClInclude Include="Core\LuaU\LuaBinds\Globals.hpp" />
+    <ClInclude Include="Core\LuaU\LuaBinds\Graphics.hpp" />
+    <ClInclude Include="Core\LuaU\LuaBinds\Http.hpp" />
+    <ClInclude Include="Core\LuaU\LuaBinds\Input.hpp" />
+    <ClInclude Include="Core\LuaU\LuaBinds\Renderer.hpp" />
+    <ClInclude Include="Core\LuaU\LuaBinds\Usertypes.hpp" />
+    <ClInclude Include="Core\LuaU\LuaBinds\Utils.hpp" />
+    <ClInclude Include="Core\LuaU\LuaBinds\Win32.hpp" />
     <ClInclude Include="Core\LuaU\Environment.hpp" />
-    <ClInclude Include="Core\LuaU\LuaBindings.hpp" />
+    <ClInclude Include="Core\LuaU\LuaBinds.hpp" />
     <ClInclude Include="Core\LuaU\LuaWrapper.hpp" />
     <ClInclude Include="Core\Utils\Utils.hpp" />
     <ClInclude Include="Core\Win32\Win32.hpp" />
@@ -419,7 +430,7 @@
     <ClInclude Include="Dependencies\SHA256\include\SHA256.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Main.lua" />
+    <None Include="Game\Main.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
