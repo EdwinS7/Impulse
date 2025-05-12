@@ -154,7 +154,7 @@ do -- Rendering
         -- TODO: add padding
     )
 
-    renderer.text(
+    local text = renderer.text(
         font, "test123",
         vector2.new(100, 100), 
         color.new(255, 255, 255, 255)

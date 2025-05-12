@@ -53,6 +53,10 @@ renderer.circle = function(position, segments, radius, completion, angle, color,
         z_index
     )
 
+    private.destroy = function(self)
+        self.draw_command:destroy()
+    end
+
     return setmetatable({}, {
         __index = function(self, key)
             return private[key]
@@ -69,7 +73,13 @@ renderer.circle = function(position, segments, radius, completion, angle, color,
                 private.position = value
 
                 private.draw_command.vertices, private.draw_command.indices = generate_arc_points(
-                    private.position, private.segments, private.radius, private.completion, private.angle, private.color, private.filled
+                    private.position, 
+                    private.segments, 
+                    private.radius, 
+                    private.completion, 
+                    private.angle, 
+                    private.color, 
+                    private.filled
                 )
             elseif key == "size" then
                 assert(typeof(value) == "userdata", "size must be a vector2 object")
@@ -77,7 +87,13 @@ renderer.circle = function(position, segments, radius, completion, angle, color,
                 private.size = value
 
                 private.draw_command.vertices, private.draw_command.indices = generate_arc_points(
-                    private.position, private.segments, private.radius, private.completion, private.angle, private.color, private.filled
+                    private.position, 
+                    private.segments, 
+                    private.radius, 
+                    private.completion, 
+                    private.angle, 
+                    private.color, 
+                    private.filled
                 )
             elseif key == "color" then
                 assert(typeof(value) == "userdata", "color must be a color object")
@@ -85,7 +101,13 @@ renderer.circle = function(position, segments, radius, completion, angle, color,
                 private.color = value
                 
                 private.draw_command.vertices, private.draw_command.indices = generate_arc_points(
-                    private.position, private.segments, private.radius, private.completion, private.angle, private.color, private.filled
+                    private.position, 
+                    private.segments, 
+                    private.radius, 
+                    private.completion, 
+                    private.angle, 
+                    private.color, 
+                    private.filled
                 )
             elseif key == "filled" then
                 assert(typeof(value) == "boolean", "filled must be a boolean")
@@ -99,10 +121,14 @@ renderer.circle = function(position, segments, radius, completion, angle, color,
                 private.filled = value
 
                 private.draw_command.vertices, private.draw_command.indices = generate_arc_points(
-                    private.position, private.segments, private.radius, private.completion, private.angle, private.color, private.filled
+                    private.position, 
+                    private.segments, 
+                    private.radius, 
+                    private.completion, 
+                    private.angle, 
+                    private.color, 
+                    private.filled
                 )
-            else
-                private[key] = value
             end
         end
     })
@@ -132,6 +158,10 @@ renderer.rectangle = function(position, size, color, filled, texture, z_index)
         texture, 
         z_index
     )
+
+    private.destroy = function(self)
+        self.draw_command:destroy()
+    end
     
     return setmetatable({}, {
         __index = function(self, key)
@@ -164,8 +194,6 @@ renderer.rectangle = function(position, size, color, filled, texture, z_index)
                 private.draw_command.primitive_topology = value 
                     and D3D11_PRIMITIVE_TOPOLOGY.TRIANGLE_STRIP 
                     or D3D11_PRIMITIVE_TOPOLOGY.LINE_STRIP
-            else
-                private[key] = value
             end
         end
     })
@@ -181,49 +209,112 @@ renderer.text = function(font, string, position, color)
         draw_commands = {}
     }
 
-    local baseline = 0
+    private.destroy = function(self)
+        for i, draw_command in ipairs(self.draw_commands) do
+            draw_command:destroy()
+        end
+    end
 
-    for i = 1, #string do
-        local char = string:sub(i, i)
-        local glyph = font.glyphs[char]
+    local get_max_offset_y = function()
+        local max_offset_y = 0
+
+        for i = 1, #string do
+            local char = string:sub(i, i)
+            local glyph = font.glyphs[char]
         
-        if glyph then
-            baseline = math.max(baseline, glyph.offset_y)
+            if glyph then
+                max_offset_y = math.max(max_offset_y, glyph.offset_y)
+            end
+        end
+
+        return max_offset_y
+    end
+
+    local create_draw_commands = function()
+        local max_offset_y = get_max_offset_y()
+
+        local advance_x, advance_y = 0, 0
+        local glyph_x, glyph_y = 0, 0
+
+        for i = 1, #private.string do
+            local char = private.string:sub(i, i)
+            local glyph = private.font.glyphs[char]
+
+            if not glyph then 
+                continue 
+            end
+
+            local glyph_x = math.floor(private.position.x + advance_x + glyph.offset_x)
+            local glyph_y = math.floor(private.position.y + max_offset_y - glyph.offset_y)
+
+            local vertices = {
+                vertex.new(glyph_x, glyph_y, 0, 1, 0, 0, private.color.hex),
+                vertex.new(glyph_x + glyph.width, glyph_y, 0, 1, 1, 0, private.color.hex),
+                vertex.new(glyph_x + glyph.width, glyph_y + glyph.height, 0, 1, 1, 1, private.color.hex),
+                vertex.new(glyph_x, glyph_y + glyph.height, 0, 1, 0, 1, private.color.hex)
+            }
+
+            private.draw_commands[i] = renderer.write_to_buffer(
+                D3D11_PRIMITIVE_TOPOLOGY.TRIANGLE_STRIP,
+                vertices,
+                {0, 1, 2, 3, 0},
+                glyph.texture,
+                z_index
+            )
+
+            advance_x = advance_x + (glyph.advance_x ~= 0 and glyph.advance_x or glyph.width)
         end
     end
 
-    -- TODO: use advance_y for multi-line
-    local advance_x, advance_y = 0, 0
-    local glyph_x, glyph_y = 0, 0
+    local reposition_draw_commands = function()
+        local max_offset_y = get_max_offset_y()
 
-    for i = 1, #string do
-        local char = string:sub(i, i)
-        local glyph = font.glyphs[char]
+        local advance_x, advance_y = 0, 0
+        local glyph_x, glyph_y = 0, 0
 
-        if not glyph then 
-            continue 
+        for i = 1, #private.string do
+            local char = private.string:sub(i, i)
+            local glyph = private.font.glyphs[char]
+
+            if not glyph then 
+                continue 
+            end
+
+            local glyph_x = math.floor(private.position.x + advance_x + glyph.offset_x)
+            local glyph_y = math.floor(private.position.y + max_offset_y - glyph.offset_y)
+
+            private.draw_commands[i].vertices = {
+                vertex.new(glyph_x, glyph_y, 0, 1, 0, 0, private.color.hex),
+                vertex.new(glyph_x + glyph.width, glyph_y, 0, 1, 1, 0, private.color.hex),
+                vertex.new(glyph_x + glyph.width, glyph_y + glyph.height, 0, 1, 1, 1, private.color.hex),
+                vertex.new(glyph_x, glyph_y + glyph.height, 0, 1, 0, 1, private.color.hex)
+            }
+
+            advance_x = advance_x + (glyph.advance_x ~= 0 and glyph.advance_x or glyph.width)
         end
-
-        local glyph_x = math.floor(position.x + advance_x + glyph.offset_x)
-        local glyph_y = math.floor(position.y + baseline - glyph.offset_y)
-
-        local vertices = {
-            vertex.new(glyph_x, glyph_y, 0, 1, 0, 0, color.hex),
-            vertex.new(glyph_x + glyph.width, glyph_y, 0, 1, 1, 0, color.hex),
-            vertex.new(glyph_x + glyph.width, glyph_y + glyph.height, 0, 1, 1, 1, color.hex),
-            vertex.new(glyph_x, glyph_y + glyph.height, 0, 1, 0, 1, color.hex)
-        }
-
-        private.draw_commands[i] = renderer.write_to_buffer(
-            D3D11_PRIMITIVE_TOPOLOGY.TRIANGLE_STRIP,
-            vertices,
-            {0, 1, 2, 3, 0},
-            glyph.texture,
-            z_index
-        )
-
-        advance_x = advance_x + (glyph.advance_x ~= 0 and glyph.advance_x or glyph.width)
     end
 
-    -- TODO: Setup metatable, ts gonna take a bit for this lmao.
+    create_draw_commands()
+
+    return setmetatable({}, {
+        __index = function(self, key)
+            return private[key]
+        end,
+
+        __newindex = function(self, key, value)
+            if key == "position" then
+                assert(typeof(value) == "userdata", "position must be a vector2 object")
+
+                private.position = value
+                
+                reposition_draw_commands()
+            elseif key == "color" then
+                assert(typeof(value) == "userdata", "color must be a color object")
+
+                private.color = value
+                private.draw_command.vertices = create_vertices()
+                private[key] = value
+            end
+        end
+    })
 end
