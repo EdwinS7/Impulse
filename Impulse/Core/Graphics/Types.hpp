@@ -97,13 +97,13 @@ public:
     std::vector<Vertex> vertices;
     std::vector<std::int32_t> indices;
     Texture* texture;
-    uint8_t z_index;
+    int z_index;
 
     DrawCommand( ) noexcept :
         primitive_topology( D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST ) {}
     DrawCommand( D3D_PRIMITIVE_TOPOLOGY primitive_topology ) :
         primitive_topology( primitive_topology ) {}
-    DrawCommand( D3D_PRIMITIVE_TOPOLOGY primitive_topology, std::vector<Vertex> vertices, std::vector<std::int32_t> indices, Texture* texture, uint8_t z_index ) :
+    DrawCommand( D3D_PRIMITIVE_TOPOLOGY primitive_topology, std::vector<Vertex> vertices, std::vector<std::int32_t> indices, Texture* texture, int z_index ) :
         primitive_topology( primitive_topology ), vertices( vertices ), indices( indices ), texture( texture ), z_index( z_index ) {}
 };
 

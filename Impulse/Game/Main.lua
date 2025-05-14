@@ -1,9 +1,9 @@
-local screen_size: vector2 = win32.get_screen_size()
+local screen_size = win32.get_screen_size()
 
 do -- Console
-    local console_size: vector2 = vector2.new(screen_size.x / 1.5, screen_size.y / 1.5)
+    local console_size = vector2.new(screen_size.x / 1.5, screen_size.y / 1.5)
 
-    local console_reference: integer = win32.create_console("Impulse - console", 
+    local console_reference = win32.create_console("Impulse - console", 
         vector2.new(
             (screen_size.x / 2) - (console_size.x / 2), 
             (screen_size.y / 2) - ((console_size.x / 2) / 2)
@@ -12,7 +12,7 @@ do -- Console
         console_size
     )
 
-    local old_print = print
+    local original_print = print
 
     print = function(...)
         local args = {...}
@@ -21,7 +21,10 @@ do -- Console
             args[i] = tostring(args[i])
         end
 
-        return old_print(console_reference, table.unpack(args))
+        return original_print(
+            console_reference, 
+            table.unpack(args)
+        )
     end
 
     print("[Impulse] Hello World!")
@@ -30,7 +33,9 @@ end
 do -- Create window and graphics device
     local window_size: vector2 = vector2.new(screen_size.x / 1.5, screen_size.y / 1.5)
 
-    local window_reference, client_size = win32.create_window("Impulse - demo", 
+    local window_reference, client_size = win32.create_window(
+        "Impulse - demo", 
+
         vector2.new(
             (screen_size.x / 2) - (window_size.x / 2),
             (screen_size.y / 2) - ((window_size.x / 2) / 2)
@@ -39,7 +44,7 @@ do -- Create window and graphics device
         window_size, false
     )
 
-    local swap_chain_description: table = {
+    local swap_chain_description = {
         output_window = window_reference,
         windowed = true,
 
@@ -47,7 +52,7 @@ do -- Create window and graphics device
         buffer_usage = DXGI_USAGE.RENDER_TARGET_OUTPUT,
         
         sample_count = 1,
-        buffer_count = 1,
+        buffer_count = 2,
 
         buffer_width = client_size.x,
         buffer_height = client_size.y,
@@ -55,9 +60,9 @@ do -- Create window and graphics device
         swap_effect = DXGI_SWAP_EFFECT.DISCARD
     }
 
-    local float_size: integer = 4
+    local float_size = 4
 
-    local buffer_description: table = {
+    local buffer_description = {
         byte_width = 4 * 4 * float_size,
         usage = D3D11_USAGE.DYNAMIC,
         bind_flags = D3D11_BIND_FLAG.CONSTANT_BUFFER,
@@ -65,17 +70,18 @@ do -- Create window and graphics device
         misc_flags = 0
     }
 
-    local rasterizer_description: table = {
+    local rasterizer_description = {
         fill_mode = D3D11_FILL_MODE.SOLID,
-        cull_mode = D3D11_CULL_MODE.NONE,
+        cull_mode = D3D11_CULL_MODE.BACK,
 
-        scissor_enable = false,
+        scissor_enable = false, -- TODO: Add clipping.
         depth_clip_enable = true
     }
 
-    local depth_stencil_description: table = {
-        depth_enable = false,
-        depth_write_mask = D3D11_DEPTH_WRITE_MASK.ALL, 
+    local depth_stencil_description = {
+        depth_enable = true,
+
+        depth_write_mask = D3D11_DEPTH_WRITE_MASK.ZERO, 
         depth_func = D3D11_COMPARISON_FUNC.ALWAYS,
 
         stencil_enable = false,
@@ -88,7 +94,7 @@ do -- Create window and graphics device
         }
     }
 
-    local sampler_description: table = {
+    local sampler_description = {
         filter = D3D11_FILTER.MIN_MAG_MIP_LINEAR,
         address_u = D3D11_TEXTURE_ADDRESS_MODE.CLAMP,
         address_v = D3D11_TEXTURE_ADDRESS_MODE.CLAMP,
@@ -99,8 +105,9 @@ do -- Create window and graphics device
         max_lod = 0.0
     }
 
-    local blend_description: table = {
+    local blend_description = {
         alpha_to_coverage_enable = false,
+        independent_blend_enable = false,
 
         render_target = {
             blend_enable = true,
@@ -160,11 +167,48 @@ do -- Rendering
         color.new(255, 255, 255, 255)
     )
 
+    local pixel_data, width, height = file_system.load_image("Game/Assets/CDazz.png")
+
+    local example_texture = graphics.create_texture(
+        "cdazz",
+
+        {
+            width = width,
+            height = height,
+            mip_levels = 1,
+            array_size = 1,
+            format = DXGI_FORMAT.R8G8B8A8_UNORM,
+            sample_desc = {count = 1, quality = 0},
+            usage = D3D11_USAGE.DEFAULT,
+            bind_flags = D3D11_BIND_FLAG.SHADER_RESOURCE,
+            cpu_access_flags = 0,
+            misc_flags  = 0,
+        },
+
+        {
+            p_sys_mem = pixel_data,
+            sys_mem_pitch = width * 4,
+            sys_mem_slice_pitch = 0,
+        },
+
+        {
+            format = DXGI_FORMAT.R8G8B8A8_UNORM,
+            view_dimension = D3D11_SRV_DIMENSION.TEXTURE2D,
+
+            union = {
+                texture2d = {
+                    most_detailed_mip = 0,
+                    mip_levels = 1,
+                }
+            }
+        }
+    )
+
     local rect = renderer.rectangle(
         vector2.new(200, 200),
-        vector2.new(50, 50),
+        vector2.new(500, 500),
         color.new(255, 255, 255, 255),
-        true, nil, 0
+        true, example_texture, 1
     )
 
     dragging.add_object(rect)

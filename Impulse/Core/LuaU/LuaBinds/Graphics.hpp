@@ -268,20 +268,73 @@ namespace LuaBind::LuaGraphics {
         D3D11_BLEND_DESC BlendDescription = {};
 
         if ( lua_istable( lua_state, 7 ) ) {
-            {
-                lua_getfield( lua_state, 7, "alpha_to_coverage_enable" );
+            { lua_getfield( lua_state, 7, "alpha_to_coverage_enable" );
                 if ( lua_isboolean( lua_state, -1 ) )
                     BlendDescription.AlphaToCoverageEnable = lua_toboolean( lua_state, -1 );
             } lua_pop( lua_state, 1 );
 
-            {
-                lua_getfield( lua_state, 7, "render_target" );
+            { lua_getfield( lua_state, 7, "independent_blend_enable" );
+                if ( lua_isboolean( lua_state, -1 ) )
+                    BlendDescription.IndependentBlendEnable = lua_toboolean( lua_state, -1 );
+            } lua_pop( lua_state, 1 );
+
+            { lua_getfield( lua_state, 7, "render_target" );
                 if ( lua_istable( lua_state, -1 ) ) {
                     lua_getfield( lua_state, -1, "blend_enable" );
                     if ( lua_isboolean( lua_state, -1 ) )
                         BlendDescription.RenderTarget[ 0 ].BlendEnable = lua_toboolean( lua_state, -1 );
                     lua_pop( lua_state, 1 );
                 }
+
+                if ( lua_istable( lua_state, -1 ) ) {
+                    lua_getfield( lua_state, -1, "src_blend" );
+                    if ( lua_isnumber( lua_state, -1 ) )
+                        BlendDescription.RenderTarget[ 0 ].SrcBlend = static_cast<D3D11_BLEND>( lua_tointeger( lua_state, -1 ) );
+                    lua_pop( lua_state, 1 );
+                }
+
+                if ( lua_istable( lua_state, -1 ) ) {
+                    lua_getfield( lua_state, -1, "dest_blend" );
+                    if ( lua_isnumber( lua_state, -1 ) )
+                        BlendDescription.RenderTarget[ 0 ].DestBlend = static_cast< D3D11_BLEND >( lua_tointeger( lua_state, -1 ) );
+                    lua_pop( lua_state, 1 );
+                }
+
+                if ( lua_istable( lua_state, -1 ) ) {
+                    lua_getfield( lua_state, -1, "blend_op" );
+                    if ( lua_isnumber( lua_state, -1 ) )
+                        BlendDescription.RenderTarget[ 0 ].BlendOp = static_cast< D3D11_BLEND_OP >( lua_tointeger( lua_state, -1 ) );
+                    lua_pop( lua_state, 1 );
+                }
+
+                if ( lua_istable( lua_state, -1 ) ) {
+                    lua_getfield( lua_state, -1, "src_blend_alpha" );
+                    if ( lua_isnumber( lua_state, -1 ) )
+                        BlendDescription.RenderTarget[ 0 ].SrcBlendAlpha = static_cast< D3D11_BLEND >( lua_tointeger( lua_state, -1 ) );
+                    lua_pop( lua_state, 1 );
+                }
+
+                if ( lua_istable( lua_state, -1 ) ) {
+                    lua_getfield( lua_state, -1, "dest_blend_alpha" );
+                    if ( lua_isnumber( lua_state, -1 ) )
+                        BlendDescription.RenderTarget[ 0 ].DestBlendAlpha = static_cast< D3D11_BLEND >( lua_tointeger( lua_state, -1 ) );
+                    lua_pop( lua_state, 1 );
+                }
+
+                if ( lua_istable( lua_state, -1 ) ) {
+                    lua_getfield( lua_state, -1, "blend_op_alpha" );
+                    if ( lua_isnumber( lua_state, -1 ) )
+                        BlendDescription.RenderTarget[ 0 ].BlendOpAlpha = static_cast< D3D11_BLEND_OP >( lua_tointeger( lua_state, -1 ) );
+                    lua_pop( lua_state, 1 );
+                }
+
+                if ( lua_istable( lua_state, -1 ) ) {
+                    lua_getfield( lua_state, -1, "render_target_write_mask" );
+                    if ( lua_isnumber( lua_state, -1 ) )
+                        BlendDescription.RenderTarget[ 0 ].RenderTargetWriteMask = static_cast< D3D11_COLOR_WRITE_ENABLE >( lua_tointeger( lua_state, -1 ) );
+                    lua_pop( lua_state, 1 );
+                }
+
             } lua_pop( lua_state, 1 );
         }
 
