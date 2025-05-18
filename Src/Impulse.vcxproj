@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{ab6cc91e-2bf5-4ca6-bbb1-1270542b2ad9}</ProjectGuid>
+    <RootNamespace>SomeProject</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Impulse</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)Output\</OutDir>
+    <IntDir>$(SolutionDir)Output\Intermediates\</IntDir>
+    <IncludePath>$(ProjectDir)Dependencies/;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)Dependencies/;$(ProjectDir)Dependencies/LuaU/build/Debug/;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)Output\</OutDir>
+    <IntDir>$(SolutionDir)Output\Intermediates\</IntDir>
+    <IncludePath>$(ProjectDir)Dependencies/;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)Dependencies/;$(ProjectDir)Dependencies/LuaU/Library/;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)Output\</OutDir>
+    <IntDir>$(SolutionDir)Output\Intermediates\</IntDir>
+    <IncludePath>$(ProjectDir)Dependencies/;$(ProjectDir)Dependencies/SHA256/include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)Dependencies/;$(ProjectDir)Dependencies/Curl/lib/;$(ProjectDir)Dependencies/SpdLog/build/Release/;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)Output\</OutDir>
+    <IntDir>$(SolutionDir)Output\Intermediates\</IntDir>
+    <IncludePath>$(ProjectDir)Dependencies/;$(ProjectDir)Dependencies/SHA256/include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)Dependencies/;$(ProjectDir)Dependencies/Curl/lib/;$(ProjectDir)Dependencies/SpdLog/build/Release/;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>LuaU.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>$(ProjectDir)Dependencies/LuaU/VM/include;$(ProjectDir)Dependencies/LuaU/VM/src;$(ProjectDir)Dependencies/LuaU/Compiler/include;$(ProjectDir)Dependencies/LuaU/Compiler/src;$(ProjectDir)Dependencies/LuaU/Ast/include;$(ProjectDir)Dependencies/LuaU/Ast/src;$(ProjectDir)Dependencies/LuaU/Common/include;$(ProjectDir)Dependencies/Freetype/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)Dependencies/LuaU/Libraries/;$(ProjectDir)Dependencies/Freetype/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Luau.Ast.lib;Luau.Compiler.lib;Luau.VM.lib;libcurl.lib;Ws2_32.lib;Crypt32.lib;Wldap32.lib;Normaliz.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;wininet.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>$(ProjectDir)Dependencies/LuaU/VM/include;$(ProjectDir)Dependencies/LuaU/VM/src;$(ProjectDir)Dependencies/LuaU/Compiler/include;$(ProjectDir)Dependencies/LuaU/Compiler/src;$(ProjectDir)Dependencies/LuaU/Ast/include;$(ProjectDir)Dependencies/LuaU/Ast/src;$(ProjectDir)Dependencies/LuaU/Common/include;$(ProjectDir)Dependencies/Freetype/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>Luau.Ast.lib;Luau.Compiler.lib;Luau.VM.lib;libcurl.lib;Ws2_32.lib;Crypt32.lib;Wldap32.lib;Normaliz.lib;d3d11.lib;dxgi.lib;d3dcompiler.lib;wininet.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)Dependencies/LuaU/Libraries/;$(ProjectDir)Dependencies/Freetype/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Core\Graphics\Renderer\Renderer.cpp" />
+    <ClCompile Include="Core\Graphics\Implement\DirectX 11.cpp" />
+    <ClCompile Include="Core\Http\Http.cpp" />
+    <ClCompile Include="Core\Input\Input.cpp" />
+    <ClCompile Include="Core\Utils\Utils.cpp" />
+    <ClCompile Include="Core\Win32\Win32.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Ast\src\Allocator.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Ast\src\Ast.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Ast\src\Confusables.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Ast\src\Lexer.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Ast\src\Location.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Ast\src\Parser.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Ast\src\StringUtils.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Ast\src\TimeTrace.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Compiler\src\BuiltinFolding.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Compiler\src\Builtins.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Compiler\src\BytecodeBuilder.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Compiler\src\Compiler.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Compiler\src\ConstantFolding.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Compiler\src\CostModel.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Compiler\src\lcode.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Compiler\src\TableShape.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Compiler\src\Types.cpp" />
+    <ClCompile Include="Dependencies\LuaU\Compiler\src\ValueTracking.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lapi.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\laux.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lbaselib.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lbitlib.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lbuffer.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lbuflib.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lbuiltins.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lcorolib.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\ldblib.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\ldebug.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\ldo.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lfunc.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lgc.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lgcdebug.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\linit.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lmathlib.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lmem.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lnumprint.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lobject.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\loslib.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lperf.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lstate.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lstring.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lstrlib.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\ltable.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\ltablib.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\ltm.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\ludata.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lutf8lib.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lveclib.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lvmexecute.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lvmload.cpp" />
+    <ClCompile Include="Dependencies\LuaU\VM\src\lvmutils.cpp" />
+    <ClCompile Include="Dependencies\SHA256\src\main.cpp" />
+    <ClCompile Include="Dependencies\SHA256\src\SHA256.cpp" />
+    <ClCompile Include="Entry.cpp" />
+    <ClCompile Include="Core\FileSystem\FileSystem.cpp" />
+    <ClCompile Include="Core\LuaU\Environment.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Common.hpp" />
+    <ClInclude Include="Core\FileSystem\FileSystem.hpp" />
+    <ClInclude Include="Core\Graphics\Include.hpp" />
+    <ClInclude Include="Core\Graphics\Renderer\Renderer.hpp" />
+    <ClInclude Include="Core\Graphics\Implement\DirectX 11.hpp" />
+    <ClInclude Include="Core\Graphics\Types.hpp" />
+    <ClInclude Include="Core\Http\Http.hpp" />
+    <ClInclude Include="Core\Input\Input.hpp" />
+    <ClInclude Include="Core\LuaU\LuaBinds\Crypt.hpp" />
+    <ClInclude Include="Core\LuaU\LuaBinds\Debug.hpp" />
+    <ClInclude Include="Core\LuaU\LuaBinds\FileSystem.hpp" />
+    <ClInclude Include="Core\LuaU\LuaBinds\Globals.hpp" />
+    <ClInclude Include="Core\LuaU\LuaBinds\Graphics.hpp" />
+    <ClInclude Include="Core\LuaU\LuaBinds\Http.hpp" />
+    <ClInclude Include="Core\LuaU\LuaBinds\Input.hpp" />
+    <ClInclude Include="Core\LuaU\LuaBinds\Renderer.hpp" />
+    <ClInclude Include="Core\LuaU\LuaBinds\Usertypes.hpp" />
+    <ClInclude Include="Core\LuaU\LuaBinds\Utils.hpp" />
+    <ClInclude Include="Core\LuaU\LuaBinds\Win32.hpp" />
+    <ClInclude Include="Core\LuaU\Environment.hpp" />
+    <ClInclude Include="Core\LuaU\LuaBinds.hpp" />
+    <ClInclude Include="Core\LuaU\LuaWrapper.hpp" />
+    <ClInclude Include="Core\Utils\Utils.hpp" />
+    <ClInclude Include="Core\Win32\Win32.hpp" />
+    <ClInclude Include="Dependencies\base64\include\base64.hpp" />
+    <ClInclude Include="Dependencies\Curl\include\curl\curl.h" />
+    <ClInclude Include="Dependencies\Curl\include\curl\curlver.h" />
+    <ClInclude Include="Dependencies\Curl\include\curl\easy.h" />
+    <ClInclude Include="Dependencies\Curl\include\curl\header.h" />
+    <ClInclude Include="Dependencies\Curl\include\curl\mprintf.h" />
+    <ClInclude Include="Dependencies\Curl\include\curl\multi.h" />
+    <ClInclude Include="Dependencies\Curl\include\curl\options.h" />
+    <ClInclude Include="Dependencies\Curl\include\curl\stdcheaders.h" />
+    <ClInclude Include="Dependencies\Curl\include\curl\system.h" />
+    <ClInclude Include="Dependencies\Curl\include\curl\typecheck-gcc.h" />
+    <ClInclude Include="Dependencies\Curl\include\curl\urlapi.h" />
+    <ClInclude Include="Dependencies\Curl\include\curl\websockets.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\config\ftconfig.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\config\ftheader.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\config\ftmodule.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\config\ftoption.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\config\ftstdlib.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\config\integer-types.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\config\mac-support.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\config\public-macros.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\freetype.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftadvanc.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftbbox.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftbdf.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftbitmap.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftbzip2.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftcache.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftchapters.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftcid.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftcolor.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftdriver.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\fterrdef.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\fterrors.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftfntfmt.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftgasp.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftglyph.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftgxval.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftgzip.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftimage.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftincrem.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftlcdfil.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftlist.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftlogging.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftlzw.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftmac.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftmm.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftmodapi.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftmoderr.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftotval.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftoutln.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftparams.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftpfr.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftrender.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftsizes.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftsnames.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftstroke.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftsynth.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftsystem.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\fttrigon.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\fttypes.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ftwinfnt.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\autohint.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\cffotypes.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\cfftypes.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\compiler-macros.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\ftcalc.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\ftdebug.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\ftdrv.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\ftgloadr.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\fthash.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\ftmemory.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\ftmmtypes.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\ftobjs.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\ftpsprop.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\ftrfork.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\ftserv.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\ftstream.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\fttrace.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\ftvalid.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\psaux.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\pshints.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\services\svbdf.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\services\svcfftl.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\services\svcid.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\services\svfntfmt.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\services\svgldict.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\services\svgxval.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\services\svkern.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\services\svmetric.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\services\svmm.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\services\svotval.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\services\svpfr.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\services\svpostnm.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\services\svprop.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\services\svpscmap.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\services\svpsinfo.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\services\svsfnt.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\services\svttcmap.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\services\svtteng.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\services\svttglyf.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\services\svwinfnt.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\sfnt.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\svginterface.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\t1types.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\tttypes.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\internal\wofftypes.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\otsvg.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\t1tables.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\ttnameid.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\tttables.h" />
+    <ClInclude Include="Dependencies\Freetype\freetype\tttags.h" />
+    <ClInclude Include="Dependencies\Freetype\ft2build.h" />
+    <ClInclude Include="Dependencies\Nlohmann\json.hpp" />
+    <ClInclude Include="Dependencies\Nlohmann\json_fwd.hpp" />
+    <ClInclude Include="Dependencies\LuaU\Ast\include\Luau\Allocator.h" />
+    <ClInclude Include="Dependencies\LuaU\Ast\include\Luau\Ast.h" />
+    <ClInclude Include="Dependencies\LuaU\Ast\include\Luau\Confusables.h" />
+    <ClInclude Include="Dependencies\LuaU\Ast\include\Luau\Lexer.h" />
+    <ClInclude Include="Dependencies\LuaU\Ast\include\Luau\Location.h" />
+    <ClInclude Include="Dependencies\LuaU\Ast\include\Luau\ParseOptions.h" />
+    <ClInclude Include="Dependencies\LuaU\Ast\include\Luau\Parser.h" />
+    <ClInclude Include="Dependencies\LuaU\Ast\include\Luau\ParseResult.h" />
+    <ClInclude Include="Dependencies\LuaU\Ast\include\Luau\StringUtils.h" />
+    <ClInclude Include="Dependencies\LuaU\Ast\include\Luau\TimeTrace.h" />
+    <ClInclude Include="Dependencies\LuaU\Common\include\Luau\Bytecode.h" />
+    <ClInclude Include="Dependencies\LuaU\Common\include\Luau\BytecodeUtils.h" />
+    <ClInclude Include="Dependencies\LuaU\Common\include\Luau\Common.h" />
+    <ClInclude Include="Dependencies\LuaU\Common\include\Luau\DenseHash.h" />
+    <ClInclude Include="Dependencies\LuaU\Common\include\Luau\ExperimentalFlags.h" />
+    <ClInclude Include="Dependencies\LuaU\Common\include\Luau\Variant.h" />
+    <ClInclude Include="Dependencies\LuaU\Common\include\Luau\VecDeque.h" />
+    <ClInclude Include="Dependencies\LuaU\Compiler\include\luacode.h" />
+    <ClInclude Include="Dependencies\LuaU\Compiler\include\Luau\BytecodeBuilder.h" />
+    <ClInclude Include="Dependencies\LuaU\Compiler\include\Luau\Compiler.h" />
+    <ClInclude Include="Dependencies\LuaU\Compiler\src\BuiltinFolding.h" />
+    <ClInclude Include="Dependencies\LuaU\Compiler\src\Builtins.h" />
+    <ClInclude Include="Dependencies\LuaU\Compiler\src\ConstantFolding.h" />
+    <ClInclude Include="Dependencies\LuaU\Compiler\src\CostModel.h" />
+    <ClInclude Include="Dependencies\LuaU\Compiler\src\TableShape.h" />
+    <ClInclude Include="Dependencies\LuaU\Compiler\src\Types.h" />
+    <ClInclude Include="Dependencies\LuaU\Compiler\src\ValueTracking.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\include\lua.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\include\luaconf.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\include\lualib.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\lapi.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\lbuffer.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\lbuiltins.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\lbytecode.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\lcommon.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\ldebug.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\ldo.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\lfunc.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\lgc.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\lmem.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\lnumutils.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\lobject.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\lstate.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\lstring.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\ltable.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\ltm.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\ludata.h" />
+    <ClInclude Include="Dependencies\LuaU\VM\src\lvm.h" />
+    <ClInclude Include="Dependencies\SHA256\include\SHA256.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

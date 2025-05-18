@@ -22,6 +22,7 @@ cpp_indent_preprocessor = leftmost_column
 cpp_indent_access_specifiers = false
 cpp_indent_namespace_contents = true
 cpp_indent_preserve_comments = false
+
 cpp_new_line_before_open_brace_namespace = ignore
 cpp_new_line_before_open_brace_type = ignore
 cpp_new_line_before_open_brace_function = ignore
@@ -33,6 +34,7 @@ cpp_new_line_close_brace_same_line_empty_function = true
 cpp_new_line_before_catch = true
 cpp_new_line_before_else = true
 cpp_new_line_before_while_in_do_while = false
+
 cpp_space_before_function_open_parenthesis = remove
 cpp_space_within_parameter_list_parentheses = true
 cpp_space_between_empty_parameter_list_parentheses = true
@@ -66,4 +68,6 @@ cpp_space_around_binary_operator = insert
 cpp_space_around_assignment_operator = insert
 cpp_space_pointer_reference_alignment = left
 cpp_space_around_ternary_operator = insert
+
 cpp_wrap_preserve_blocks = one_liners
+cpp_wrap_before_control_statements = false
