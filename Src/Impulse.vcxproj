@@ -72,25 +72,25 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)Output\</OutDir>
+    <OutDir>$(SolutionDir)Output\Files\</OutDir>
     <IntDir>$(SolutionDir)Output\Intermediates\</IntDir>
     <IncludePath>$(ProjectDir)Dependencies/;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)Dependencies/;$(ProjectDir)Dependencies/LuaU/build/Debug/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)Output\</OutDir>
+    <OutDir>$(SolutionDir)Output\Files\</OutDir>
     <IntDir>$(SolutionDir)Output\Intermediates\</IntDir>
     <IncludePath>$(ProjectDir)Dependencies/;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)Dependencies/;$(ProjectDir)Dependencies/LuaU/Library/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)Output\</OutDir>
+    <OutDir>$(SolutionDir)Output\Files\</OutDir>
     <IntDir>$(SolutionDir)Output\Intermediates\</IntDir>
     <IncludePath>$(ProjectDir)Dependencies/;$(ProjectDir)Dependencies/SHA256/include;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)Dependencies/;$(ProjectDir)Dependencies/Curl/lib/;$(ProjectDir)Dependencies/SpdLog/build/Release/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)Output\</OutDir>
+    <OutDir>$(SolutionDir)Output\Files\</OutDir>
     <IntDir>$(SolutionDir)Output\Intermediates\</IntDir>
     <IncludePath>$(ProjectDir)Dependencies/;$(ProjectDir)Dependencies/SHA256/include;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)Dependencies/;$(ProjectDir)Dependencies/Curl/lib/;$(ProjectDir)Dependencies/SpdLog/build/Release/;$(LibraryPath)</LibraryPath>
@@ -180,6 +180,7 @@
     <ClCompile Include="Core\Graphics\Implement\DirectX 11.cpp" />
     <ClCompile Include="Core\Http\Http.cpp" />
     <ClCompile Include="Core\Input\Input.cpp" />
+    <ClCompile Include="Core\LuaU\Callbacks.cpp" />
     <ClCompile Include="Core\Utils\Utils.cpp" />
     <ClCompile Include="Core\Win32\Win32.cpp" />
     <ClCompile Include="Dependencies\LuaU\Ast\src\Allocator.cpp" />
@@ -253,15 +254,14 @@
     <ClInclude Include="Core\LuaU\LuaBinds\FileSystem.hpp" />
     <ClInclude Include="Core\LuaU\LuaBinds\Globals.hpp" />
     <ClInclude Include="Core\LuaU\LuaBinds\Graphics.hpp" />
-    <ClInclude Include="Core\LuaU\LuaBinds\Http.hpp" />
     <ClInclude Include="Core\LuaU\LuaBinds\Input.hpp" />
     <ClInclude Include="Core\LuaU\LuaBinds\Renderer.hpp" />
     <ClInclude Include="Core\LuaU\LuaBinds\Usertypes.hpp" />
-    <ClInclude Include="Core\LuaU\LuaBinds\Utils.hpp" />
     <ClInclude Include="Core\LuaU\LuaBinds\Win32.hpp" />
     <ClInclude Include="Core\LuaU\Environment.hpp" />
     <ClInclude Include="Core\LuaU\LuaBinds.hpp" />
-    <ClInclude Include="Core\LuaU\LuaWrapper.hpp" />
+    <ClInclude Include="Core\LuaU\Callbacks.hpp" />
+    <ClInclude Include="Core\LuaU\Wrapper.hpp" />
     <ClInclude Include="Core\Utils\Utils.hpp" />
     <ClInclude Include="Core\Win32\Win32.hpp" />
     <ClInclude Include="Dependencies\base64\include\base64.hpp" />

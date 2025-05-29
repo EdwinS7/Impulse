@@ -16,10 +16,10 @@ void CInput::PoolInput( ) {
 
 			if ( m_Active ) {
 				if ( IsPressed && !WasPressed )
-					Environment.RunConnection( "key_pressed", { i } );
+					Callbacks.RunConnection( "key_pressed", { i } );
 
 				if ( IsPressed ) {
-					Environment.RunConnection( "key_held", { i } );
+					Callbacks.RunConnection( "key_held", { i } );
 					m_AnyKeyPressed = true;
 				}
 			}

@@ -201,6 +201,9 @@
     <ClCompile Include="Dependencies\SHA256\src\SHA256.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Core\LuaU\Callbacks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.hpp">
@@ -731,13 +734,10 @@
     <ClInclude Include="Dependencies\Nlohmann\json_fwd.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Core\LuaU\LuaWrapper.hpp">
+    <ClInclude Include="Core\LuaU\Wrapper.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Core\LuaU\LuaBinds\Usertypes.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\LuaU\LuaBinds\Utils.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Core\LuaU\LuaBinds\FileSystem.hpp">
@@ -755,9 +755,6 @@
     <ClInclude Include="Core\LuaU\LuaBinds\Graphics.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Core\LuaU\LuaBinds\Http.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Core\LuaU\LuaBinds\Input.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -765,6 +762,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Core\LuaU\LuaBinds\Win32.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\LuaU\Callbacks.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

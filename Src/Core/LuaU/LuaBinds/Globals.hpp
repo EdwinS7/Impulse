@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../../Http/Http.hpp"
 #include "Win32.hpp"
 
 namespace LuaBind::LuaGlobals {
@@ -29,7 +30,7 @@ namespace LuaBind::LuaGlobals {
     }
 
     int AddConnection( lua_State* lua_state ) {
-        lua_pushinteger( lua_state, Environment.AddConnection(
+        lua_pushinteger( lua_state, Callbacks.AddConnection(
             luaL_checkstring( lua_state, 1 ),
             lua_ref( lua_state, 2 )
         ) );
@@ -38,7 +39,7 @@ namespace LuaBind::LuaGlobals {
     }
 
     int RemoveConnection( lua_State* lua_state ) {
-        Environment.RemoveConnection( luaL_checkinteger( lua_state, 1 ) );
+        Callbacks.RemoveConnection( luaL_checkinteger( lua_state, 1 ) );
 
         return 0;
     }
@@ -118,5 +119,53 @@ namespace LuaBind::LuaGlobals {
         lua_pushboolean( lua_state, lua_getreadonly( lua_state, 1 ) );
 
         return 1;
+    }
+
+    int RandomString( lua_State* lua_state ) {
+        lua_pushstring( lua_state, Utils.RandomString( luaL_checkinteger( lua_state, 1 ) ) );
+
+        return 0;
+    }
+
+    int SetClipboard( lua_State* lua_state ) {
+        Utils.SetClipboard( luaL_checkstring( lua_state, 1 ) );
+
+        return 0;
+    }
+
+    int GetClipboard( lua_State* lua_state ) {
+        lua_pushstring( lua_state, Utils.GetClipboard( ) );
+
+        return 0;
+    }
+
+    int HasInternet( lua_State* lua_state ) {
+        lua_pushboolean( lua_state, Utils.IsInternetConnected( ) );
+
+        return 1;
+    }
+
+    int Get( lua_State* lua_state ) {
+        lua_pushstring( lua_state, Http.Get( luaL_checkstring( lua_state, 1 ) ).c_str( ) );
+
+        return 0;
+    }
+
+    int Post( lua_State* lua_state ) {
+        lua_pushstring( lua_state, Http.Post( luaL_checkstring( lua_state, 1 ), luaL_checkstring( lua_state, 2 ) ).c_str( ) );
+
+        return 0;
+    }
+
+    int Put( lua_State* lua_state ) {
+        lua_pushstring( lua_state, Http.Put( luaL_checkstring( lua_state, 1 ), luaL_checkstring( lua_state, 2 ) ).c_str( ) );
+
+        return 0;
+    }
+
+    int Delete( lua_State* lua_state ) {
+        lua_pushstring( lua_state, Http.Delete( luaL_checkstring( lua_state, 1 ) ).c_str( ) );
+
+        return 0;
     }
 }

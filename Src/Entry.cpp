@@ -13,16 +13,11 @@ int WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
             return 1;
         }
 
-        const std::string Script = FileSystem.ReadFile("Game/Main.lua");
-
-        if ( Script.empty( ) ) {
-            MessageBox( NULL, "Failed to read Main.lua", "Error", MB_OK | MB_ICONERROR );
+        if ( !Environment.Initiate( ) ) {
             return 1;
         }
 
-        std::string ScriptError;
-        if ( !Environment.RunScript( Script, ScriptError ) ) {
-            MessageBox( NULL, ScriptError.c_str( ), "Error", MB_OK | MB_ICONERROR );
+        if ( !Environment.LoadFile( "Game/Lua/Main.lua" ) ) {
             return 1;
         }
 
@@ -30,11 +25,13 @@ int WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
             Input.PoolInput( );
 
             if ( Graphics.GetDevice( ) && Graphics.Present( ) ) {
-                Environment.RunConnection( "present", {
+                Callbacks.RunConnection( "present", {
                     /* Parameters */
                 } );
             }
         }
+
+        Environment.Cleanup( );
     } catch ( const std::exception& e ) {
         MessageBox( NULL, e.what( ), "Error", MB_OK | MB_ICONERROR );
         return 1;
@@ -43,7 +40,7 @@ int WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         return 1;
     }
 
-    Environment.RunConnection( "shutdown", { 
+    Callbacks.RunConnection( "shutdown", {
         /* Parameters */
     } );
 

@@ -31,7 +31,7 @@ LRESULT CALLBACK WndProc( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam ) {
             );
 
             Input.SetCursorPosition( Position, false );
-            Environment.RunConnection( "cursor_move", { Position } );
+            Callbacks.RunConnection( "cursor_move", { Position } );
 
             break;
         }
