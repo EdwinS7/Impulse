@@ -204,6 +204,9 @@
     <ClCompile Include="Core\LuaU\Callbacks.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Core\Client\Client.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.hpp">
@@ -765,6 +768,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Core\LuaU\Callbacks.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\LuaU\LuaBinds\Client.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Client\Client.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -176,6 +176,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Core\Client\Client.cpp" />
     <ClCompile Include="Core\Graphics\Renderer\Renderer.cpp" />
     <ClCompile Include="Core\Graphics\Implement\DirectX 11.cpp" />
     <ClCompile Include="Core\Http\Http.cpp" />
@@ -242,6 +243,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.hpp" />
+    <ClInclude Include="Core\Client\Client.hpp" />
     <ClInclude Include="Core\FileSystem\FileSystem.hpp" />
     <ClInclude Include="Core\Graphics\Include.hpp" />
     <ClInclude Include="Core\Graphics\Renderer\Renderer.hpp" />
@@ -249,6 +251,7 @@
     <ClInclude Include="Core\Graphics\Types.hpp" />
     <ClInclude Include="Core\Http\Http.hpp" />
     <ClInclude Include="Core\Input\Input.hpp" />
+    <ClInclude Include="Core\LuaU\LuaBinds\Client.hpp" />
     <ClInclude Include="Core\LuaU\LuaBinds\Crypt.hpp" />
     <ClInclude Include="Core\LuaU\LuaBinds\Debug.hpp" />
     <ClInclude Include="Core\LuaU\LuaBinds\FileSystem.hpp" />

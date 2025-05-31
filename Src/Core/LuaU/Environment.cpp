@@ -60,6 +60,13 @@ bool CEnvironment::Initiate( ) {
     "draw_command" );
 
     // Libraries
+    register_table( m_State, "client",
+        std::make_pair( "get_username", LuaBind::LuaClient::GetUsername ),
+        std::make_pair( "get_delta_time", LuaBind::LuaClient::GetDeltaTime ),
+        std::make_pair( "get_real_time", LuaBind::LuaClient::GetRealTime ),
+        std::make_pair( "get_fps", LuaBind::LuaClient::GetFps )
+    );
+
     register_table( m_State, "win32",
         std::make_pair( "create_window", LuaBind::LuaWin32::CreateWindow_ ),
         std::make_pair( "destroy_window", LuaBind::LuaWin32::DestroyWindow ),
@@ -149,8 +156,8 @@ bool CEnvironment::Initiate( ) {
     register_function( m_State, LuaBind::LuaGlobals::Delete, "http_delete", true );
 
     std::vector<std::string> ScriptDirectories = {
-        "Game/Lua/Core/Libraries",
-        "Game/Lua/Core"
+        "Game/Lua/Core",
+        "Game/Lua/Core/Libraries"
     };
 
     for ( const auto& directory : ScriptDirectories ) {

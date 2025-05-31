@@ -19,9 +19,15 @@ public:
         : x( x ), y( y ), z( z ) {}
 };
 
+#define RGBA_TO_DWORD(r, g, b, a) \
+    ((DWORD)((((a) & 0xff) << 24) | (((r) & 0xff) << 16) | (((g) & 0xff) << 8) | ((b) & 0xff)))
+
+#define COLOR_TO_DWORD(color) \
+    ((DWORD)((((color.a) & 0xff) << 24) | (((color.r) & 0xff) << 16) | (((color.g) & 0xff) << 8) | ((color.b) & 0xff)))
+
 class Color {
 public:
-    uint8_t r{}, g{}, b{}, a{ 255 }; // NOTE: Default alpha to 255 (fully opaque)
+    uint8_t r{}, g{}, b{}, a{ 255 };
 
     Color( ) noexcept = default;
     Color( uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255 ) noexcept
@@ -65,36 +71,32 @@ public:
         : Name( name ), Size( size ) {}
 };
 
-#define RGBA_TO_DWORD(r, g, b, a) \
-    ((DWORD)((((a) & 0xff) << 24) | (((r) & 0xff) << 16) | (((g) & 0xff) << 8) | ((b) & 0xff)))
-
 class Vertex {
 public:
     float x{}, y{}, z{}, rhw{};
     float u{}, v{};
-    unsigned long color{};
+    unsigned long clr{};
 
     Vertex( ) noexcept = default;
     Vertex( float x, float y, float z, float rhw, float u, float v, unsigned long color ) noexcept
-        : x( x ), y( y ), z( z ), rhw( rhw ), u( u ), v( v ), color( color ) {}
+        : x( x ), y( y ), z( z ), rhw( rhw ), u( u ), v( v ), clr( color ) {}
     Vertex( float x, float y, float z, float rhw, float u, float v, Color color ) noexcept
-        : x( x ), y( y ), z( z ), rhw( rhw ), u( u ), v( v ), color( RGBA_TO_DWORD(color.r, color.g, color.b, color.a ) ) {}
+        : x( x ), y( y ), z( z ), rhw( rhw ), u( u ), v( v ), clr( COLOR_TO_DWORD( color ) ) {}
 };
 
 class DrawCommand {
 public:
-    D3D_PRIMITIVE_TOPOLOGY primitive_topology;
-    std::vector<Vertex> vertices;
-    std::vector<std::int32_t> indices;
-    Texture* texture;
-    int z_index;
+    D3D_PRIMITIVE_TOPOLOGY PrimitiveTopology{ D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST };
+    std::vector<Vertex> Vertices;
+    std::vector<std::int32_t> Indices;
+    Texture* _Texture;
+    int ZIndex;
 
-    DrawCommand( ) noexcept :
-        primitive_topology( D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST ) {}
+    DrawCommand( ) noexcept = default;
     DrawCommand( D3D_PRIMITIVE_TOPOLOGY primitive_topology ) :
-        primitive_topology( primitive_topology ) {}
+        PrimitiveTopology( primitive_topology ) {}
     DrawCommand( D3D_PRIMITIVE_TOPOLOGY primitive_topology, std::vector<Vertex> vertices, std::vector<std::int32_t> indices, Texture* texture, int z_index ) :
-        primitive_topology( primitive_topology ), vertices( vertices ), indices( indices ), texture( texture ), z_index( z_index ) {}
+        PrimitiveTopology( primitive_topology ), Vertices( vertices ), Indices( indices ), _Texture( texture ), ZIndex( z_index ) {}
 };
 
 #endif

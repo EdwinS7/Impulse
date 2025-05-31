@@ -23,11 +23,12 @@ private:
     int m_ConnectionCount{ 0 };
 
     std::unordered_map<std::string, CallbackPairList> m_Connections = {
-        {"present",     CallbackPairList{}},
-        {"cursor_move", CallbackPairList{}},
-        {"key_pressed", CallbackPairList{}},
-        {"key_held",    CallbackPairList{}},
-        {"shutdown",    CallbackPairList{}},
+        {"present",             CallbackPairList{}},
+        {"cursor_move",         CallbackPairList{}},
+        {"key_pressed",         CallbackPairList{}},
+        {"key_held",            CallbackPairList{}},
+        {"shutdown",            CallbackPairList{}},
+        {"fps_counter_update",  CallbackPairList{}}
     };
 public:
     void RunConnection( const char* connection_name, const Args& args );

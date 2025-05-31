@@ -1,6 +1,8 @@
 #pragma once
 
 namespace LuaBind::LuaUsertypes {
+    // TODO: Finish the 'New' function for every user type.
+
     namespace LuaVector2 {
         int New( lua_State* lua_state ) {
             auto* Userdata = ( Vector2* ) lua_newuserdata( lua_state, sizeof( Vector2 ) );
@@ -171,7 +173,7 @@ namespace LuaBind::LuaUsertypes {
                 lua_pushnumber( lua_state, Userdata->v );
             }
             else if ( strcmp( Key, "color" ) == 0 ) {
-                lua_pushnumber( lua_state, static_cast< double >( Userdata->color ) );
+                lua_pushnumber( lua_state, static_cast< double >( Userdata->clr ) );
             }
             else {
                 luaL_error( lua_state, "invalid field '%s' for vertex", Key );
@@ -203,7 +205,7 @@ namespace LuaBind::LuaUsertypes {
                 Userdata->v = static_cast< float >( lua_tonumber( lua_state, 3 ) );
             }
             else if ( strcmp( Key, "color" ) == 0 ) {
-                Userdata->color = static_cast< unsigned long >( lua_tonumber( lua_state, 3 ) );
+                Userdata->clr = static_cast< unsigned long >( lua_tonumber( lua_state, 3 ) );
             }
             else {
                 luaL_error( lua_state, "invalid field '%s' for vertex", Key );
@@ -483,7 +485,7 @@ namespace LuaBind::LuaUsertypes {
             else if ( strcmp( Key, "hex" ) == 0 ) {
                 lua_pushnumber( lua_state, static_cast< double >(
                     RGBA_TO_DWORD( Userdata->r, Userdata->g, Userdata->b, Userdata->a )
-                    ) );
+                ) );
             }
             else {
                 luaL_error( lua_state, "invalid field '%s' for color", Key );
@@ -546,14 +548,14 @@ namespace LuaBind::LuaUsertypes {
             auto Key = lua_tostring( lua_state, 2 );
 
             if ( strcmp( Key, "primitive_topology" ) == 0 ) {
-                lua_pushinteger( lua_state, static_cast< int >( Userdata->primitive_topology ) );
+                lua_pushinteger( lua_state, static_cast< int >( Userdata->PrimitiveTopology ) );
             }
             else if ( strcmp( Key, "vertices" ) == 0 ) {
-                lua_createtable( lua_state, static_cast< int >( Userdata->vertices.size( ) ), 0 );
+                lua_createtable( lua_state, static_cast< int >( Userdata->Vertices.size( ) ), 0 );
 
-                for ( size_t i = 0; i < Userdata->vertices.size( ); i++ ) {
+                for ( size_t i = 0; i < Userdata->Vertices.size( ); i++ ) {
                     auto* _Vertex = ( Vertex* ) lua_newuserdata( lua_state, sizeof( Vertex ) );
-                    *_Vertex = Userdata->vertices[ i ];
+                    *_Vertex = Userdata->Vertices[ i ];
 
                     luaL_getmetatable( lua_state, "vertex" );
                     lua_setmetatable( lua_state, -2 );
@@ -562,15 +564,15 @@ namespace LuaBind::LuaUsertypes {
                 }
             }
             else if ( strcmp( Key, "indices" ) == 0 ) {
-                lua_createtable( lua_state, static_cast< int >( Userdata->indices.size( ) ), 0 );
+                lua_createtable( lua_state, static_cast< int >( Userdata->Indices.size( ) ), 0 );
 
-                for ( size_t i = 0; i < Userdata->indices.size( ); i++ ) {
-                    lua_pushinteger( lua_state, static_cast< int >( Userdata->indices[ i ] ) );
+                for ( size_t i = 0; i < Userdata->Indices.size( ); i++ ) {
+                    lua_pushinteger( lua_state, static_cast< int >( Userdata->Indices[ i ] ) );
                     lua_rawseti( lua_state, -2, static_cast< int >( i + 1 ) );
                 }
             }
             else if ( strcmp( Key, "z_index" ) == 0 ) {
-                lua_pushinteger( lua_state, static_cast< int >( Userdata->z_index ) );
+                lua_pushinteger( lua_state, static_cast< int >( Userdata->ZIndex ) );
             }
             else if ( lua_getmetatable( lua_state, 1 ) ) {
                 lua_pushvalue( lua_state, 2 );
@@ -595,18 +597,18 @@ namespace LuaBind::LuaUsertypes {
             const char* Key = lua_tostring( lua_state, 2 );
 
             if ( strcmp( Key, "primitive_topology" ) == 0 ) {
-                Userdata->primitive_topology = static_cast< D3D_PRIMITIVE_TOPOLOGY >( lua_tonumber( lua_state, 3 ) );
+                Userdata->PrimitiveTopology = static_cast< D3D_PRIMITIVE_TOPOLOGY >( lua_tonumber( lua_state, 3 ) );
             }
             else if ( strcmp( Key, "vertices" ) == 0 ) {
                 size_t TableLength = static_cast< size_t >( lua_objlen( lua_state, 3 ) );
 
-                Userdata->vertices.resize( TableLength );
+                Userdata->Vertices.resize( TableLength );
 
                 for ( size_t i = 1; i <= TableLength; i++ ) {
                     lua_rawgeti( lua_state, 3, static_cast< int >( i ) );
 
                     auto* _Vertex = ( Vertex* ) luaL_checkudata( lua_state, -1, "vertex" );
-                    Userdata->vertices[ i - 1 ] = *_Vertex;
+                    Userdata->Vertices[ i - 1 ] = *_Vertex;
 
                     lua_pop( lua_state, 1 );
                 }
@@ -614,18 +616,18 @@ namespace LuaBind::LuaUsertypes {
             else if ( strcmp( Key, "indices" ) == 0 ) {
                 size_t TableLength = lua_objlen( lua_state, 3 );
 
-                Userdata->indices.resize( TableLength );
+                Userdata->Indices.resize( TableLength );
 
                 for ( size_t i = 1; i <= TableLength; i++ ) {
                     lua_rawgeti( lua_state, 3, static_cast< int >( i ) );
 
-                    Userdata->indices[ i - 1 ] = lua_tointeger( lua_state, -1 );
+                    Userdata->Indices[ i - 1 ] = lua_tointeger( lua_state, -1 );
 
                     lua_pop( lua_state, 1 );
                 }
             }
             else if ( strcmp( Key, "z_index" ) == 0 ) {
-                Userdata->z_index = static_cast< int >( lua_tonumber( lua_state, 3 ) );
+                Userdata->ZIndex = static_cast< int >( lua_tonumber( lua_state, 3 ) );
             }
             else {
                 luaL_error( lua_state, "invalid field '%s' for draw_command", Key );

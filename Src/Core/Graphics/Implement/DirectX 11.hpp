@@ -7,7 +7,7 @@
 class CGraphics {
 private:
 	// Runtime flags 
-	bool m_VSync = true;
+	bool m_VSync = false;
 	Color m_ClearColor = { 0, 0, 0, 255 };
 
 	// Window / Swap-chain 

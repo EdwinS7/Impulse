@@ -17,10 +17,22 @@ DrawCommand* CRenderer::WriteToBuffer( D3D_PRIMITIVE_TOPOLOGY primitive_topology
     Graphics.DrawCommands.push_back( std::move( Command ) );
 
     std::sort( Graphics.DrawCommands.begin( ), Graphics.DrawCommands.end( ), [ ] ( auto const& a, auto const& b ) {
-        return a->z_index < b->z_index;
+        return a->ZIndex < b->ZIndex;
     } );
 
     return CommandPointer;
+}
+
+bool CRenderer::RemoveFromBuffer( DrawCommand* draw_command ) {
+	auto it = std::find_if( Graphics.DrawCommands.begin( ), Graphics.DrawCommands.end( ), [ & ] ( const std::unique_ptr<DrawCommand>& ptr ) {
+		return ptr.get( ) == draw_command;
+	} );
+
+	if ( it == Graphics.DrawCommands.end( ) )
+		return false;
+
+	Graphics.DrawCommands.erase( it );
+	return true;
 }
 
 CRenderer Renderer;

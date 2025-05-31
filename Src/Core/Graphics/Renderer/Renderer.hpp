@@ -14,8 +14,10 @@ public:
 		const std::vector<Vertex>* vertices, 
 		const std::vector<int32_t>* indices, 
 		Texture* texture, 
-		int z_index = 0 
+		int z_index
 	);
+
+    bool RemoveFromBuffer( DrawCommand* draw_command );
 
 } extern Renderer;
 

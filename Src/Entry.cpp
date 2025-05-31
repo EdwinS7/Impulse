@@ -1,5 +1,6 @@
 ﻿#include "Common.hpp"
 
+#include "Core/Client/Client.hpp"
 #include "Core/FileSystem/FileSystem.hpp"
 #include "Core/LuaU/Environment.hpp"
 #include "Core/Win32/Win32.hpp"
@@ -22,6 +23,7 @@ int WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         }
 
         while ( Win32.DispatchMessages( ) ) {
+            Client.Update( );
             Input.PoolInput( );
 
             if ( Graphics.GetDevice( ) && Graphics.Present( ) ) {

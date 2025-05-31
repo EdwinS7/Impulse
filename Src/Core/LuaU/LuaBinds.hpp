@@ -1,6 +1,7 @@
 #ifndef LUAU_BINDINGS_H
 #define LUAU_BINDINGS_H
 
+#include "LuaBinds/Client.hpp"
 #include "LuaBinds/Crypt.hpp"
 #include "LuaBinds/Debug.hpp"
 #include "LuaBinds/FileSystem.hpp"

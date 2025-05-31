@@ -124,7 +124,7 @@ namespace LuaBind::LuaGlobals {
     int RandomString( lua_State* lua_state ) {
         lua_pushstring( lua_state, Utils.RandomString( luaL_checkinteger( lua_state, 1 ) ) );
 
-        return 0;
+        return 1;
     }
 
     int SetClipboard( lua_State* lua_state ) {

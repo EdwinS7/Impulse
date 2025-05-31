@@ -49,9 +49,9 @@ bool CGraphics::Initiate(
     }
 
     const D3D11_INPUT_ELEMENT_DESC LocalLayout[] = {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,       0, 16, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "COLOR",    0, DXGI_FORMAT_R8G8B8A8_UNORM,     0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT,            0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,                  0, 16, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "COLOR",    0, swap_chain_description.BufferDesc.Format,  0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 }
     };
     Result = m_pDevice->CreateInputLayout(
         LocalLayout, ARRAYSIZE( LocalLayout ),
@@ -155,12 +155,12 @@ bool CGraphics::ResizeSwapChainBuffers( int width, int height ) {
     return true;
 }
 
-bool CGraphics::RenderDrawData( ) {
+bool CGraphics::RenderDrawData(  ) {
     int TotalVerticesCount{ 0 }, TotalIndicesCount{ 0 };
 
     for ( const auto& draw_command : DrawCommands ) {
-        TotalVerticesCount += static_cast< int >( draw_command->vertices.size( ) );
-        TotalIndicesCount += static_cast< int >( draw_command->indices.size( ) );
+        TotalVerticesCount += static_cast< int >( draw_command->Vertices.size( ) );
+        TotalIndicesCount += static_cast< int >( draw_command->Indices.size( ) );
     }
 
     if ( !m_pVertexBuffer || m_VertexBufferSize < TotalVerticesCount ) {
@@ -214,11 +214,11 @@ bool CGraphics::RenderDrawData( ) {
     Vertex* VertexDst = ( Vertex* ) VertexResource.pData;
     std::int32_t* IndexDst = ( std::int32_t* ) IndexResource.pData;
     for ( const auto& draw_command : DrawCommands ) {
-        memcpy( VertexDst, draw_command->vertices.data( ), draw_command->vertices.size( ) * sizeof( Vertex ) );
-        memcpy( IndexDst, draw_command->indices.data( ), draw_command->indices.size( ) * sizeof( std::int32_t ) );
+        memcpy( VertexDst, draw_command->Vertices.data( ), draw_command->Vertices.size( ) * sizeof( Vertex ) );
+        memcpy( IndexDst, draw_command->Indices.data( ), draw_command->Indices.size( ) * sizeof( std::int32_t ) );
 
-        VertexDst += draw_command->vertices.size( );
-        IndexDst += draw_command->indices.size( );
+        VertexDst += draw_command->Vertices.size( );
+        IndexDst += draw_command->Indices.size( );
     }
 
     m_pDeviceContext->Unmap( m_pVertexBuffer, 0 );
@@ -228,13 +228,13 @@ bool CGraphics::RenderDrawData( ) {
 
     int VertexOffset{ 0 }, IndexOffset{ 0 };
     for ( const auto& draw_command : DrawCommands ) {
-        m_pDeviceContext->IASetPrimitiveTopology( draw_command->primitive_topology );
-        m_pDeviceContext->PSSetShaderResources( 0, 1, ( draw_command->texture ? &draw_command->texture->pTextureSRV : &m_pTextureSRV ) );
+        m_pDeviceContext->IASetPrimitiveTopology( draw_command->PrimitiveTopology );
+        m_pDeviceContext->PSSetShaderResources( 0, 1, ( draw_command->_Texture ? &draw_command->_Texture->pTextureSRV : &m_pTextureSRV ) );
 
-        m_pDeviceContext->DrawIndexed( static_cast< UINT >( draw_command->indices.size( ) ), IndexOffset, VertexOffset );
+        m_pDeviceContext->DrawIndexed( static_cast< UINT >( draw_command->Indices.size( ) ), IndexOffset, VertexOffset );
 
-        VertexOffset += static_cast< int >( draw_command->vertices.size( ) );
-        IndexOffset += static_cast< int >( draw_command->indices.size( ) );
+        VertexOffset += static_cast< int >( draw_command->Vertices.size( ) );
+        IndexOffset += static_cast< int >( draw_command->Indices.size( ) );
     }
 
     return true;
@@ -406,7 +406,8 @@ Font* CGraphics::_CreateFont( const char* font_path, int size ) {
     // Extended ASCII - 256
     // Unicode - > 143,000
     for ( int i = 0; i < 128; i++ ) {
-        if ( !isprint( i ) )
+        // 32 = Space bar
+        if ( !isprint( i ) && i != 32 )
             continue;
 
         Error = FT_Load_Char( m_FTFace, i, FT_LOAD_RENDER );
@@ -415,46 +416,51 @@ Font* CGraphics::_CreateFont( const char* font_path, int size ) {
         }
 
         FT_GlyphSlot GlyphSlot = m_FTFace->glyph;
-        if ( GlyphSlot->bitmap.width == 0 || GlyphSlot->bitmap.rows == 0 || GlyphSlot->bitmap.buffer == nullptr ) {
-            continue;
-        }
 
-        const unsigned int width = GlyphSlot->bitmap.width;
-        const unsigned int height = GlyphSlot->bitmap.rows;
-        std::vector<unsigned char> Color( width * height * 4 );
-        for ( unsigned int y = 0; y < height; y++ ) {
-            for ( unsigned int x = 0; x < width; x++ ) {
-                unsigned char gray = GlyphSlot->bitmap.buffer[ y * GlyphSlot->bitmap.pitch + x ];
-                unsigned int rgbaIdx = ( y * width + x ) * 4;
-                Color[ rgbaIdx + 0 ] = gray; // R
-                Color[ rgbaIdx + 1 ] = gray; // G
-                Color[ rgbaIdx + 2 ] = gray; // B
-                Color[ rgbaIdx + 3 ] = gray; // A
+        bool HasBitmap = GlyphSlot->bitmap.width != 0 &&
+            GlyphSlot->bitmap.rows != 0 &&
+            GlyphSlot->bitmap.buffer != nullptr;
+
+        Texture* _Texture = nullptr;
+        if ( HasBitmap ) {
+            const unsigned int width = GlyphSlot->bitmap.width;
+            const unsigned int height = GlyphSlot->bitmap.rows;
+            std::vector<unsigned char> Color( width * height * 4 );
+
+            for ( unsigned int y = 0; y < height; y++ ) {
+                for ( unsigned int x = 0; x < width; x++ ) {
+                    unsigned char gray = GlyphSlot->bitmap.buffer[ y * GlyphSlot->bitmap.pitch + x ];
+                    unsigned int rgbaIdx = ( y * width + x ) * 4;
+                    Color[ rgbaIdx + 0 ] = gray;
+                    Color[ rgbaIdx + 1 ] = gray;
+                    Color[ rgbaIdx + 2 ] = gray;
+                    Color[ rgbaIdx + 3 ] = gray;
+                }
             }
+
+            D3D11_TEXTURE2D_DESC TextureDesc = {};
+            TextureDesc.Width = width;
+            TextureDesc.Height = height;
+            TextureDesc.MipLevels = 1;
+            TextureDesc.ArraySize = 1;
+            TextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+            TextureDesc.Usage = D3D11_USAGE_DEFAULT;
+            TextureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+            TextureDesc.CPUAccessFlags = 0;
+            TextureDesc.SampleDesc.Count = 1;
+
+            D3D11_SUBRESOURCE_DATA ResourceData = {};
+            ResourceData.pSysMem = Color.data( );
+            ResourceData.SysMemPitch = width * 4;
+
+            D3D11_SHADER_RESOURCE_VIEW_DESC SRVDescription = {};
+            SRVDescription.Format = TextureDesc.Format;
+            SRVDescription.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+            SRVDescription.Texture2D.MipLevels = 1;
+
+            std::string TextureName = FontName + "_" + std::string( 1, static_cast< char >( i ) );
+            _Texture = CreateTexture( TextureName.c_str( ), TextureDesc, ResourceData, SRVDescription );
         }
-
-        D3D11_TEXTURE2D_DESC TextureDesc = {};
-        TextureDesc.Width = width;
-        TextureDesc.Height = height;
-        TextureDesc.MipLevels = 1;
-        TextureDesc.ArraySize = 1;
-        TextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        TextureDesc.Usage = D3D11_USAGE_DEFAULT;
-        TextureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-        TextureDesc.CPUAccessFlags = 0;
-        TextureDesc.SampleDesc.Count = 1;
-
-        D3D11_SUBRESOURCE_DATA ResourceData = {};
-        ResourceData.pSysMem = Color.data( );
-        ResourceData.SysMemPitch = width * 4;
-
-        D3D11_SHADER_RESOURCE_VIEW_DESC SRVDescription = {};
-        SRVDescription.Format = TextureDesc.Format;
-        SRVDescription.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-        SRVDescription.Texture2D.MipLevels = 1;
-
-        std::string TextureName = FontName + "_" + std::string( 1, static_cast< char >( i ) );
-        Texture* _Texture = CreateTexture( TextureName.c_str( ), TextureDesc, ResourceData, SRVDescription );
 
         _Font->Glyphs[ static_cast< char >( i ) ] = Glyph(
             static_cast< float >( GlyphSlot->advance.x ) / 64.0f,

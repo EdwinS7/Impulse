@@ -24,32 +24,37 @@ void CCallbacks::RunConnection( const char* connection_name, const Args& args ) 
                 else if constexpr ( std::is_same_v<T, std::string> )
                     lua_pushstring( L, value.c_str( ) );
                 else if constexpr ( std::is_same_v<T, Vector2> ) {
-                    auto* vec = static_cast< Vector2* >( lua_newuserdata( L, sizeof( Vector2 ) ) );
-                    new ( vec ) Vector2( value.x, value.y );
+                    auto* _Vector2 = static_cast< Vector2* >( lua_newuserdata( L, sizeof( Vector2 ) ) );
+                    new ( _Vector2 ) Vector2( value.x, value.y );
+
                     luaL_getmetatable( L, "vector2" );
                     lua_setmetatable( L, -2 );
                 }
                 else if constexpr ( std::is_same_v<T, Vector3> ) {
-                    auto* vec = static_cast< Vector3* >( lua_newuserdata( L, sizeof( Vector3 ) ) );
-                    new ( vec ) Vector3( value.x, value.y, value.z );
+                    auto* _Vector3 = static_cast< Vector3* >( lua_newuserdata( L, sizeof( Vector3 ) ) );
+                    new ( _Vector3 ) Vector3( value.x, value.y, value.z );
+
                     luaL_getmetatable( L, "vector3" );
                     lua_setmetatable( L, -2 );
                 }
                 else if constexpr ( std::is_same_v<T, Vertex> ) {
-                    auto* v = static_cast< Vertex* >( lua_newuserdata( L, sizeof( Vertex ) ) );
-                    new ( v ) Vertex( value.x, value.y, value.z, value.rhw, value.u, value.v, value.color );
+                    auto* _Vertex = static_cast< Vertex* >( lua_newuserdata( L, sizeof( Vertex ) ) );
+                    new ( _Vertex ) Vertex( value.x, value.y, value.z, value.rhw, value.u, value.v, value.clr );
+
                     luaL_getmetatable( L, "vertex" );
                     lua_setmetatable( L, -2 );
                 }
                 else if constexpr ( std::is_same_v<T, DrawCommand> ) {
-                    auto* cmd = static_cast< DrawCommand* >( lua_newuserdata( L, sizeof( DrawCommand ) ) );
-                    new ( cmd ) DrawCommand( value.primitive_topology, value.vertices, value.indices, value.texture, value.z_index );
+                    auto* _DrawCommand = static_cast< DrawCommand* >( lua_newuserdata( L, sizeof( DrawCommand ) ) );
+                    new ( _DrawCommand ) DrawCommand( value.PrimitiveTopology, value.Vertices, value.Indices, value._Texture, value.ZIndex );
+
                     luaL_getmetatable( L, "draw_command" );
                     lua_setmetatable( L, -2 );
                 }
                 else if constexpr ( std::is_same_v<T, Color> ) {
-                    auto* color = static_cast< Color* >( lua_newuserdata( L, sizeof( Color ) ) );
-                    new ( color ) Color( value.r, value.g, value.b, value.a );
+                    auto* _Color = static_cast< Color* >( lua_newuserdata( L, sizeof( Color ) ) );
+                    new ( _Color ) Color( value.r, value.g, value.b, value.a );
+
                     luaL_getmetatable( L, "color" );
                     lua_setmetatable( L, -2 );
                 }
@@ -57,19 +62,18 @@ void CCallbacks::RunConnection( const char* connection_name, const Args& args ) 
         }
 
         if ( lua_pcall( L, args.size( ), 0, 0 ) != LUA_OK ) {
-            std::cerr << "Error running connection '" << connection_name << "': "
-                << lua_tostring( L, -1 ) << "\n";
+            std::cerr << "Error running connection '" << connection_name << "': " << lua_tostring( L, -1 ) << "\n";
+            // TODO: Remove connection to prevent spam erroring
+
             lua_pop( L, 1 );
         }
     }
 }
 
 int CCallbacks::AddConnection( const char* connection_name, int function_reference ) {
-    static int ConnectionCount = 1;
+    m_Connections[ connection_name ].push_back( std::make_pair( m_ConnectionCount, function_reference ) );
 
-    m_Connections[ connection_name ].push_back( std::make_pair( ConnectionCount, function_reference ) );
-
-    return ConnectionCount++;
+    return m_ConnectionCount++;
 }
 
 void CCallbacks::RemoveConnection( int connection_id ) {
