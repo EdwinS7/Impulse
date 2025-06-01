@@ -49,7 +49,6 @@ private:
 
 public:
 	bool Initiate( 
-		HWND hwnd, 
 		DXGI_SWAP_CHAIN_DESC swap_chain_description, 
 		D3D11_BUFFER_DESC buffer_description, 
 		D3D11_RASTERIZER_DESC rasterizer_description,
@@ -57,7 +56,8 @@ public:
 		D3D11_SAMPLER_DESC sampler_description, 
 		D3D11_BLEND_DESC blend_description, 
 		const char* vertex_shader_source, 
-		const char* pixel_shader_source 
+		const char* pixel_shader_source, 
+		bool vertical_sync
 	);
 
 	void Cleanup( );
@@ -85,7 +85,12 @@ public:
 	);
 	void DestroyTexture( Texture* texture );
 
-	Font* _CreateFont( const char* font_path, int size );
+	Font* _CreateFont( 
+		const char* font_path, 
+		int size, 
+		int padding, 
+		bool antialiasing
+	);
 	void DestroyFont( Font* font );
 
 	std::vector<std::unique_ptr<DrawCommand>> DrawCommands;

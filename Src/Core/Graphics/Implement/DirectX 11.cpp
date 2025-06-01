@@ -4,7 +4,6 @@
 #define SAFE_RELEASE(p) if (p) { p->Release(); p = nullptr; }
 
 bool CGraphics::Initiate(
-    HWND hwnd,
     DXGI_SWAP_CHAIN_DESC swap_chain_description,
     D3D11_BUFFER_DESC buffer_description,
     D3D11_RASTERIZER_DESC rasterizer_description,
@@ -12,9 +11,11 @@ bool CGraphics::Initiate(
     D3D11_SAMPLER_DESC sampler_description,
     D3D11_BLEND_DESC blend_description,
     const char* vertex_shader_source,
-    const char* pixel_shader_source )
+    const char* pixel_shader_source,
+    bool vertical_sync )
 {
-    m_TargetWindow = hwnd;
+    m_TargetWindow = swap_chain_description.OutputWindow;
+    m_VSync = vertical_sync;
 
     auto Result = D3D11CreateDeviceAndSwapChain(
         nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0,
@@ -390,7 +391,7 @@ void CGraphics::DestroyTexture( Texture* texture ) {
     texture = nullptr;
 }
 
-Font* CGraphics::_CreateFont( const char* font_path, int size ) {
+Font* CGraphics::_CreateFont( const char* font_path, int size, int padding, bool antialiasing ) {
     auto Error = FT_New_Face( m_FT, font_path, 0, &m_FTFace );
     if ( Error )
         return nullptr;
@@ -400,7 +401,7 @@ Font* CGraphics::_CreateFont( const char* font_path, int size ) {
         return nullptr;
 
     std::string FontName = std::filesystem::path( font_path ).stem( ).string( );
-    auto _Font = new Font( FontName, size );
+    auto _Font = new Font( FontName, size, padding, antialiasing );
 
     // ASCII - 128
     // Extended ASCII - 256
@@ -410,37 +411,46 @@ Font* CGraphics::_CreateFont( const char* font_path, int size ) {
         if ( !isprint( i ) && i != 32 )
             continue;
 
-        Error = FT_Load_Char( m_FTFace, i, FT_LOAD_RENDER );
+        Error = FT_Load_Char( m_FTFace, i, FT_LOAD_NO_BITMAP );
         if ( Error ) {
             continue;
         }
 
-        FT_GlyphSlot GlyphSlot = m_FTFace->glyph;
+        FT_Glyph _Glyph;
+        FT_Get_Glyph( m_FTFace->glyph, &_Glyph );
+        FT_Glyph_To_Bitmap( &_Glyph, antialiasing ? FT_RENDER_MODE_NORMAL : FT_RENDER_MODE_MONO, 0, 1 );
 
-        bool HasBitmap = GlyphSlot->bitmap.width != 0 &&
-            GlyphSlot->bitmap.rows != 0 &&
-            GlyphSlot->bitmap.buffer != nullptr;
+        FT_BitmapGlyph BitmapGlyph = reinterpret_cast< FT_BitmapGlyph >( _Glyph );
+        FT_Bitmap& Bitmap = BitmapGlyph->bitmap;
+        bool HasBitmap = Bitmap.width != 0 &&
+            Bitmap.rows != 0 &&
+            Bitmap.buffer != nullptr;
 
         Texture* _Texture = nullptr;
         if ( HasBitmap ) {
-            const unsigned int width = GlyphSlot->bitmap.width;
-            const unsigned int height = GlyphSlot->bitmap.rows;
-            std::vector<unsigned char> Color( width * height * 4 );
+            const unsigned int Width = Bitmap.width;
+            const unsigned int Height = Bitmap.rows;
+            std::vector<unsigned char> Color( Width * Height * 4 );
 
-            for ( unsigned int y = 0; y < height; y++ ) {
-                for ( unsigned int x = 0; x < width; x++ ) {
-                    unsigned char gray = GlyphSlot->bitmap.buffer[ y * GlyphSlot->bitmap.pitch + x ];
-                    unsigned int rgbaIdx = ( y * width + x ) * 4;
-                    Color[ rgbaIdx + 0 ] = 255;
-                    Color[ rgbaIdx + 1 ] = 255;
-                    Color[ rgbaIdx + 2 ] = 255;
-                    Color[ rgbaIdx + 3 ] = gray;
+            for ( unsigned int y = 0; y < Height; y++ ) {
+                for ( unsigned int x = 0; x < Width; x++ ) {
+                    unsigned char GrayScale;
+                    if ( Bitmap.pixel_mode == FT_PIXEL_MODE_MONO )
+                        GrayScale = ( Bitmap.buffer[ y * Bitmap.pitch + ( x >> 3 ) ] & ( 0x80 >> ( x & 7 ) ) ) ? 255 : 0;
+                    else
+                        GrayScale = Bitmap.buffer[ y * Bitmap.pitch + x ];
+
+                    unsigned int Index = ( y * Width + x ) * 4;
+                    Color[ Index + 0 ] = 255;
+                    Color[ Index + 1 ] = 255;
+                    Color[ Index + 2 ] = 255;
+                    Color[ Index + 3 ] = GrayScale;
                 }
             }
 
             D3D11_TEXTURE2D_DESC TextureDesc = {};
-            TextureDesc.Width = width;
-            TextureDesc.Height = height;
+            TextureDesc.Width = Width;
+            TextureDesc.Height = Height;
             TextureDesc.MipLevels = 1;
             TextureDesc.ArraySize = 1;
             TextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -451,7 +461,7 @@ Font* CGraphics::_CreateFont( const char* font_path, int size ) {
 
             D3D11_SUBRESOURCE_DATA ResourceData = {};
             ResourceData.pSysMem = Color.data( );
-            ResourceData.SysMemPitch = width * 4;
+            ResourceData.SysMemPitch = Width * 4; // RGBA
 
             D3D11_SHADER_RESOURCE_VIEW_DESC SRVDescription = {};
             SRVDescription.Format = TextureDesc.Format;
@@ -462,12 +472,17 @@ Font* CGraphics::_CreateFont( const char* font_path, int size ) {
             _Texture = CreateTexture( TextureName.c_str( ), TextureDesc, ResourceData, SRVDescription );
         }
 
+        _Font->MaxOffsetY = max( 
+            _Font->MaxOffsetY,
+            static_cast< float >( BitmapGlyph->top )
+        );
+
         _Font->Glyphs[ static_cast< char >( i ) ] = Glyph(
-            static_cast< float >( GlyphSlot->advance.x ) / 64.0f,
-            static_cast< float >( GlyphSlot->bitmap_left ),
-            static_cast< float >( GlyphSlot->bitmap_top ),
-            static_cast< float >( GlyphSlot->bitmap.width ),
-            static_cast< float >( GlyphSlot->bitmap.rows ),
+            static_cast< float >( m_FTFace->glyph->advance.x ) / 64.0f,
+            static_cast< float >( BitmapGlyph->left ),
+            static_cast< float >( BitmapGlyph->top ),
+            static_cast< float >( Bitmap.width ),
+            static_cast< float >( Bitmap.rows ),
             0.f, 0.f, 1.f, 1.f, _Texture
         );
     }

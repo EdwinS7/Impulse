@@ -1,5 +1,7 @@
 #include "Renderer.hpp"
 
+#include "../../FileSystem/FileSystem.hpp"
+
 DrawCommand* CRenderer::WriteToBuffer( D3D_PRIMITIVE_TOPOLOGY primitive_topology, const std::vector<Vertex>* vertices, const std::vector<int32_t>* indices, Texture* texture, int z_index ) {
     m_VerticesCount += static_cast< int >( vertices->size( ) );
     m_IndicesCount += static_cast< int >( indices->size( ) );

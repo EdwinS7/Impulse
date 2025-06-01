@@ -53,10 +53,9 @@ namespace LuaBind::LuaCrypt {
             return 1;
         }
         catch ( const std::exception& e ) {
-            lua_pushnil( lua_state );
-            lua_pushstring( lua_state, e.what( ) );
+            luaL_error( lua_state, e.what( ) );
 
-            return 2;
+            return 0;
         }
 
         return 1;

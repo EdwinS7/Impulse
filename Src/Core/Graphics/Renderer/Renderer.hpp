@@ -18,7 +18,6 @@ public:
 	);
 
     bool RemoveFromBuffer( DrawCommand* draw_command );
-
 } extern Renderer;
 
 #endif 

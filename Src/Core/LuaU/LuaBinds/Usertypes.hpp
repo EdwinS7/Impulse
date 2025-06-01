@@ -227,22 +227,8 @@ namespace LuaBind::LuaUsertypes {
 
     namespace LuaTexture {
         int New( lua_State* lua_state ) {
-            ID3D11Texture2D* Texture2D = nullptr;
-            ID3D11ShaderResourceView* TextureSRV = nullptr;
-
-            auto* _Texture = new Texture(
-                luaL_checkstring( lua_state, 1 ),
-                Texture2D,
-                TextureSRV
-            );
-
-            auto** Userdata = ( Texture** ) lua_newuserdata( lua_state, sizeof( Texture* ) );
-            *Userdata = _Texture;
-
-            luaL_getmetatable( lua_state, "texture" );
-            lua_setmetatable( lua_state, -2 );
-
-            return 1;
+            luaL_error( lua_state, "Use 'graphics.create_texture' to create a texture instead." );
+            return 0;
         }
 
         int Index( lua_State* lua_state ) {
@@ -266,19 +252,7 @@ namespace LuaBind::LuaUsertypes {
         }
 
         int NewIndex( lua_State* lua_state ) {
-            Texture* _Texture = *( Texture** ) luaL_checkudata( lua_state, 1, "texture" );
-            const char* Key = luaL_checkstring( lua_state, 2 );
-
-            if ( strcmp( Key, "name" ) == 0 ) {
-                _Texture->Name = luaL_checkstring( lua_state, 3 );
-            }
-            else if ( strcmp( Key, "texture" ) == 0 || strcmp( Key, "texture_srv" ) == 0 ) {
-                luaL_error( lua_state, "attempt to write to readonly field '%s'", Key );
-            }
-            else {
-                luaL_error( lua_state, "invalid field '%s' for texture", Key );
-            }
-
+            luaL_error( lua_state, "Textures are read-only and cannot be modified." );
             return 0;
         }
 
@@ -296,16 +270,8 @@ namespace LuaBind::LuaUsertypes {
 
     namespace LuaGlyph {
         int New( lua_State* lua_state ) {
-            auto* Userdata = ( Glyph* ) lua_newuserdata( lua_state, sizeof( Glyph ) );
-
-            new ( Userdata ) Glyph(
-                // TODO: Add parameters
-            );
-
-            luaL_getmetatable( lua_state, "glyph" );
-            lua_setmetatable( lua_state, -2 );
-
-            return 1;
+            luaL_error( lua_state, "Use 'graphics.create_font' to create a font. Fonts contain a table of glyphs." );
+            return 0;
         }
 
         int Index( lua_State* lua_state ) {
@@ -354,8 +320,7 @@ namespace LuaBind::LuaUsertypes {
         }
 
         int NewIndex( lua_State* lua_state ) {
-            luaL_error( lua_state, "writing to glyph is forbidden" );
-
+            luaL_error( lua_state, "Glyphs are read-only and cannot be modified." );
             return 0;
         }
 
@@ -372,17 +337,8 @@ namespace LuaBind::LuaUsertypes {
 
     namespace LuaFont {
         int New( lua_State* lua_state ) {
-            auto* Userdata = ( Font* ) lua_newuserdata( lua_state, sizeof( Font ) );
-
-            new ( Userdata ) Font(
-                luaL_checkstring( lua_state, 1 ),
-                luaL_checkinteger( lua_state, 2 )
-            );
-
-            luaL_getmetatable( lua_state, "font" );
-            lua_setmetatable( lua_state, -2 );
-
-            return 1;
+            luaL_error( lua_state, "Use 'graphics.create_font' to create a font instead." );
+            return 0;
         }
 
         int Index( lua_State* lua_state ) {
@@ -394,6 +350,15 @@ namespace LuaBind::LuaUsertypes {
             }
             else if ( strcmp( Key, "size" ) == 0 ) {
                 lua_pushinteger( lua_state, Userdata->Size );
+            }
+            else if ( strcmp( Key, "padding" ) == 0 ) {
+                lua_pushinteger( lua_state, Userdata->Padding );
+            }
+            else if ( strcmp( Key, "antialiasing" ) == 0 ) {
+                lua_pushboolean( lua_state, Userdata->Antialiasing );
+            }
+            else if ( strcmp( Key, "max_offset_y" ) == 0 ) {
+                lua_pushnumber( lua_state, Userdata->MaxOffsetY );
             }
             else if ( strcmp( Key, "glyphs" ) == 0 ) {
                 lua_createtable( lua_state, 0, static_cast< int >( Userdata->Glyphs.size( ) ) );
@@ -419,22 +384,7 @@ namespace LuaBind::LuaUsertypes {
         }
 
         int NewIndex( lua_State* lua_state ) {
-            Font* Userdata = *( Font** ) luaL_checkudata( lua_state, 1, "font" );
-            const char* Key = luaL_checkstring( lua_state, 2 );
-
-            if ( strcmp( Key, "name" ) == 0 ) {
-                Userdata->Name = luaL_checkstring( lua_state, 3 );
-            }
-            else if ( strcmp( Key, "size" ) == 0 ) {
-                Userdata->Size = luaL_checkinteger( lua_state, 3 );
-            }
-            else if ( strcmp( Key, "glyphs" ) == 0 ) {
-                luaL_error( lua_state, "'%s' cannot be set", Key );
-            }
-            else {
-                luaL_error( lua_state, "invalid field '%s' for font", Key );
-            }
-
+            luaL_error( lua_state, "Fonts are read-only and cannot be modified." );
             return 0;
         }
 
@@ -454,10 +404,10 @@ namespace LuaBind::LuaUsertypes {
             auto* Userdata = ( Color* ) lua_newuserdata( lua_state, sizeof( Color ) );
 
             new ( Userdata ) Color(
-                static_cast< uint8_t >( lua_tointeger( lua_state, 1 ) ), // r
-                static_cast< uint8_t >( lua_tointeger( lua_state, 2 ) ), // g
-                static_cast< uint8_t >( lua_tointeger( lua_state, 3 ) ), // b
-                static_cast< uint8_t >( luaL_optinteger( lua_state, 4, 255 ) ) // a (optional)
+                static_cast< uint8_t >( lua_tointeger( lua_state, 1 ) ),
+                static_cast< uint8_t >( lua_tointeger( lua_state, 2 ) ),
+                static_cast< uint8_t >( lua_tointeger( lua_state, 3 ) ),
+                static_cast< uint8_t >( luaL_optinteger( lua_state, 4, 255 ) )
             );
 
             luaL_getmetatable( lua_state, "color" );
@@ -530,16 +480,8 @@ namespace LuaBind::LuaUsertypes {
 
     namespace LuaDrawCommand {
         int New( lua_State* lua_state ) {
-            auto* Userdata = ( DrawCommand* ) lua_newuserdata( lua_state, sizeof( DrawCommand ) );
-
-            new ( Userdata ) DrawCommand(
-                D3D_PRIMITIVE_TOPOLOGY( luaL_optinteger( lua_state, 1, D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST ) )
-            );
-
-            luaL_getmetatable( lua_state, "draw_command" );
-            lua_setmetatable( lua_state, -2 );
-
-            return 1;
+            luaL_error( lua_state, "Use 'renderer.write_to_buffer' to create a draw_command instead." );
+            return 0;
         }
 
         int Index( lua_State* lua_state ) {

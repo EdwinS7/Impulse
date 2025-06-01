@@ -61,14 +61,16 @@ struct Glyph {
 class Font {
 public:
     std::string Name;
-    int Size;
+    int Size, Padding;
+    bool Antialiasing;
 
     std::map<char, Glyph> Glyphs;
+    float MaxOffsetY;
 
     Font( ) noexcept = default;
 
-    Font( const std::string& name, int size )
-        : Name( name ), Size( size ) {}
+    Font( const std::string& name, int size, int padding, bool antialiasing )
+        : Name( name ), Size( size ), Padding( padding ), Antialiasing( antialiasing ) {}
 };
 
 class Vertex {

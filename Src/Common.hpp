@@ -36,6 +36,7 @@
 // FreeType
 #include "Freetype/freetype.h"
 #include "Freetype/ft2build.h"
+#include "Freetype/ftstroke.h"
 
 // Luau VM and Compiler
 #include "LuaU/VM/Include/lualib.h"
