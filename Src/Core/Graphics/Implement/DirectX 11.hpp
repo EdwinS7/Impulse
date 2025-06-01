@@ -8,7 +8,7 @@ class CGraphics {
 private:
 	// Runtime flags 
 	bool m_VSync = false;
-	Color m_ClearColor = { 0, 0, 0, 255 };
+	Color m_ClearColor = { 114, 140, 153, 255 };
 
 	// Window / Swap-chain 
 	HWND m_TargetWindow = nullptr;

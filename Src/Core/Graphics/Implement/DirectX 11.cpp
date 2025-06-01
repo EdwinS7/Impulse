@@ -259,10 +259,10 @@ void CGraphics::SetupRenderState( ID3D11DeviceContext* device_context ) {
     m_pDeviceContext->OMSetRenderTargets( 1, &m_pRenderTargetView, nullptr );
 
     float ClearColor[ 4 ] = {
-        static_cast< float >( m_ClearColor.r ),
-        static_cast< float >( m_ClearColor.g ),
-        static_cast< float >( m_ClearColor.b ),
-        static_cast< float >( m_ClearColor.a )
+        static_cast< float >( m_ClearColor.r ) / 255.f,
+        static_cast< float >( m_ClearColor.g ) / 255.f,
+        static_cast< float >( m_ClearColor.b ) / 255.f,
+        static_cast< float >( m_ClearColor.a ) / 255.f
     };
     m_pDeviceContext->ClearRenderTargetView( m_pRenderTargetView, ClearColor );
 
@@ -431,9 +431,9 @@ Font* CGraphics::_CreateFont( const char* font_path, int size ) {
                 for ( unsigned int x = 0; x < width; x++ ) {
                     unsigned char gray = GlyphSlot->bitmap.buffer[ y * GlyphSlot->bitmap.pitch + x ];
                     unsigned int rgbaIdx = ( y * width + x ) * 4;
-                    Color[ rgbaIdx + 0 ] = gray;
-                    Color[ rgbaIdx + 1 ] = gray;
-                    Color[ rgbaIdx + 2 ] = gray;
+                    Color[ rgbaIdx + 0 ] = 255;
+                    Color[ rgbaIdx + 1 ] = 255;
+                    Color[ rgbaIdx + 2 ] = 255;
                     Color[ rgbaIdx + 3 ] = gray;
                 }
             }
