@@ -3,7 +3,7 @@
 
 #include "../Common.hpp"
 
-static inline void register_function( lua_State* L, lua_CFunction wrapper_function, const std::string& name, bool global = false ) {
+static inline void RegisterFunction( lua_State* L, lua_CFunction wrapper_function, const std::string& name, bool global = false ) {
     lua_pushcfunction( L, wrapper_function, nullptr );
 
     if ( global )
@@ -13,19 +13,19 @@ static inline void register_function( lua_State* L, lua_CFunction wrapper_functi
 }
 
 template<typename... Funcs>
-void register_table( lua_State* L, const char* name, Funcs... funcs ) {
+inline void RegisterTable( lua_State* L, const char* name, Funcs... funcs ) {
     std::vector<std::pair<const char*, lua_CFunction>> Entries = { funcs... };
 
     lua_createtable( L, 0, static_cast< int >( Entries.size( ) ) );
     for ( const auto& [name, fn] : Entries ) {
-        register_function( L, fn, name, false );
+        RegisterFunction( L, fn, name, false );
     }
 
     lua_setglobal( L, name );
 }
 
 template<typename... Pairs>
-void extend_table( lua_State* L, const char* tableName, Pairs&&... pairs ) {
+inline void ExtendTable( lua_State* L, const char* tableName, Pairs&&... pairs ) {
     lua_getglobal( L, tableName );
 
     if ( !lua_istable( L, -1 ) ) {
@@ -35,24 +35,49 @@ void extend_table( lua_State* L, const char* tableName, Pairs&&... pairs ) {
     }
 
     ( [ & ] {
-        register_function( L, pairs.second, pairs.first );
+        RegisterFunction( L, pairs.second, pairs.first );
     }( ), ... );
 
     lua_pop( L, 1 );
 }
 
-static inline void register_usertype( lua_State* L, lua_CFunction new_function, lua_CFunction destroy_function, lua_CFunction index_function, lua_CFunction newindex_function, const char* name ) {
+static inline void RegisterUsertype( lua_State* L, const char* name,
+    const std::unordered_map<std::string, lua_CFunction>& methods,
+    lua_CFunction new_function, lua_CFunction destroy_function
+) {
     luaL_newmetatable( L, name );
 
-    register_function( L, index_function, "__index", false );
-    register_function( L, newindex_function, "__newindex", false );
-    register_function( L, destroy_function, "destroy", false );
+    RegisterFunction( L, destroy_function, "destroy", false );
+    for ( const auto& [key, func] : methods ) {
+        if ( key.compare( 0, 2, "__" ) == 0 )
+            RegisterFunction( L, func, key.c_str( ), false );
+    }
 
     lua_createtable( L, 0, 1 );
 
-    register_function( L, new_function, "new", false );
+    RegisterFunction( L, new_function, "new", false );
+    for ( const auto& [key, func] : methods ) {
+        if ( key.compare( 0, 2, "__" ) != 0 )
+            RegisterFunction( L, func, key.c_str( ), false );
+    }
 
     lua_setglobal( L, name );
+}
+
+inline int ThrowError( lua_State* L, const char* fmt, ... ) {
+    va_list args;
+    va_start( args, fmt );
+    luaL_error( L, fmt, args );
+    va_end( args );
+    return 0;
+}
+
+inline int ThrowArgError( lua_State* L, int arg, const char* fmt, ... ) {
+    va_list args;
+    va_start( args, fmt );
+    luaL_argerror( L, arg, fmt, args );
+    va_end( args );
+    return 0;
 }
 
 #endif

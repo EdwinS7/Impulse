@@ -19,55 +19,74 @@ bool CEnvironment::Initiate( ) {
     luaL_openlibs( m_State );
 
     // Usertypes
-    register_usertype( m_State,
-        LuaBind::LuaUsertypes::LuaVector2::New, LuaBind::LuaUsertypes::LuaVector2::Destroy,
-        LuaBind::LuaUsertypes::LuaVector2::Index, LuaBind::LuaUsertypes::LuaVector2::NewIndex,
-    "vector2" );
+    RegisterUsertype( m_State, "vector2", {
+        {"__index", LuaBind::LuaUsertypes::LuaVector2::__Index},
+        {"__newindex", LuaBind::LuaUsertypes::LuaVector2::__NewIndex},
+        {"__add", LuaBind::LuaUsertypes::LuaVector2::__Add},
+        {"__sub", LuaBind::LuaUsertypes::LuaVector2::__Sub},
+        {"__mul", LuaBind::LuaUsertypes::LuaVector2::__Mul},
+        {"__div", LuaBind::LuaUsertypes::LuaVector2::__Div},
+        {"__unm", LuaBind::LuaUsertypes::LuaVector2::__Unm},
+    }, LuaBind::LuaUsertypes::LuaVector2::New, LuaBind::LuaUsertypes::LuaVector2::Destroy );
 
-    register_usertype( m_State,
-        LuaBind::LuaUsertypes::LuaVector3::New, LuaBind::LuaUsertypes::LuaVector3::Destroy,
-        LuaBind::LuaUsertypes::LuaVector3::Index, LuaBind::LuaUsertypes::LuaVector3::NewIndex,
-    "vector3" );
+    RegisterUsertype( m_State, "vector3", {
+        {"__index", LuaBind::LuaUsertypes::LuaVector3::__Index},
+        {"__newindex", LuaBind::LuaUsertypes::LuaVector3::__NewIndex},
+        {"__add", LuaBind::LuaUsertypes::LuaVector3::__Add},
+        {"__sub", LuaBind::LuaUsertypes::LuaVector3::__Sub},
+        {"__mul", LuaBind::LuaUsertypes::LuaVector3::__Mul},
+        {"__div", LuaBind::LuaUsertypes::LuaVector3::__Div},
+        {"__unm", LuaBind::LuaUsertypes::LuaVector3::__Unm},
+    }, LuaBind::LuaUsertypes::LuaVector3::New, LuaBind::LuaUsertypes::LuaVector3::Destroy );
 
-    register_usertype( m_State,
-        LuaBind::LuaUsertypes::LuaVertex::New, LuaBind::LuaUsertypes::LuaVertex::Destroy,
-        LuaBind::LuaUsertypes::LuaVertex::Index, LuaBind::LuaUsertypes::LuaVertex::NewIndex,
-    "vertex" );
+    RegisterUsertype( m_State, "vertex", {
+        {"__index", LuaBind::LuaUsertypes::LuaVertex::__Index},
+        {"__newindex", LuaBind::LuaUsertypes::LuaVertex::__NewIndex},
+        {"__add", LuaBind::LuaUsertypes::LuaVertex::__Add},
+        {"__sub", LuaBind::LuaUsertypes::LuaVertex::__Sub},
+        {"__mul", LuaBind::LuaUsertypes::LuaVertex::__Mul},
+        {"__div", LuaBind::LuaUsertypes::LuaVertex::__Div},
+        {"__unm", LuaBind::LuaUsertypes::LuaVertex::__Unm},
+    }, LuaBind::LuaUsertypes::LuaVertex::New, LuaBind::LuaUsertypes::LuaVertex::Destroy );
 
-    register_usertype( m_State,
-        LuaBind::LuaUsertypes::LuaTexture::New, LuaBind::LuaUsertypes::LuaTexture::Destroy,
-        LuaBind::LuaUsertypes::LuaTexture::Index, LuaBind::LuaUsertypes::LuaTexture::NewIndex,
-    "texture" );
+    RegisterUsertype( m_State, "texture", {
+        {"__index", LuaBind::LuaUsertypes::LuaTexture::__Index},
+        {"__newindex", LuaBind::LuaUsertypes::LuaTexture::__NewIndex}
+    }, LuaBind::LuaUsertypes::LuaTexture::New, LuaBind::LuaUsertypes::LuaTexture::Destroy );
 
-    register_usertype( m_State,
-        LuaBind::LuaUsertypes::LuaGlyph::New, LuaBind::LuaUsertypes::LuaGlyph::Destroy,
-        LuaBind::LuaUsertypes::LuaGlyph::Index, LuaBind::LuaUsertypes::LuaGlyph::NewIndex,
-    "glyph" );
+    RegisterUsertype( m_State, "glyph", {
+        {"__index", LuaBind::LuaUsertypes::LuaGlyph::__Index},
+        {"__newindex", LuaBind::LuaUsertypes::LuaGlyph::__NewIndex}
+    }, LuaBind::LuaUsertypes::LuaGlyph::New, LuaBind::LuaUsertypes::LuaGlyph::Destroy );
 
-    register_usertype( m_State,
-        LuaBind::LuaUsertypes::LuaFont::New, LuaBind::LuaUsertypes::LuaFont::Destroy,
-        LuaBind::LuaUsertypes::LuaFont::Index, LuaBind::LuaUsertypes::LuaFont::NewIndex,
-    "font" );
+    RegisterUsertype( m_State, "font", {
+        {"__index", LuaBind::LuaUsertypes::LuaFont::__Index},
+        {"__newindex", LuaBind::LuaUsertypes::LuaFont::__NewIndex}
+    }, LuaBind::LuaUsertypes::LuaFont::New, LuaBind::LuaUsertypes::LuaFont::Destroy );
 
-    register_usertype( m_State,
-        LuaBind::LuaUsertypes::LuaColor::New, LuaBind::LuaUsertypes::LuaColor::Destroy,
-        LuaBind::LuaUsertypes::LuaColor::Index, LuaBind::LuaUsertypes::LuaColor::NewIndex,
-    "color" );
+    RegisterUsertype( m_State, "color", {
+        {"__index", LuaBind::LuaUsertypes::LuaColor::__Index},
+        {"__newindex", LuaBind::LuaUsertypes::LuaColor::__NewIndex},
 
-    register_usertype( m_State,
-        LuaBind::LuaUsertypes::LuaDrawCommand::New, LuaBind::LuaUsertypes::LuaDrawCommand::Destroy,
-        LuaBind::LuaUsertypes::LuaDrawCommand::Index, LuaBind::LuaUsertypes::LuaDrawCommand::NewIndex,
-    "draw_command" );
+        {"to_grayscale", LuaBind::LuaUsertypes::LuaColor::ToGrayscale},
+        {"invert", LuaBind::LuaUsertypes::LuaColor::Invert},
+        {"lerp", LuaBind::LuaUsertypes::LuaColor::Lerp},
+    }, LuaBind::LuaUsertypes::LuaColor::New, LuaBind::LuaUsertypes::LuaColor::Destroy );
+
+    RegisterUsertype( m_State, "draw_command", {
+        {"__index", LuaBind::LuaUsertypes::LuaDrawCommand::__Index},
+        {"__newindex", LuaBind::LuaUsertypes::LuaDrawCommand::__NewIndex}
+    }, LuaBind::LuaUsertypes::LuaDrawCommand::New, LuaBind::LuaUsertypes::LuaDrawCommand::Destroy );
 
     // Libraries
-    register_table( m_State, "client",
+    RegisterTable( m_State, "client",
         std::make_pair( "get_username", LuaBind::LuaClient::GetUsername ),
         std::make_pair( "get_delta_time", LuaBind::LuaClient::GetDeltaTime ),
         std::make_pair( "get_real_time", LuaBind::LuaClient::GetRealTime ),
         std::make_pair( "get_fps", LuaBind::LuaClient::GetFps )
     );
 
-    register_table( m_State, "win32",
+    RegisterTable( m_State, "win32",
         std::make_pair( "create_window", LuaBind::LuaWin32::CreateWindow_ ),
         std::make_pair( "destroy_window", LuaBind::LuaWin32::DestroyWindow ),
         std::make_pair( "create_console", LuaBind::LuaWin32::CreateConsole ),
@@ -76,7 +95,7 @@ bool CEnvironment::Initiate( ) {
         std::make_pair( "get_screen_size", LuaBind::LuaWin32::GetScreenSize )
     );
 
-    register_table( m_State, "graphics",
+    RegisterTable( m_State, "graphics",
         std::make_pair( "initiate", LuaBind::LuaGraphics::Initiate ),
         std::make_pair( "cleanup", LuaBind::LuaGraphics::Cleanup ),
         std::make_pair( "set_projection_matrix", LuaBind::LuaGraphics::SetProjectionMatrix ),
@@ -87,11 +106,11 @@ bool CEnvironment::Initiate( ) {
         std::make_pair( "destroy_font", LuaBind::LuaGraphics::DestroyFont )
     );
 
-    register_table( m_State, "renderer",
+    RegisterTable( m_State, "renderer",
         std::make_pair( "write_to_buffer", LuaBind::LuaRenderer::WriteToBuffer )
     );
 
-    register_table( m_State, "input",
+    RegisterTable( m_State, "input",
         std::make_pair( "is_active", LuaBind::LuaInput::IsActive ),
         std::make_pair( "is_key_pressed", LuaBind::LuaInput::IsKeyPressed ),
         std::make_pair( "is_key_held", LuaBind::LuaInput::IsKeyHeld ),
@@ -101,7 +120,7 @@ bool CEnvironment::Initiate( ) {
         std::make_pair( "set_cursor_style", LuaBind::LuaInput::SetCursorStyle )
     );
 
-    register_table( m_State, "file_system",
+    RegisterTable( m_State, "file_system",
         std::make_pair( "list_files", LuaBind::LuaFileSystem::ListFiles ),
         std::make_pair( "file_exists", LuaBind::LuaFileSystem::FileExists ),
         std::make_pair( "read_file", LuaBind::LuaFileSystem::ReadFile ),
@@ -115,7 +134,7 @@ bool CEnvironment::Initiate( ) {
         std::make_pair( "load_image", LuaBind::LuaFileSystem::_LoadImage )
     );
 
-    register_table( m_State, "crypt",
+    RegisterTable( m_State, "crypt",
         std::make_pair( "sha256_encode", LuaBind::LuaCrypt::SHA256Encode ),
         std::make_pair( "base64_encode", LuaBind::LuaCrypt::Base64Encode ),
         std::make_pair( "base64_decode", LuaBind::LuaCrypt::Base64Decode ),
@@ -123,7 +142,7 @@ bool CEnvironment::Initiate( ) {
         std::make_pair( "json_decode", LuaBind::LuaCrypt::JsonDecode )
     );
 
-    extend_table( m_State, "debug",
+    ExtendTable( m_State, "debug",
         std::make_pair( "get_registry", LuaBind::LuaDebug::GetRegistry ),
         std::make_pair( "get_upvalues", LuaBind::LuaDebug::GetUpvalues ),
         std::make_pair( "get_upvalue", LuaBind::LuaDebug::GetUpvalue ),
@@ -131,29 +150,29 @@ bool CEnvironment::Initiate( ) {
     );
 
     // Globals
-    register_function( m_State, LuaBind::LuaGlobals::Print, "print", true );
+    RegisterFunction( m_State, LuaBind::LuaGlobals::Print, "print", true );
 
-    register_function( m_State, LuaBind::LuaGlobals::AddConnection, "add_connection", true );
-    register_function( m_State, LuaBind::LuaGlobals::RemoveConnection, "remove_connection", true );
+    RegisterFunction( m_State, LuaBind::LuaGlobals::AddConnection, "add_connection", true );
+    RegisterFunction( m_State, LuaBind::LuaGlobals::RemoveConnection, "remove_connection", true );
 
-    register_function( m_State, LuaBind::LuaGlobals::LoadString_, "load_string", true );
-    register_function( m_State, LuaBind::LuaGlobals::NewCClosure, "new_c_closure", true );
-    register_function( m_State, LuaBind::LuaGlobals::IsLuaClosure, "is_l_closure", true );
-    register_function( m_State, LuaBind::LuaGlobals::IsCClosure, "is_c_closure", true );
-    register_function( m_State, LuaBind::LuaGlobals::GetWrappedOriginal, "get_wrapped_original", true );
+    RegisterFunction( m_State, LuaBind::LuaGlobals::LoadString_, "load_string", true );
+    RegisterFunction( m_State, LuaBind::LuaGlobals::NewCClosure, "new_c_closure", true );
+    RegisterFunction( m_State, LuaBind::LuaGlobals::IsLuaClosure, "is_l_closure", true );
+    RegisterFunction( m_State, LuaBind::LuaGlobals::IsCClosure, "is_c_closure", true );
+    RegisterFunction( m_State, LuaBind::LuaGlobals::GetWrappedOriginal, "get_wrapped_original", true );
 
-    register_function( m_State, LuaBind::LuaGlobals::SetReadOnly, "set_read_only", true );
-    register_function( m_State, LuaBind::LuaGlobals::GetReadOnly, "is_read_only", true );
+    RegisterFunction( m_State, LuaBind::LuaGlobals::SetReadOnly, "set_read_only", true );
+    RegisterFunction( m_State, LuaBind::LuaGlobals::GetReadOnly, "is_read_only", true );
 
-    register_function( m_State, LuaBind::LuaGlobals::RandomString, "random_string", true );
-    register_function( m_State, LuaBind::LuaGlobals::SetClipboard, "set_clipboard", true );
-    register_function( m_State, LuaBind::LuaGlobals::GetClipboard, "get_clipboard", true );
-    register_function( m_State, LuaBind::LuaGlobals::HasInternet, "has_internet", true );
+    RegisterFunction( m_State, LuaBind::LuaGlobals::RandomString, "random_string", true );
+    RegisterFunction( m_State, LuaBind::LuaGlobals::SetClipboard, "set_clipboard", true );
+    RegisterFunction( m_State, LuaBind::LuaGlobals::GetClipboard, "get_clipboard", true );
+    RegisterFunction( m_State, LuaBind::LuaGlobals::HasInternet, "has_internet", true );
 
-    register_function( m_State, LuaBind::LuaGlobals::Get, "http_get", true );
-    register_function( m_State, LuaBind::LuaGlobals::Post, "http_post", true );
-    register_function( m_State, LuaBind::LuaGlobals::Put, "http_put", true );
-    register_function( m_State, LuaBind::LuaGlobals::Delete, "http_delete", true );
+    RegisterFunction( m_State, LuaBind::LuaGlobals::Get, "http_get", true );
+    RegisterFunction( m_State, LuaBind::LuaGlobals::Post, "http_post", true );
+    RegisterFunction( m_State, LuaBind::LuaGlobals::Put, "http_put", true );
+    RegisterFunction( m_State, LuaBind::LuaGlobals::Delete, "http_delete", true );
 
     std::vector<std::string> ScriptDirectories = {
         "Game/Lua/Core",

@@ -1,16 +1,11 @@
 #pragma once
 
 #include "../../Graphics/Include.hpp"
+#include "../Wrapper.hpp"
 #include "Win32.hpp"
 
 namespace LuaBind::LuaGraphics {
     int Initiate( lua_State* lua_state ) {
-        auto ThrowError = [ lua_state ] ( int arg, const char* message ) -> int {
-            luaL_argerror( lua_state, arg, message );
-            lua_pushboolean( lua_state, false );
-            return 1;
-        };
-
         DXGI_SWAP_CHAIN_DESC SwapChainDescription = {};
         if ( lua_istable( lua_state, 1 ) ) {
             lua_getfield( lua_state, 1, "buffer_format" );
@@ -65,7 +60,7 @@ namespace LuaBind::LuaGraphics {
             lua_pop( lua_state, 1 );
         }
         else
-            return ThrowError( 1, " Expected a table for SwapChainDescription" );
+            return ThrowArgError( lua_state, 1, " Expected a table for SwapChainDescription" );
 
         D3D11_BUFFER_DESC BufferDescription = {};
         if ( lua_istable( lua_state, 2 ) ) {
@@ -95,7 +90,7 @@ namespace LuaBind::LuaGraphics {
             lua_pop( lua_state, 1 );
         }
         else
-            return ThrowError( 2, "Expected a table for BufferDescription" );
+            return ThrowArgError( lua_state, 2, "Expected a table for BufferDescription" );
 
         D3D11_RASTERIZER_DESC RasterizerDescription = {};
         if ( lua_istable( lua_state, 3 ) ) {
@@ -121,7 +116,7 @@ namespace LuaBind::LuaGraphics {
             lua_pop( lua_state, 1 );
         }
         else
-            return ThrowError( 3, "Expected a table for RasterizerDescription" );
+            return ThrowArgError( lua_state, 3, "Expected a table for RasterizerDescription" );
 
         D3D11_DEPTH_STENCIL_DESC DepthStencilDescription = {};
         if ( lua_istable( lua_state, 4 ) ) {
@@ -172,7 +167,7 @@ namespace LuaBind::LuaGraphics {
             DepthStencilDescription.BackFace = DepthStencilDescription.FrontFace;
         }
         else
-            return ThrowError( 4, "Expected a table for DepthStencilDescription" );
+            return ThrowArgError( lua_state, 4, "Expected a table for DepthStencilDescription" );
 
         D3D11_SAMPLER_DESC SamplerDescription = {};
         if ( lua_istable( lua_state, 5 ) ) {
@@ -235,7 +230,7 @@ namespace LuaBind::LuaGraphics {
             lua_pop( lua_state, 1 );
         }
         else
-            return ThrowError( 5, "Expected a table for SamplerDescription" );
+            return ThrowArgError( lua_state, 5, "Expected a table for SamplerDescription" );
 
         D3D11_BLEND_DESC BlendDescription = {};
 
@@ -293,12 +288,12 @@ namespace LuaBind::LuaGraphics {
                 lua_pop( lua_state, 1 );
             }
             else
-                return ThrowError( 6, "Expected a table for BlendDescription.RenderTarget" );
+                return ThrowArgError( lua_state, 6, "Expected a table for BlendDescription.RenderTarget" );
 
             lua_pop( lua_state, 1 );
         }
         else
-            return ThrowError( 6, "Expected a table for BlendDescription" );
+            return ThrowArgError( lua_state, 6, "Expected a table for BlendDescription" );
 
         lua_pushboolean( lua_state, Graphics.Initiate(
             SwapChainDescription,
@@ -316,20 +311,15 @@ namespace LuaBind::LuaGraphics {
     }
 
     int SetProjectionMatrix( lua_State* lua_state ) {
-        auto ThrowError = [ lua_state ] ( int arg, const char* message ) -> int {
-            luaL_argerror( lua_state, arg, message );
-            return 0;
-        };
-
         if ( !lua_istable( lua_state, 1 ) )
-            return ThrowError( 1, "Expected a table as the first argument" );
+            return ThrowArgError( lua_state, 1, "Expected a table as the first argument" );
 
         float Matrix[ 4 ][ 4 ];
         for ( int i = 0; i < 16; ++i ) {
             lua_rawgeti( lua_state, 1, i + 1 );
 
             if ( !lua_isnumber( lua_state, -1 ) )
-                return ThrowError( 1, "All matrix elements must be numbers" );
+                return ThrowArgError( lua_state, 1, "All matrix elements must be numbers" );
 
             Matrix[ i / 4 ][ i % 4 ] = static_cast< float >( lua_tonumber( lua_state, -1 ) );
 
@@ -342,22 +332,17 @@ namespace LuaBind::LuaGraphics {
     }
 
     int SetViewport( lua_State* lua_state ) {
-        auto ThrowError = [ lua_state ] ( int arg, const char* message ) -> int {
-            luaL_argerror( lua_state, arg, message );
-            return 0;
-        };
-
         if ( !lua_isuserdata( lua_state, 1 ) )
-            return ThrowError( 1, "Expected a vector2 as the first argument" );
+            return ThrowArgError( lua_state, 1, "Expected a vector2 as the first argument" );
 
         if ( !lua_isuserdata( lua_state, 2 ) )
-            return ThrowError( 1, "Expected a vector2 as the second argument" );
+            return ThrowArgError( lua_state, 2, "Expected a vector2 as the second argument" );
 
         if ( !lua_isnumber( lua_state, 3 ) )
-            return ThrowError( 1, "Expected a number as the third argument" );
+            return ThrowArgError( lua_state, 3, "Expected a number as the third argument" );
 
         if ( !lua_isnumber( lua_state, 4 ) )
-            return ThrowError( 1, "Expected a number as the fourth argument" );
+            return ThrowArgError( lua_state, 4, "Expected a number as the fourth argument" );
 
         Graphics.SetViewport(
             *( Vector2* ) luaL_checkudata( lua_state, 1, "vector2" ),
@@ -370,13 +355,8 @@ namespace LuaBind::LuaGraphics {
     }
 
     int CreateTexture( lua_State* lua_state ) {
-        auto ThrowError = [ lua_state ] ( int arg, const char* message ) -> int {
-            luaL_argerror( lua_state, arg, message );
-            return 0;
-        };
-
         if ( !lua_isstring( lua_state, 1 ) )
-            return ThrowError( 1, "Expected a string for the first argument" );
+            return ThrowArgError( lua_state, 1, "Expected a string for the first argument" );
 
         D3D11_TEXTURE2D_DESC TextureDescription = {};
         if ( lua_istable( lua_state, 2 ) ) {
@@ -455,7 +435,7 @@ namespace LuaBind::LuaGraphics {
             lua_pop( lua_state, 1 );
         }
         else
-            return ThrowError( 2, "Expected a table for the second arguement" );
+            return ThrowArgError( lua_state, 2, "Expected a table for the second arguement" );
         lua_pop( lua_state, 1 );
 
         D3D11_SUBRESOURCE_DATA SubResourceData = {};
@@ -493,7 +473,7 @@ namespace LuaBind::LuaGraphics {
             lua_pop( lua_state, 1 );
         }
         else
-            return ThrowError( 3, "Expected a table for the third arguement" );
+            return ThrowArgError( lua_state, 3, "Expected a table for the third arguement" );
         lua_pop( lua_state, 1 );
 
         D3D11_SHADER_RESOURCE_VIEW_DESC ShaderResourceViewDescription = {};
@@ -537,7 +517,7 @@ namespace LuaBind::LuaGraphics {
             lua_pop( lua_state, 1 );
         }
         else
-            return ThrowError( 4, "Expected a table for the fourth arguement" );
+            return ThrowArgError( lua_state, 4, "Expected a table for the fourth arguement" );
         lua_pop( lua_state, 1 );
 
         Texture* _Texture = Graphics.CreateTexture(
@@ -558,17 +538,12 @@ namespace LuaBind::LuaGraphics {
     }
 
     int DestroyTexture( lua_State* lua_state ) {
-        auto ThrowError = [ lua_state ] ( int arg, const char* message ) -> int {
-            luaL_argerror( lua_state, arg, message );
-            return 0;
-        };
-
         Texture* _Texture = ( Texture* ) luaL_checkudata(
             lua_state, 1, "texture"
         );
 
         if ( !_Texture )
-            return ThrowError( 1, "Expected a texture for the first argument" );
+            return ThrowArgError( lua_state, 1, "Expected a texture for the first argument" );
 
         Graphics.DestroyTexture( _Texture );
 
@@ -576,22 +551,17 @@ namespace LuaBind::LuaGraphics {
     }
 
     int _CreateFont( lua_State* lua_state ) {
-        auto ThrowError = [ lua_state ] ( int arg, const char* message ) -> int {
-            luaL_argerror( lua_state, arg, message );
-            return 0;
-        };
-
         if ( !lua_isstring( lua_state, 1 ) )
-            return ThrowError( 1, "Expected a string for the first argument" );
+            return ThrowArgError( lua_state, 1, "Expected a string for the first argument" );
 
         if ( !lua_isnumber( lua_state, 2 ) )
-            return ThrowError( 2, "Expected a number for the second argument" );
+            return ThrowArgError( lua_state, 2, "Expected a number for the second argument" );
 
         if ( !lua_isnumber( lua_state, 3 ) )
-            return ThrowError( 3, "Expected a number for the third argument" );
+            return ThrowArgError( lua_state, 3, "Expected a number for the third argument" );
 
         if ( !lua_isboolean( lua_state, 4 ) )
-            return ThrowError( 4, "Expected a boolean for the fourth argument" );
+            return ThrowArgError( lua_state, 4, "Expected a boolean for the fourth argument" );
 
         Font* _Font = Graphics._CreateFont(
             lua_tostring( lua_state, 1 ),
