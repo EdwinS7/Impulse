@@ -15,26 +15,25 @@ namespace LuaBind::LuaInput {
         return 1;
     }
 
-    int IsKeyHeld( lua_State* lua_state ) {
-        lua_pushboolean( lua_state, Input.IsKeyHeld( luaL_checkinteger( lua_state, 1 ) ) );
+    int IsKeyDown( lua_State* lua_state ) {
+        lua_pushboolean( lua_state, Input.IsKeyDown( luaL_checkinteger( lua_state, 1 ) ) );
 
         return 1;
     }
 
-    int SetCursorPosition( lua_State* lua_state ) {
-        Input.SetCursorPosition( *( Vector2* ) luaL_checkudata( lua_state, 1, "vector2" ), true );
+    int SetMousePosition( lua_State* lua_state ) {
+        Input.SetMousePosition( *( Vector2* ) luaL_checkudata( lua_state, 1, "vector2" ), true );
 
         return 1;
     }
 
-    int GetCursorPosition( lua_State* lua_state ) {
-        Vector2 MousePosition = Input.GetCursorPosition( );
+    int GetMousePosition( lua_State* lua_state ) {
+        Vector2 MousePosition = Input.GetMousePosition( );
 
         auto Vector = ( Vector2* ) lua_newuserdata( lua_state, sizeof( Vector2 ) );
-
         new ( Vector ) Vector2(
-            static_cast< double >( MousePosition.x ),
-            static_cast< double >( MousePosition.y )
+            MousePosition.x,
+            MousePosition.y
         );
 
         luaL_getmetatable( lua_state, "vector2" );
@@ -43,15 +42,15 @@ namespace LuaBind::LuaInput {
         return 1;
     }
 
-    int SetCursorStyle( lua_State* lua_state ) {
-        Input.SetCursorStyle( ( PointerStyle ) luaL_checknumber( lua_state, 1 ) );
-
-        return 0;
-    }
-
-    int GetCursorStyle( lua_State* lua_state ) {
-        lua_pushnumber( lua_state, ( double ) Input.GetCursorStyle( ) );
+    int GetCursor( lua_State* lua_state ) {
+        lua_pushinteger( lua_state, static_cast<int>( Input.GetCursor( ) ) );
 
         return 1;
+    }
+
+    int SetCursor( lua_State* lua_state ) {
+        Input.SetCursor( static_cast< PointerStyle >( luaL_checkinteger( lua_state, 1 ) ) );
+
+        return 0;
     }
 }

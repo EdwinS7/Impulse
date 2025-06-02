@@ -30,14 +30,14 @@ LRESULT CALLBACK WndProc( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam ) {
                 ( int ) HIWORD( lParam )
             );
 
-            Input.SetCursorPosition( Position, false );
+            Input.SetMousePosition( Position, false );
             Callbacks.RunConnection( "cursor_move", { Position } );
 
             break;
         }
 
         case WM_SETCURSOR: {
-            SetCursor( LoadCursorA( 0, LPCSTR( Input.GetCursorStyle( ) ) ) );
+            SetCursor( LoadCursorA( 0, LPCSTR( Input.GetCursor( ) ) ) );
             break;
         }
 

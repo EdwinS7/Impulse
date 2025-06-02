@@ -113,11 +113,11 @@ bool CEnvironment::Initiate( ) {
     RegisterTable( m_State, "input",
         std::make_pair( "is_active", LuaBind::LuaInput::IsActive ),
         std::make_pair( "is_key_pressed", LuaBind::LuaInput::IsKeyPressed ),
-        std::make_pair( "is_key_held", LuaBind::LuaInput::IsKeyHeld ),
-        std::make_pair( "get_cursor_position", LuaBind::LuaInput::GetCursorPosition ),
-        std::make_pair( "set_cursor_position", LuaBind::LuaInput::SetCursorPosition ),
-        std::make_pair( "get_cursor_style", LuaBind::LuaInput::GetCursorStyle ),
-        std::make_pair( "set_cursor_style", LuaBind::LuaInput::SetCursorStyle )
+        std::make_pair( "is_key_down", LuaBind::LuaInput::IsKeyDown ),
+        std::make_pair( "get_mouse_position", LuaBind::LuaInput::GetMousePosition ),
+        std::make_pair( "set_mouse_position", LuaBind::LuaInput::SetMousePosition ),
+        std::make_pair( "get_cursor", LuaBind::LuaInput::GetCursor ),
+        std::make_pair( "set_cursor", LuaBind::LuaInput::SetCursor )
     );
 
     RegisterTable( m_State, "file_system",

@@ -35,11 +35,11 @@ bool CInput::IsKeyPressed( int key ) {
 	return ( m_KeyStates[ key ] & 0x01 ) && !( m_KeyStates[ key ] & 0x02 );
 }
 
-bool CInput::IsKeyHeld( int key ) {
+bool CInput::IsKeyDown( int key ) {
 	return ( m_KeyStates[ key ] & 0x01 ) != 0;
 }
 
-void CInput::SetCursorPosition( Vector2 position, bool actual_cursor ) {
+void CInput::SetMousePosition( Vector2 position, bool actual_cursor ) {
 	if ( actual_cursor )
 		SetCursorPos( position.x, position.y );
 	else {
@@ -47,15 +47,15 @@ void CInput::SetCursorPosition( Vector2 position, bool actual_cursor ) {
 	}
 }
 
-Vector2 CInput::GetCursorPosition( ) {
+Vector2 CInput::GetMousePosition( ) {
 	return m_CursorPosition;
 }
 
-PointerStyle CInput::GetCursorStyle( ) {
+PointerStyle CInput::GetCursor( ) {
 	return m_CursorStyle;
 }
 
-void CInput::SetCursorStyle( PointerStyle pointer_style ) {
+void CInput::SetCursor( PointerStyle pointer_style ) {
 	m_CursorStyle = pointer_style;
 }
 

@@ -45,13 +45,13 @@ public:
 
     bool IsActive( );
     bool IsKeyPressed( int key );
-    bool IsKeyHeld ( int key );
+    bool IsKeyDown ( int key );
 
-    void SetCursorPosition( Vector2 position, bool actual_cursor );
-    Vector2 GetCursorPosition( );
+    void SetMousePosition( Vector2 position, bool actual_cursor );
+    Vector2 GetMousePosition( );
 
-    PointerStyle GetCursorStyle( );
-    void SetCursorStyle( PointerStyle pointer_style );
+    PointerStyle GetCursor( );
+    void SetCursor( PointerStyle pointer_style );
 
 } extern Input;
 
