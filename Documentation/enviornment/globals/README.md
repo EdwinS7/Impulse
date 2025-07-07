@@ -1,0 +1,6 @@
+---
+icon: earth-americas
+---
+
+# Globals
+
