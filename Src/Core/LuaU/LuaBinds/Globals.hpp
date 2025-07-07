@@ -1,10 +1,10 @@
-#pragma once
+﻿#pragma once
 
 #include "../../Http/Http.hpp"
 #include "Win32.hpp"
 
 namespace LuaBind::LuaGlobals {
-    int Print( lua_State* lua_state ) {
+    int PrintWithPrefix( lua_State* lua_state, WORD color, const char* prefix ) {
         HWND ConsoleHandle = LuaWin32::ConsoleHandles[ luaL_checkinteger( lua_state, 1 ) ];
 
         if ( !ConsoleHandle )
@@ -12,21 +12,38 @@ namespace LuaBind::LuaGlobals {
 
         Win32.RedirectConsole( ConsoleHandle );
 
-        int ArgCount = lua_gettop( lua_state );
+        SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), color );
+        
+        std::cout << prefix;
 
+        SetConsoleTextAttribute( 
+            GetStdHandle( STD_OUTPUT_HANDLE ),
+            FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE
+        );
+
+        int ArgCount = lua_gettop( lua_state );
         for ( int i = 2; i <= ArgCount; ++i ) {
             const char* String = lua_tostring( lua_state, i );
-
             if ( String )
                 std::cout << String;
-
             if ( i < ArgCount )
                 std::cout << "\t";
         }
-
         std::cout << "\n";
 
         return 0;
+    }
+
+    int Print( lua_State* lua_state ) {
+        return PrintWithPrefix( lua_state, FOREGROUND_GREEN | FOREGROUND_INTENSITY, "[~] " );
+    }
+
+    int Warn( lua_State* lua_state ) {
+        return PrintWithPrefix( lua_state, FOREGROUND_RED | FOREGROUND_GREEN, "[+] " );
+    }
+
+    int Error( lua_State* lua_state ) {
+        return PrintWithPrefix( lua_state, FOREGROUND_RED | FOREGROUND_INTENSITY, "[!] " );
     }
 
     int AddConnection( lua_State* lua_state ) {

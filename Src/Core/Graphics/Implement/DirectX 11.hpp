@@ -45,8 +45,6 @@ private:
 	FT_Library m_FT;
 	FT_Face m_FTFace;
 
-	Font* m_DefaultFont;
-
 public:
 	bool Initiate( 
 		DXGI_SWAP_CHAIN_DESC swap_chain_description, 

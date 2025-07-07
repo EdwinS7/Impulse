@@ -88,7 +88,7 @@ static IWICImagingFactory* GetWICFactory( ) {
     return Factory;
 }
 
-bool CFileSystem::_LoadImage( const char* file_path, unsigned char** pixels, int* width, int* height ) {
+bool CFileSystem::_LoadImageData( const char* file_path, unsigned char** pixels, int* width, int* height ) {
     if ( !file_path || !pixels || !width || !height )
         return false;
 
@@ -146,6 +146,7 @@ bool CFileSystem::_LoadImage( const char* file_path, unsigned char** pixels, int
     );
 
     Frame->Release( );
+
     if ( FAILED( Result ) ) {
         Converter->Release( );
         return false;
@@ -167,13 +168,12 @@ bool CFileSystem::_LoadImage( const char* file_path, unsigned char** pixels, int
         pixel_buffer
     );
 
+    Converter->Release( );
+
     if ( FAILED( Result ) ) {
         free( pixel_buffer );
-        Converter->Release( );
         return false;
     }
-
-    Converter->Release( );
 
     *pixels = pixel_buffer;
     *width = ( int ) ImageWidth;

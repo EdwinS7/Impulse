@@ -54,6 +54,7 @@ struct Glyph {
     Texture* _Texture;
 
     Glyph( ) noexcept = default;
+
     Glyph( float advance_x, float offset_x, float offset_y, float width, float height, float u0, float v0, float u1, float v1, Texture* texture )
         : AdvanceX( advance_x ), OffsetX( offset_x ), OffsetY( offset_y ), Width( width ), Height( height ), u0( u0 ), v0( v0 ), u1( u1 ), v1( v1 ), _Texture( texture ) {}
 };
@@ -75,30 +76,43 @@ public:
 
 class Vertex {
 public:
-    float x{}, y{}, z{}, rhw{};
-    float u{}, v{};
+    float x{}, y{}, z{};
+    float rhw{}; // Reciprocal Homogeneous W
+    float u{}, v{}; // Texture coordinates
     unsigned long clr{};
 
     Vertex( ) noexcept = default;
+
     Vertex( float x, float y, float z, float rhw, float u, float v, unsigned long color ) noexcept
         : x( x ), y( y ), z( z ), rhw( rhw ), u( u ), v( v ), clr( color ) {}
+
     Vertex( float x, float y, float z, float rhw, float u, float v, Color color ) noexcept
         : x( x ), y( y ), z( z ), rhw( rhw ), u( u ), v( v ), clr( COLOR_TO_DWORD( color ) ) {}
 };
 
 class DrawCommand {
 public:
-    D3D_PRIMITIVE_TOPOLOGY PrimitiveTopology{ D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST };
+    D3D_PRIMITIVE_TOPOLOGY PrimitiveTopology;
     std::vector<Vertex> Vertices;
     std::vector<std::int32_t> Indices;
-    Texture* _Texture;
+    Texture* TexturePtr;
     int ZIndex;
 
     DrawCommand( ) noexcept = default;
+
     DrawCommand( D3D_PRIMITIVE_TOPOLOGY primitive_topology ) :
         PrimitiveTopology( primitive_topology ) {}
-    DrawCommand( D3D_PRIMITIVE_TOPOLOGY primitive_topology, std::vector<Vertex> vertices, std::vector<std::int32_t> indices, Texture* texture, int z_index ) :
-        PrimitiveTopology( primitive_topology ), Vertices( vertices ), Indices( indices ), _Texture( texture ), ZIndex( z_index ) {}
+
+    DrawCommand( D3D_PRIMITIVE_TOPOLOGY primitive_topology,
+                const std::vector<Vertex>& vertices,
+                const std::vector<std::int32_t>& indices,
+                Texture* texture,
+                int z_index )
+        : PrimitiveTopology( primitive_topology ),
+        Vertices( vertices ),
+        Indices( indices ),
+        TexturePtr( texture ),
+        ZIndex( z_index ) {}
 };
 
 #endif

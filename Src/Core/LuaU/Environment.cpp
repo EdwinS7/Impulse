@@ -91,7 +91,7 @@ bool CEnvironment::Initiate( ) {
         std::make_pair( "destroy_window", LuaBind::LuaWin32::DestroyWindow ),
         std::make_pair( "create_console", LuaBind::LuaWin32::CreateConsole ),
         std::make_pair( "destroy_console", LuaBind::LuaWin32::DestroyConsole ),
-        std::make_pair( "create_message_box", LuaBind::LuaWin32::MessageBox_ ),
+        std::make_pair( "message_box", LuaBind::LuaWin32::MessageBox_ ),
         std::make_pair( "get_screen_size", LuaBind::LuaWin32::GetScreenSize )
     );
 
@@ -131,7 +131,7 @@ bool CEnvironment::Initiate( ) {
         std::make_pair( "directory_exists", LuaBind::LuaFileSystem::DirectoryExists ),
         std::make_pair( "create_directory", LuaBind::LuaFileSystem::CreateDirectory_ ),
         std::make_pair( "delete_directory", LuaBind::LuaFileSystem::DeleteDirectory ),
-        std::make_pair( "load_image", LuaBind::LuaFileSystem::_LoadImage )
+        std::make_pair( "load_image_data", LuaBind::LuaFileSystem::_LoadImageData )
     );
 
     RegisterTable( m_State, "crypt",
@@ -151,6 +151,8 @@ bool CEnvironment::Initiate( ) {
 
     // Globals
     RegisterFunction( m_State, LuaBind::LuaGlobals::Print, "print", true );
+    RegisterFunction( m_State, LuaBind::LuaGlobals::Warn, "warn", true );
+    RegisterFunction( m_State, LuaBind::LuaGlobals::Error, "error", true );
 
     RegisterFunction( m_State, LuaBind::LuaGlobals::AddConnection, "add_connection", true );
     RegisterFunction( m_State, LuaBind::LuaGlobals::RemoveConnection, "remove_connection", true );
@@ -175,8 +177,10 @@ bool CEnvironment::Initiate( ) {
     RegisterFunction( m_State, LuaBind::LuaGlobals::Delete, "http_delete", true );
 
     std::vector<std::string> ScriptDirectories = {
+        "Game/Lua/Core/Dependencies",
         "Game/Lua/Core",
-        "Game/Lua/Core/Libraries"
+        "Game/Lua/Core/Libraries",
+        "Game/Lua/Core/Modules"
     };
 
     for ( const auto& directory : ScriptDirectories ) {

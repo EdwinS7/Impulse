@@ -28,6 +28,10 @@ public:
     std::string JsonEncode( const std::string& inputStr );
     std::string JsonDecode( const std::string& encoded_data );
 
+    std::string ToLowercase( const char* input );
+
+    void _MessageBox( const char* title, const char* content, UINT flags );
+
     bool IsInternetConnected( );
 
 } extern Utils;

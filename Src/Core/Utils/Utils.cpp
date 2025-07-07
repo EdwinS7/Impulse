@@ -89,6 +89,22 @@ std::string CUtils::JsonDecode( const std::string& encoded_data ) {
     return cppcodec::base64_rfc4648::decode<std::string>( encoded_data );
 }
 
+std::string CUtils::ToLowercase( const char* input ) {
+    std::string Result = input;
+
+    for ( char& _char : Result ) {
+        _char = static_cast< char >( std::tolower(
+            static_cast< unsigned char >( _char )
+        ) );
+    }
+
+    return Result;
+}
+
+void CUtils::_MessageBox( const char* title, const char* content, UINT flags ) {
+    MessageBox( NULL, content, title, flags );
+}
+
 bool CUtils::IsInternetConnected( ) {
     DWORD Flags;
 

@@ -46,7 +46,7 @@ void CCallbacks::RunConnection( const char* connection_name, const Args& args ) 
                 }
                 else if constexpr ( std::is_same_v<T, DrawCommand> ) {
                     auto* _DrawCommand = static_cast< DrawCommand* >( lua_newuserdata( L, sizeof( DrawCommand ) ) );
-                    new ( _DrawCommand ) DrawCommand( value.PrimitiveTopology, value.Vertices, value.Indices, value._Texture, value.ZIndex );
+                    new ( _DrawCommand ) DrawCommand( value.PrimitiveTopology, value.Vertices, value.Indices, value.TexturePtr, value.ZIndex );
 
                     luaL_getmetatable( L, "draw_command" );
                     lua_setmetatable( L, -2 );

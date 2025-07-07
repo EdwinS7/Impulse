@@ -79,11 +79,11 @@ namespace LuaBind::LuaFileSystem {
         return 0;
     }
 
-    int _LoadImage( lua_State* lua_state ) {
+    int _LoadImageData( lua_State* lua_state ) {
         unsigned char* Pixels = NULL;
         int Width = 0, Height = 0;
 
-        if ( !FileSystem._LoadImage( luaL_checkstring( lua_state, 1 ), &Pixels, &Width, &Height ) ) {
+        if ( !FileSystem._LoadImageData( luaL_checkstring( lua_state, 1 ), &Pixels, &Width, &Height ) ) {
             lua_pushnil( lua_state );
             lua_pushstring( lua_state, "Failed to load image" );
             return 2;

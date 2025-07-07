@@ -230,7 +230,7 @@ bool CGraphics::RenderDrawData(  ) {
     int VertexOffset{ 0 }, IndexOffset{ 0 };
     for ( const auto& draw_command : DrawCommands ) {
         m_pDeviceContext->IASetPrimitiveTopology( draw_command->PrimitiveTopology );
-        m_pDeviceContext->PSSetShaderResources( 0, 1, ( draw_command->_Texture ? &draw_command->_Texture->pTextureSRV : &m_pTextureSRV ) );
+        m_pDeviceContext->PSSetShaderResources( 0, 1, ( draw_command->TexturePtr ? &draw_command->TexturePtr->pTextureSRV : &m_pTextureSRV ) );
 
         m_pDeviceContext->DrawIndexed( static_cast< UINT >( draw_command->Indices.size( ) ), IndexOffset, VertexOffset );
 

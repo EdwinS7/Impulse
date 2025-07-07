@@ -2,8 +2,6 @@
 #include "../Wrapper.hpp"
 
 namespace LuaBind::LuaUsertypes {
-    // TODO: Finish the math operators (Vector2, Vector3, Vertex, Color (add color related shit)).
-
     namespace LuaVector2 {
         int New( lua_State* lua_state ) {
             auto* Userdata = static_cast< Vector2* >( lua_newuserdata( lua_state, sizeof( Vector2 ) ) );
@@ -27,28 +25,28 @@ namespace LuaBind::LuaUsertypes {
 
         int __Index( lua_State* lua_state ) {
             auto* Userdata = static_cast< Vector2* >( luaL_checkudata( lua_state, 1, "vector2" ) );
-            const char* Key = lua_tostring( lua_state, 2 );
+            std::string Key = Utils.ToLowercase( lua_tostring( lua_state, 2 ) );
 
-            if ( strcmp( Key, "x" ) == 0 ) {
-                lua_pushinteger( lua_state, Userdata->x );
+            if ( Key == "x" ) {
+                lua_pushnumber( lua_state, static_cast< double >( Userdata->x ) );
             }
-            else if ( strcmp( Key, "y" ) == 0 ) {
-                lua_pushinteger( lua_state, Userdata->y );
+            else if ( Key == "y" ) {
+                lua_pushnumber( lua_state, static_cast< double >( Userdata->y ) );
             }
             else {
-                luaL_error( lua_state, "invalid property '%s' for vector2", Key );
+                luaL_error( lua_state, "invalid property '%s' for vector2", Key.c_str( ) );
             }
 
             return 1;
         }
         int __NewIndex( lua_State* lua_state ) {
             auto* Userdata = static_cast< Vector2* >( luaL_checkudata( lua_state, 1, "vector2" ) );
-            const char* Key = lua_tostring( lua_state, 2 );
+            std::string Key = Utils.ToLowercase( lua_tostring( lua_state, 2 ) );
 
-            if ( strcmp( Key, "x" ) == 0 )
-                Userdata->x = luaL_checkinteger( lua_state, 3 );
-            else if ( strcmp( Key, "y" ) == 0 )
-                Userdata->y = luaL_checkinteger( lua_state, 3 );
+            if ( Key == "x" )
+                Userdata->x = std::round( luaL_checknumber( lua_state, 3 ) );
+            else if ( Key == "y" )
+                Userdata->y = std::round( luaL_checknumber( lua_state, 3 ) );
             else {
                 luaL_error( lua_state, "invalid property '%s' for vector2", Key );
             }
@@ -159,15 +157,15 @@ namespace LuaBind::LuaUsertypes {
 
         int __Index( lua_State* lua_state ) {
             auto* Userdata = static_cast< Vector3* >( luaL_checkudata( lua_state, 1, "vector3" ) );
-            const char* Key = lua_tostring( lua_state, 2 );
+            std::string Key = Utils.ToLowercase( lua_tostring( lua_state, 2 ) );
 
-            if ( strcmp( Key, "x" ) == 0 ) {
+            if ( Key == "x" ) {
                 lua_pushnumber( lua_state, Userdata->x );
             }
-            else if ( strcmp( Key, "y" ) == 0 ) {
+            else if ( Key == "y" ) {
                 lua_pushnumber( lua_state, Userdata->y );
             }
-            else if ( strcmp( Key, "z" ) == 0 ) {
+            else if ( Key == "z" ) {
                 lua_pushnumber( lua_state, Userdata->z );
             }
             else {
@@ -179,15 +177,15 @@ namespace LuaBind::LuaUsertypes {
 
         int __NewIndex( lua_State* lua_state ) {
             auto* Userdata = static_cast< Vector3* >( luaL_checkudata( lua_state, 1, "vector3" ) );
-            const char* Key = lua_tostring( lua_state, 2 );
+            std::string Key = Utils.ToLowercase( lua_tostring( lua_state, 2 ) );
 
-            if ( strcmp( Key, "x" ) == 0 ) {
+            if ( Key == "x" ) {
                 Userdata->x = static_cast< float >( lua_tonumber( lua_state, 3 ) );
             }
-            else if ( strcmp( Key, "y" ) == 0 ) {
+            else if ( Key == "y" ) {
                 Userdata->y = static_cast< float >( lua_tonumber( lua_state, 3 ) );
             }
-            else if ( strcmp( Key, "z" ) == 0 ) {
+            else if ( Key == "z" ) {
                 Userdata->z = static_cast< float >( lua_tonumber( lua_state, 3 ) );
             }
             else {
@@ -310,27 +308,27 @@ namespace LuaBind::LuaUsertypes {
         // Metatable functions
         int __Index( lua_State* lua_state ) {
             auto* Userdata = ( Vertex* ) luaL_checkudata( lua_state, 1, "vertex" );
-            const char* Key = lua_tostring( lua_state, 2 );
+            std::string Key = Utils.ToLowercase( lua_tostring( lua_state, 2 ) );
 
-            if ( strcmp( Key, "x" ) == 0 ) {
+            if ( Key == "x" ) {
                 lua_pushnumber( lua_state, Userdata->x );
             }
-            else if ( strcmp( Key, "y" ) == 0 ) {
+            else if ( Key == "y" ) {
                 lua_pushnumber( lua_state, Userdata->y );
             }
-            else if ( strcmp( Key, "z" ) == 0 ) {
+            else if ( Key == "z" ) {
                 lua_pushnumber( lua_state, Userdata->z );
             }
-            else if ( strcmp( Key, "rhw" ) == 0 ) {
+            else if ( Key == "rhw" ) {
                 lua_pushnumber( lua_state, Userdata->rhw );
             }
-            else if ( strcmp( Key, "u" ) == 0 ) {
+            else if ( Key == "u" ) {
                 lua_pushnumber( lua_state, Userdata->u );
             }
-            else if ( strcmp( Key, "v" ) == 0 ) {
+            else if ( Key == "v" ) {
                 lua_pushnumber( lua_state, Userdata->v );
             }
-            else if ( strcmp( Key, "color" ) == 0 ) {
+            else if ( Key == "color" ) {
                 lua_pushnumber( lua_state, static_cast< double >( Userdata->clr ) );
             }
             else
@@ -340,27 +338,27 @@ namespace LuaBind::LuaUsertypes {
         }
         int __NewIndex( lua_State* lua_state ) {
             auto* Userdata = ( Vertex* ) luaL_checkudata( lua_state, 1, "vertex" );
-            const char* Key = lua_tostring( lua_state, 2 );
+            std::string Key = Utils.ToLowercase( lua_tostring( lua_state, 2 ) );
 
-            if ( strcmp( Key, "x" ) == 0 ) {
+            if ( Key == "x" ) {
                 Userdata->x = static_cast< float >( lua_tonumber( lua_state, 3 ) );
             }
-            else if ( strcmp( Key, "y" ) == 0 ) {
+            else if ( Key == "y" ) {
                 Userdata->y = static_cast< float >( lua_tonumber( lua_state, 3 ) );
             }
-            else if ( strcmp( Key, "z" ) == 0 ) {
+            else if ( Key == "z" ) {
                 Userdata->z = static_cast< float >( lua_tonumber( lua_state, 3 ) );
             }
-            else if ( strcmp( Key, "rhw" ) == 0 ) {
+            else if ( Key == "rhw" ) {
                 Userdata->rhw = static_cast< float >( lua_tonumber( lua_state, 3 ) );
             }
-            else if ( strcmp( Key, "u" ) == 0 ) {
+            else if ( Key == "u" ) {
                 Userdata->u = static_cast< float >( lua_tonumber( lua_state, 3 ) );
             }
-            else if ( strcmp( Key, "v" ) == 0 ) {
+            else if ( Key == "v" ) {
                 Userdata->v = static_cast< float >( lua_tonumber( lua_state, 3 ) );
             }
-            else if ( strcmp( Key, "color" ) == 0 ) {
+            else if ( Key == "color" ) {
                 Userdata->clr = static_cast< unsigned long >( lua_tonumber( lua_state, 3 ) );
             }
             else
@@ -494,15 +492,15 @@ namespace LuaBind::LuaUsertypes {
         // Metatable functions
         int __Index( lua_State* lua_state ) {
             Texture* _Texture = *( Texture** ) luaL_checkudata( lua_state, 1, "texture" );
-            const char* Key = luaL_checkstring( lua_state, 2 );
+            std::string Key = Utils.ToLowercase( lua_tostring( lua_state, 2 ) );
 
-            if ( strcmp( Key, "name" ) == 0 ) {
+            if ( Key == "name" ) {
                 lua_pushstring( lua_state, _Texture->Name.c_str( ) );
             }
-            else if ( strcmp( Key, "texture" ) == 0 ) {
+            else if ( Key == "texture" ) {
                 lua_pushlightuserdata( lua_state, _Texture->pTexture );
             }
-            else if ( strcmp( Key, "texture_srv" ) == 0 ) {
+            else if ( Key == "texture_srv" ) {
                 lua_pushlightuserdata( lua_state, _Texture->pTextureSRV );
             }
             else {
@@ -535,36 +533,36 @@ namespace LuaBind::LuaUsertypes {
         // Metatable functions
         int __Index( lua_State* lua_state ) {
             Glyph* Userdata = *( Glyph** ) luaL_checkudata( lua_state, 1, "glyph" );
-            const char* Key = lua_tostring( lua_state, 2 );
+            std::string Key = Utils.ToLowercase( lua_tostring( lua_state, 2 ) );
 
-            if ( strcmp( Key, "advance_x" ) == 0 ) {
+            if ( Key == "advance_x" ) {
                 lua_pushnumber( lua_state, Userdata->AdvanceX );
             }
-            else if ( strcmp( Key, "offset_x" ) == 0 ) {
+            else if ( Key == "offset_x" ) {
                 lua_pushinteger( lua_state, Userdata->OffsetX );
             }
-            else if ( strcmp( Key, "offset_y" ) == 0 ) {
+            else if ( Key == "offset_y" ) {
                 lua_pushinteger( lua_state, Userdata->OffsetY );
             }
-            else if ( strcmp( Key, "width" ) == 0 ) {
+            else if ( Key == "width" ) {
                 lua_pushinteger( lua_state, Userdata->Width );
             }
-            else if ( strcmp( Key, "height" ) == 0 ) {
+            else if ( Key == "height" ) {
                 lua_pushinteger( lua_state, Userdata->Height );
             }
-            else if ( strcmp( Key, "u0" ) == 0 ) {
+            else if ( Key == "u0" ) {
                 lua_pushinteger( lua_state, Userdata->u0 );
             }
-            else if ( strcmp( Key, "v0" ) == 0 ) {
+            else if ( Key == "v0" ) {
                 lua_pushinteger( lua_state, Userdata->v0 );
             }
-            else if ( strcmp( Key, "u1" ) == 0 ) {
+            else if ( Key == "u1" ) {
                 lua_pushinteger( lua_state, Userdata->u1 );
             }
-            else if ( strcmp( Key, "v1" ) == 0 ) {
+            else if ( Key == "v1" ) {
                 lua_pushinteger( lua_state, Userdata->v1 );
             }
-            else if ( strcmp( Key, "texture" ) == 0 ) {
+            else if ( Key == "texture" ) {
                 auto** TextureUserdata = ( Texture** ) lua_newuserdata( lua_state, sizeof( Texture* ) );
                 *TextureUserdata = Userdata->_Texture;
 
@@ -601,24 +599,24 @@ namespace LuaBind::LuaUsertypes {
         // Metatable functions
         int __Index( lua_State* lua_state ) {
             Font* Userdata = *( Font** ) luaL_checkudata( lua_state, 1, "font" );
-            const char* Key = luaL_checkstring( lua_state, 2 );
+            std::string Key = Utils.ToLowercase( lua_tostring( lua_state, 2 ) );
 
-            if ( strcmp( Key, "name" ) == 0 ) {
+            if ( Key == "name" ) {
                 lua_pushstring( lua_state, Userdata->Name.c_str( ) );
             }
-            else if ( strcmp( Key, "size" ) == 0 ) {
+            else if ( Key == "size" ) {
                 lua_pushinteger( lua_state, Userdata->Size );
             }
-            else if ( strcmp( Key, "padding" ) == 0 ) {
+            else if ( Key == "padding" ) {
                 lua_pushinteger( lua_state, Userdata->Padding );
             }
-            else if ( strcmp( Key, "antialiasing" ) == 0 ) {
+            else if ( Key == "antialiasing" ) {
                 lua_pushboolean( lua_state, Userdata->Antialiasing );
             }
-            else if ( strcmp( Key, "max_offset_y" ) == 0 ) {
+            else if ( Key == "max_offset_y" ) {
                 lua_pushnumber( lua_state, Userdata->MaxOffsetY );
             }
-            else if ( strcmp( Key, "glyphs" ) == 0 ) {
+            else if ( Key == "glyphs" ) {
                 lua_createtable( lua_state, 0, static_cast< int >( Userdata->Glyphs.size( ) ) );
 
                 for ( const auto& [Char, GlyphRef] : Userdata->Glyphs ) {
@@ -725,21 +723,21 @@ namespace LuaBind::LuaUsertypes {
         // Metatable functions
         int __Index( lua_State* lua_state ) {
             Color* Userdata = ( Color* ) luaL_checkudata( lua_state, 1, "color" );
-            const char* Key = lua_tostring( lua_state, 2 );
+            std::string Key = Utils.ToLowercase( lua_tostring( lua_state, 2 ) );
 
-            if ( strcmp( Key, "r" ) == 0 ) {
+            if ( Key == "r" ) {
                 lua_pushinteger( lua_state, static_cast< int >( Userdata->r ) );
             }
-            else if ( strcmp( Key, "g" ) == 0 ) {
+            else if ( Key == "g" ) {
                 lua_pushinteger( lua_state, static_cast< int >( Userdata->g ) );
             }
-            else if ( strcmp( Key, "b" ) == 0 ) {
+            else if ( Key == "b" ) {
                 lua_pushinteger( lua_state, static_cast< int >( Userdata->b ) );
             }
-            else if ( strcmp( Key, "a" ) == 0 ) {
+            else if ( Key == "a" ) {
                 lua_pushinteger( lua_state, static_cast< int >( Userdata->a ) );
             }
-            else if ( strcmp( Key, "hex" ) == 0 ) {
+            else if ( Key == "hex" ) {
                 lua_pushnumber( lua_state, static_cast< double >(
                     RGBA_TO_DWORD( Userdata->r, Userdata->g, Userdata->b, Userdata->a )
                 ) );
@@ -752,18 +750,18 @@ namespace LuaBind::LuaUsertypes {
         }
         int __NewIndex( lua_State* lua_state ) {
             Color* Userdata = ( Color* ) luaL_checkudata( lua_state, 1, "color" );
-            const char* Key = lua_tostring( lua_state, 2 );
+            std::string Key = Utils.ToLowercase( lua_tostring( lua_state, 2 ) );
 
-            if ( strcmp( Key, "r" ) == 0 ) {
+            if ( Key == "r" ) {
                 Userdata->r = static_cast< uint8_t >( luaL_checknumber( lua_state, 3 ) );
             }
-            else if ( strcmp( Key, "g" ) == 0 ) {
+            else if ( Key == "g" ) {
                 Userdata->g = static_cast< uint8_t >( luaL_checknumber( lua_state, 3 ) );
             }
-            else if ( strcmp( Key, "b" ) == 0 ) {
+            else if ( Key == "b" ) {
                 Userdata->b = static_cast< uint8_t >( luaL_checknumber( lua_state, 3 ) );
             }
-            else if ( strcmp( Key, "a" ) == 0 ) {
+            else if ( Key == "a" ) {
                 Userdata->a = static_cast< uint8_t >( luaL_checknumber( lua_state, 3 ) );
             }
             else {
