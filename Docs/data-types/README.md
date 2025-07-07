@@ -1,6 +1,0 @@
----
-icon: table
----
-
-# Data types
-
