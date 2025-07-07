@@ -1,0 +1,6 @@
+---
+icon: table
+---
+
+# Data types
+
