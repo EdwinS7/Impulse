@@ -14,7 +14,7 @@
   * [Impulse globals](Docs/enviornment/globals/impulse-globals.md)
 * [Libraries](Docs/enviornment/libraries/README.md)
   * [Win32](Docs/enviornment/libraries/win32.md)
-  * [Graphics](Docs/enviornment/libraries/direct-x.md)
+  * [Graphics](enviornment/libraries/graphics.md)
   * [Renderer](Docs/enviornment/libraries/renderer.md)
   * [Input](Docs/enviornment/libraries/input.md)
   * [File system](Docs/enviornment/libraries/file-system.md)
