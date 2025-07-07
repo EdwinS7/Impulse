@@ -1,6 +1,0 @@
----
-icon: memo-pad
----
-
-# examples
-
