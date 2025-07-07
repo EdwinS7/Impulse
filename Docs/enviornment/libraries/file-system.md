@@ -68,3 +68,9 @@ file_system.create_directory(directory: string) -> nil
 ```lua
 file_system.delete_directory(directory: string) -> nil
 ```
+
+## file\_system.load\_image\_data
+
+```lua
+file_system.load_image_data(directory: string) -> pixel_data: userdata, width: number, height: number
+```

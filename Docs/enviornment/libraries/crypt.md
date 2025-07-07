@@ -21,3 +21,15 @@ crypt.base64_encode(data: string) -> string
 ```lua
 crypt.base64_decode(data: string) -> string
 ```
+
+## crypt.json\_encode
+
+```lua
+crypt.json_encode(data: string) -> string
+```
+
+## crypt.json\_decode
+
+```lua
+crypt.json_decode(data: string) -> string
+```

@@ -4,6 +4,24 @@ icon: crown
 
 # Impulse globals
 
+## print
+
+```lua
+print(console_reference: number, content: string) -> nil
+```
+
+## warn
+
+```lua
+warn(console_reference: number, content: string) -> nil
+```
+
+## error
+
+```lua
+error(console_reference: number, content: string) -> nil
+```
+
 ## add\_connection
 
 ```lua
@@ -30,10 +48,10 @@ load_string(source_code: string) -> function
 new_c_closure(func: function) -> function
 ```
 
-## is\_lua\_closure&#x20;
+## is\_l\_closure&#x20;
 
 ```lua
-is_lua_closure(func: function) -> boolean
+is_l_closure(func: function) -> boolean
 ```
 
 ## is\_c\_closure
@@ -77,8 +95,8 @@ set_clipboard(data: string) -> nil
 get_clipboard() -> string
 ```
 
-## is\_internet\_connected
+## has\_internet
 
 ```lua
-is_internet_connected() -> boolean
+has_internet() -> boolean
 ```
