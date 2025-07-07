@@ -71,7 +71,7 @@ graphics.create_font(font_path: string, size: number, padding: number: antialias
 ```
 
 {% hint style="info" %}
-This returns a [font](../../../data-types/font.md) object.
+This returns a [font](../../data-types/font.md) object.
 {% endhint %}
 
 ## graphics.destroy\_font

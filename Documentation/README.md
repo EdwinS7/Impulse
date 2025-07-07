@@ -15,8 +15,8 @@ icon: rocket-launch
 ## Creating your first script
 
 1. Open your preferred IDE and navigate to the Impulse executable directory.
-2. Create a new file named `main.lua` and try one of our [examples](broken-reference).
+2. Create a new file named `main.lua` and try one of our [examples](examples/).
 
-{% content-ref url="broken-reference" %}
-[Broken link](broken-reference)
+{% content-ref url="enviornment/" %}
+[enviornment](enviornment/)
 {% endcontent-ref %}
