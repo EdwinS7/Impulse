@@ -80,13 +80,17 @@ pcall(func: function, ...: any) -> boolean, any
 
 Calls a function safely, returning `true` and the result if successful, or `false` and an error message if an error occurs.
 
-## print
+## print ⚠️
 
 ```lua
 print(...: any) -> nil
 ```
 
 Outputs the provided values to the console for debugging or display purposes.
+
+{% hint style="warning" %}
+`print` is overwritten by Impulse, go [here](impulse-globals.md#print).
+{% endhint %}
 
 ## rawequal
 
